@@ -5,13 +5,14 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.health.HealthStats;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -27,11 +28,15 @@ import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.itgowo.gamestzb.Entity.HeroEntity;
+import com.itgowo.gamestzb.Entity.SimpleEntity;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -44,7 +49,8 @@ import library.PhotoView;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
-    private List<Entity> list = new ArrayList<>();
+    private List<SimpleEntity> simpleEntities = new ArrayList<>();
+    private List<HeroEntity> heroEntities = new ArrayList<>();
     private Random random = new Random(System.currentTimeMillis());
     private int height, width;
     private TextView msg5;
@@ -66,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initView();
         init();
+        Utils.setupShortcuts();
         if (isWifiConnect()) {
             initRecyclerView();
         } else {
@@ -81,29 +88,18 @@ public class MainActivity extends AppCompatActivity {
                     });
             superDialog.show();
         }
-        RequestParams params = new RequestParams("http://itgowo.com/game/stzb");
-        x.http().get(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                JSONObject object = JSON.parseObject(result);
-                seed = object.getIntValue("seed");
-            }
 
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                ex.printStackTrace();
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
+        try {
+            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.heroes));
+            heroEntities = JSON.parseArray(temp, HeroEntity.class);
+//            for (int i = 0; i < heroEntities.size(); i++) {
+//                HeroEntity entity=heroEntities.get(i);
+//                File file=new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"heros/"+entity.getId()+".jpg");
+//                Utils.download(file,entity.getIcon());
+//            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -195,6 +191,29 @@ public class MainActivity extends AppCompatActivity {
                             num = 15;
                             goodluck();
                         }
+                        RequestParams params = new RequestParams("http://itgowo.com/game/stzb");
+                        x.http().get(params, new Callback.CommonCallback<String>() {
+                            @Override
+                            public void onSuccess(String result) {
+                                JSONObject object = JSON.parseObject(result);
+                                seed = object.getIntValue("seed");
+                            }
+
+                            @Override
+                            public void onError(Throwable ex, boolean isOnCallback) {
+                                ex.printStackTrace();
+                            }
+
+                            @Override
+                            public void onCancelled(CancelledException cex) {
+
+                            }
+
+                            @Override
+                            public void onFinished() {
+
+                            }
+                        });
                     }
                 }).show();
 
@@ -206,8 +225,8 @@ public class MainActivity extends AppCompatActivity {
             byte[] bytes = new byte[inputStream.available()];
             inputStream.read(bytes);
             data = new String(bytes);
-            list = JSON.parseArray(data, Entity.class);
-            Collections.sort(list);
+            simpleEntities = JSON.parseArray(data, SimpleEntity.class);
+            Collections.sort(simpleEntities);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -233,14 +252,14 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         num--;
-        Entity entity;
+        SimpleEntity entity;
         int temp = random.nextInt(30);
         if (temp < seed) {
-            entity = list.get(random.nextInt(221));
+            entity = simpleEntities.get(random.nextInt(221));
         } else if (temp < seed * 2) {
-            entity = list.get(48 + random.nextInt(173));
+            entity = simpleEntities.get(48 + random.nextInt(173));
         } else {
-            entity = list.get(137 + random.nextInt(84));
+            entity = simpleEntities.get(137 + random.nextInt(84));
         }
         if (entity.getLevel() == 3) {
             count3++;
@@ -286,15 +305,17 @@ public class MainActivity extends AppCompatActivity {
             p.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // 把PhotoView当普通的控件把触摸功能关掉
             p.disenable();
-            final Entity entity = list.get(position);
+            final HeroEntity entity = heroEntities.get(position);
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
-            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
+//            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
+            final int res=getResources().getIdentifier("hero_"+entity.getId(),"drawable",getPackageName());
+            Glide.with(holder.itemView).load(res).apply(options).into(p);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     PhotoView p = (PhotoView) v;
                     mInfo = p.getInfo();
-                    Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(new SimpleTarget<Drawable>() {
+                    Glide.with(holder.itemView).load(res).apply(options).into(new SimpleTarget<Drawable>() {
                         @Override
                         public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                             mPhotoView.setImageDrawable(resource);
@@ -313,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return list.size();
+            return heroEntities.size();
         }
     }
 

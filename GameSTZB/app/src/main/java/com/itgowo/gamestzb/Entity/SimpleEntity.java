@@ -1,4 +1,4 @@
-package com.itgowo.gamestzb;
+package com.itgowo.gamestzb.Entity;
 
 import android.support.annotation.NonNull;
 
@@ -9,7 +9,7 @@ import java.net.URLEncoder;
  * Created by lujianchao on 2018/3/23.
  */
 
-public class Entity implements Comparable<Entity> {
+public class SimpleEntity implements Comparable<SimpleEntity> {
     /**
      * cn_name : 吕布
      * src : https://mgame-f.netease.com/forum/201509/30/172410ttnvuwqeu8ae4v4h.jpg
@@ -45,7 +45,7 @@ public class Entity implements Comparable<Entity> {
     public String getCountry(){
         switch (lv){
             case 0:
-                return "汗";
+                return "汉";
             case 1:
                 return "魏";
             case 2:
@@ -114,7 +114,7 @@ public class Entity implements Comparable<Entity> {
     }
 
     @Override
-    public int compareTo(@NonNull Entity o) {
+    public int compareTo(@NonNull SimpleEntity o) {
         return type - o.type;
     }
 }
