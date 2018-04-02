@@ -9,5 +9,6 @@ public class BaseApp extends Application {
     public void onCreate() {
         super.onCreate();
         app = this;
+        Utils.setupShortcuts();
     }
 }

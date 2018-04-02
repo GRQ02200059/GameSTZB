@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initView();
         init();
-        Utils.setupShortcuts();
         if (isWifiConnect()) {
             initRecyclerView();
         } else {
