@@ -6,7 +6,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.health.HealthStats;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -35,7 +34,6 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -89,13 +87,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         try {
-            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.heroes));
-            heroEntities = JSON.parseArray(temp, HeroEntity.class);
-//            for (int i = 0; i < heroEntities.size(); i++) {
-//                HeroEntity entity=heroEntities.get(i);
-//                File file=new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"heros/"+entity.getId()+".jpg");
-//                Utils.download(file,entity.getIcon());
-//            }
+            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.simpledata));
+            simpleEntities = JSON.parseArray(temp, SimpleEntity.class);
+            for (int i = 0; i < heroEntities.size(); i++) {
+                SimpleEntity entity = simpleEntities.get(i);
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Simple/" + entity.getEncodeName() + ".jpg");
+                Utils.download(file, entity.getSrc());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -220,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
         });
         try {
             String data;
-            InputStream inputStream = getResources().openRawResource(R.raw.datastring);
+            InputStream inputStream = getResources().openRawResource(R.raw.simpledata);
             byte[] bytes = new byte[inputStream.available()];
             inputStream.read(bytes);
             data = new String(bytes);
@@ -307,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
             final HeroEntity entity = heroEntities.get(position);
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
 //            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
-            final int res=getResources().getIdentifier("hero_"+entity.getId(),"drawable",getPackageName());
+            final int res = getResources().getIdentifier("hero_" + entity.getId(), "drawable", getPackageName());
             Glide.with(holder.itemView).load(res).apply(options).into(p);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

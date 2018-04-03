@@ -11,6 +11,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.VideoView;
 
+import com.itgowo.gamestzb.View.FillVideoView;
+
 public class LoaddingActivity extends AppCompatActivity {
     private VideoView videoView1;
 
@@ -46,24 +48,12 @@ public class LoaddingActivity extends AppCompatActivity {
     }
 
     private void step2() {
-        videoView1.setClickable(false);
-        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.cg_2);
-        videoView1.setVideoURI(uri);
-        videoView1.setVisibility(View.VISIBLE);
-        videoView1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                finish();
-                Intent intent = new Intent(LoaddingActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-        videoView1.start();
+
     }
 
 
     private void initView() {
-        videoView1 = new VideoView(this);
+        videoView1 = new FillVideoView(this);
         getWindow().addContentView(videoView1, new WindowManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 }

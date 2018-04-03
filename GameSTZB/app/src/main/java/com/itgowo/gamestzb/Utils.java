@@ -1,10 +1,14 @@
 package com.itgowo.gamestzb;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
+import android.support.v4.app.NotificationManagerCompat;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -12,7 +16,6 @@ import org.xutils.x;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,8 +48,8 @@ public class Utils {
     }
 
     public static String ReadFile2String(InputStream inputStream) throws IOException {
-        BufferedReader reader=new BufferedReader(new InputStreamReader(inputStream));
-        String temp=reader.readLine();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String temp = reader.readLine();
         return temp;
     }
 
@@ -76,5 +79,20 @@ public class Utils {
 
             }
         });
+    }
+
+
+    public static boolean hasNotificationPermission(Context context) {
+        NotificationManagerCompat manager = NotificationManagerCompat.from(context);
+        boolean isOpened = manager.areNotificationsEnabled();
+        return isOpened;
+    }
+    public static void intentDetailsSettingActivity(Context context){
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+        intent.setData(uri);
+        context.startActivity(intent);
     }
 }

@@ -10,5 +10,6 @@ public class BaseApp extends Application {
         super.onCreate();
         app = this;
         Utils.setupShortcuts();
+
     }
 }
