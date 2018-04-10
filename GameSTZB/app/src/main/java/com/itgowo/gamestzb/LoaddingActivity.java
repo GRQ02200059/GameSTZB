@@ -48,7 +48,8 @@ public class LoaddingActivity extends AppCompatActivity {
     }
 
     private void step2() {
-
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 

@@ -28,7 +28,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Entity.HeroEntity;
-import com.itgowo.gamestzb.Entity.SimpleEntity;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -36,9 +35,7 @@ import org.xutils.x;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -46,8 +43,8 @@ import library.Info;
 import library.PhotoView;
 
 public class MainActivity extends AppCompatActivity {
+    private STZBManager manager = new STZBManager();
     private RecyclerView recyclerView;
-    private List<SimpleEntity> simpleEntities = new ArrayList<>();
     private List<HeroEntity> heroEntities = new ArrayList<>();
     private Random random = new Random(System.currentTimeMillis());
     private int height, width;
@@ -70,33 +67,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initView();
         init();
-        if (isWifiConnect()) {
-            initRecyclerView();
-        } else {
-            SuperDialog superDialog = new SuperDialog(this).setTitle("枫林提醒")
-                    .setContent("当前使用的不是wifi网络，为了防止流量过多浪费，默认禁止使用数据网络，是否允许使用数据网络下载图片？")
-                    .setButtonTexts("允许使用", "我要省流量").setListener(new SuperDialog.onDialogClickListener() {
-                        @Override
-                        public void click(boolean isButtonClick, int position) {
-                            if (isButtonClick && position == 0) {
-                                initRecyclerView();
-                            }
-                        }
-                    });
-            superDialog.show();
-        }
-
-        try {
-            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.simpledata));
-            simpleEntities = JSON.parseArray(temp, SimpleEntity.class);
-            for (int i = 0; i < heroEntities.size(); i++) {
-                SimpleEntity entity = simpleEntities.get(i);
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Simple/" + entity.getEncodeName() + ".jpg");
-                Utils.download(file, entity.getSrc());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        initRecyclerView();
+//            SuperDialog superDialog = new SuperDialog(this).setTitle("枫林提醒")
+//                    .setContent("当前使用的不是wifi网络，为了防止流量过多浪费，默认禁止使用数据网络，是否允许使用数据网络下载图片？")
+//                    .setButtonTexts("允许使用", "我要省流量").setListener(new SuperDialog.onDialogClickListener() {
+//                        @Override
+//                        public void click(boolean isButtonClick, int position) {
+//                            if (isButtonClick && position == 0) {
+//                                initRecyclerView();
+//                            }
+//                        }
+//                    });
+//            superDialog.show();
 
     }
 
@@ -217,13 +199,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         try {
-            String data;
-            InputStream inputStream = getResources().openRawResource(R.raw.simpledata);
-            byte[] bytes = new byte[inputStream.available()];
-            inputStream.read(bytes);
-            data = new String(bytes);
-            simpleEntities = JSON.parseArray(data, SimpleEntity.class);
-            Collections.sort(simpleEntities);
+            int count = 0;
+//            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.simpledata));
+//            simpleEntities = JSON.parseArray(temp, SimpleEntity.class);
+//            Collections.sort(simpleEntities);
+            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.herolist));
+            manager.setTotalHeroList(JSON.parseArray(temp, HeroEntity.class));
+            heroEntities = manager.getTotalHeroList();
+
+            for (int i = 0; i < heroEntities.size(); i++) {
+                File h=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"stzb/hero_"+heroEntities.get(i).getId()+".jpg");
+                Utils.download(h,"https://stzb.res.netease.com/pc/qt/20170323200251/data/role/card_"+heroEntities.get(i).getId()+".jpg");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -249,35 +236,35 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         num--;
-        SimpleEntity entity;
+        final HeroEntity entity;
         int temp = random.nextInt(30);
         if (temp < seed) {
-            entity = simpleEntities.get(random.nextInt(221));
+            entity = heroEntities.get(random.nextInt(221));
         } else if (temp < seed * 2) {
-            entity = simpleEntities.get(48 + random.nextInt(173));
+            entity = heroEntities.get(48 + random.nextInt(173));
         } else {
-            entity = simpleEntities.get(137 + random.nextInt(84));
+            entity = heroEntities.get(137 + random.nextInt(84));
         }
-        if (entity.getLevel() == 3) {
+        if (entity.getQuality() == 3) {
             count3++;
             goodluck();
             return;
         }
-        if (entity.getLevel() == 4) {
+        if (entity.getQuality() == 4) {
             count4++;
         }
-        if (entity.getLevel() == 5) {
+        if (entity.getQuality() == 5) {
             count5++;
         }
-        final String src = entity.getSrc();
         SuperDialog dialog = new SuperDialog(MainActivity.this).setShowButtonLayout(false);
         dialog.setImageListener(new SuperDialog.onDialogImageListener() {
             @Override
             public void onInitImageView(ImageView imageView) {
                 RequestOptions options = new RequestOptions().dontAnimate().dontTransform();
-                Glide.with(imageView).load(src).apply(options).into(imageView);
+                final int res = getResources().getIdentifier("hero_" + entity.getId(), "drawable", getPackageName());
+                Glide.with(imageView).load(res).apply(options).into(imageView);
             }
-        }).setTitleTextSize(17).setContent("恭喜主公喜获 " + entity.getLevel() + "星 " + entity.getCountry() + " " + entity.getCn_name()).setTitle("枫林制作，仅供娱乐").show();
+        }).setTitleTextSize(17).setContent("恭喜主公喜获 " + entity.getQuality() + "星 " + entity.getContory() + " " + entity.getType() + " " + entity.getName()).setTitle("枫林制作，仅供娱乐").show();
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -302,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
             p.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // 把PhotoView当普通的控件把触摸功能关掉
             p.disenable();
-            final HeroEntity entity = heroEntities.get(position);
+            final HeroEntity entity = manager.getHeroList5().get(position);
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
 //            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
             final int res = getResources().getIdentifier("hero_" + entity.getId(), "drawable", getPackageName());
@@ -331,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return heroEntities.size();
+            return manager.getHeroList5().size();
         }
     }
 
