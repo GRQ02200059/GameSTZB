@@ -1,5 +1,6 @@
 package com.itgowo.gamestzb;
 
+import com.alibaba.fastjson.JSON;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 
 import org.xutils.common.Callback;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class STZBManager {
-//    public static final String ROOTURL = "http://itgowo.com:666/GameSTZB";
+    //    public static final String ROOTURL = "http://itgowo.com:666/GameSTZB";
     public static final String ROOTURL = "http://10.0.4.33:666/GameSTZB";
     private List<HeroEntity> totalHeroList = new ArrayList<>();
     private List<HeroEntity> heroList5 = new ArrayList<>();

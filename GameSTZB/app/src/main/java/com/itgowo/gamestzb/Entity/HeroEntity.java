@@ -6,7 +6,6 @@ public class HeroEntity {
      * name : 吕布
      * siege : 9
      * speed : 77
-     * methodDetail : {"id":200012,"name":"辕门射戟","icon":"http://res.stzb.netease.com/gw/15v1/data/jineng/tactics_02.png"}
      * cost : 3.5
      * type : 弓
      * quality : 5
@@ -20,7 +19,6 @@ public class HeroEntity {
     private String name;
     private int siege;
     private int speed;
-    private MethodDetailBean methodDetail;
     private double cost;
     private String type;
     private int quality;
@@ -28,21 +26,15 @@ public class HeroEntity {
     private String icon;
     private String src;
     private String url;
+    private int skillId;
 
-    public boolean mergeData(SimpleEntity simpleEntity) {
-        if (this.name.equalsIgnoreCase(simpleEntity.getCn_name())) {
-            if (this.quality == simpleEntity.getLevel()) {
-                if (this.getContory().equalsIgnoreCase(simpleEntity.getCountry())) {
-                    if (url != null) {
-                        System.out.println(toString());
-                    }
-                    setUrl(simpleEntity.getUrl());
-                    setSrc(simpleEntity.getSrc());
-                    return true;
-                }
-            }
-        }
-        return false;
+    public int getSkillId() {
+        return skillId;
+    }
+
+    public HeroEntity setSkillId(int skillId) {
+        this.skillId = skillId;
+        return this;
     }
 
     public String getSrc() {
@@ -95,13 +87,7 @@ public class HeroEntity {
         this.speed = speed;
     }
 
-    public MethodDetailBean getMethodDetail() {
-        return methodDetail;
-    }
 
-    public void setMethodDetail(MethodDetailBean methodDetail) {
-        this.methodDetail = methodDetail;
-    }
 
     public double getCost() {
         return cost;
@@ -150,7 +136,6 @@ public class HeroEntity {
                 ", name='" + name + '\'' +
                 ", siege=" + siege +
                 ", speed=" + speed +
-                ", methodDetail=" + methodDetail +
                 ", cost=" + cost +
                 ", type='" + type + '\'' +
                 ", quality=" + quality +
@@ -161,48 +146,4 @@ public class HeroEntity {
                 '}';
     }
 
-    public static class MethodDetailBean {
-        /**
-         * id : 200012
-         * name : 辕门射戟
-         * icon : http://res.stzb.netease.com/gw/15v1/data/jineng/tactics_02.png
-         */
-
-        private int id;
-        private String name;
-        private String icon;
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getIcon() {
-            return icon;
-        }
-
-        public void setIcon(String icon) {
-            this.icon = icon;
-        }
-
-        @Override
-        public String toString() {
-            return "MethodDetailBean{" +
-                    "id=" + id +
-                    ", name='" + name + '\'' +
-                    ", icon='" + icon + '\'' +
-                    '}';
-        }
-    }
 }
