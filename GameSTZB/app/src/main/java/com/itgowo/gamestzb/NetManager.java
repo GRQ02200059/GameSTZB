@@ -14,8 +14,8 @@ import java.lang.reflect.Type;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-    public static final String ROOTURL = "http://10.0.4.34:1666/GameSTZB";
-//    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
+//    public static final String ROOTURL = "http://10.0.4.34:1666/GameSTZB";
+    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
 
     public static void getRandomHero(int num, onNetResultListener listener) {
         BaseRequest request = new BaseRequest();
