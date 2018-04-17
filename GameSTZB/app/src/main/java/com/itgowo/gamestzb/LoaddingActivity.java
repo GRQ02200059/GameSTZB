@@ -33,6 +33,7 @@ public class LoaddingActivity extends AppCompatActivity {
 
             @Override
             public void onCompletion(MediaPlayer mPlayer) {
+                System.out.println("LoaddingActivity.onCompletion");
                 mPlayer.start();
                 mPlayer.setLooping(true);
                 videoView1.setClickable(true);
@@ -48,6 +49,7 @@ public class LoaddingActivity extends AppCompatActivity {
     }
 
     private void step2() {
+        finish();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

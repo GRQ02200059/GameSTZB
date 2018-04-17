@@ -53,33 +53,7 @@ public class Utils {
         return temp;
     }
 
-    public static void download(final File file, final String url) {
-        RequestParams requestParams = new RequestParams(url);
-        requestParams.setSaveFilePath(file.getAbsolutePath());
-        requestParams.setMultipart(true);
-        x.http().get(requestParams, new Callback.CommonCallback<File>() {
-            @Override
-            public void onSuccess(File result) {
-                System.out.println("download:" + file.getName() + "   " + url);
-            }
 
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                ex.printStackTrace();
-                System.out.println("downloaderror:" + file.getName() + "   " + url);
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
-    }
 
 
     public static boolean hasNotificationPermission(Context context) {

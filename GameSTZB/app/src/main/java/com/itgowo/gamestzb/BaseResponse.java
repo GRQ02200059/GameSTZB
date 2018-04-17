@@ -23,11 +23,11 @@ public class BaseResponse<Data> {
         return this;
     }
 
-    public Data getData() {
-        return data;
+    public   Data getData() {
+        return   data;
     }
 
-    public BaseResponse setData(Data data) {
+    public BaseResponse<Data> setData(Data data) {
         this.data = data;
         return this;
     }

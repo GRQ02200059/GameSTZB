@@ -1,6 +1,5 @@
 package com.itgowo.gamestzb;
 
-import com.alibaba.fastjson.JSON;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 
 import org.xutils.common.Callback;
@@ -75,7 +74,7 @@ public class STZBManager {
 
     public void loadNetData(boolean isCustom) {
         BaseRequest request = new BaseRequest();
-        request.setAction(isCustom ? BaseRequest.GET_CUSTOMHEROLIST : BaseRequest.GET_HEROLIST);
+        request.setAction(isCustom ? BaseRequest.GET_CUSTOM_HERO_LIST : BaseRequest.GET_HERO_LIST);
         RequestParams requestParams = new RequestParams(ROOTURL);
         requestParams.setBodyContent(request.toJson());
         x.http().post(requestParams, new Callback.CommonCallback<String>() {

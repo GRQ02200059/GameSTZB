@@ -1,11 +1,11 @@
 package com.itgowo.gamestzb;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -16,12 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.request.RequestOptions;
@@ -29,12 +29,6 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 
-import org.xutils.common.Callback;
-import org.xutils.http.RequestParams;
-import org.xutils.x;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -45,13 +39,13 @@ import library.PhotoView;
 public class MainActivity extends AppCompatActivity {
     private STZBManager manager = new STZBManager();
     private RecyclerView recyclerView;
-    private List<HeroEntity> heroEntities = new ArrayList<>();
+    private List<HeroEntity> randomHeroEntities = new ArrayList<>();
     private Random random = new Random(System.currentTimeMillis());
     private int height, width;
     private TextView msg5;
     private TextView msg4;
     private TextView msg3;
-    private int count5, count4, count3, num, seed = 6;
+    private int count5, count4, count3, count2, count1;
     private View mParent;
     private View mBg;
     private PhotoView mPhotoView;
@@ -63,23 +57,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        x.Ext.init(getApplication());
         setContentView(R.layout.activity_main);
         initView();
         init();
         initRecyclerView();
-//            SuperDialog superDialog = new SuperDialog(this).setTitle("枫林提醒")
-//                    .setContent("当前使用的不是wifi网络，为了防止流量过多浪费，默认禁止使用数据网络，是否允许使用数据网络下载图片？")
-//                    .setButtonTexts("允许使用", "我要省流量").setListener(new SuperDialog.onDialogClickListener() {
-//                        @Override
-//                        public void click(boolean isButtonClick, int position) {
-//                            if (isButtonClick && position == 0) {
-//                                initRecyclerView();
-//                            }
-//                        }
-//                    });
-//            superDialog.show();
-
     }
 
     private void initView() {
@@ -115,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
+        final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(this, R.anim.anim_layout_animation_fall_down);
+        recyclerView.setLayoutAnimation(controller);
+        recyclerView.scheduleLayoutAnimation();
         recyclerView.setLayoutManager(new GridLayoutManager(this, 5));
         recyclerView.setAdapter(new Myadapter());
         mPhotoView.enable();
@@ -161,64 +145,38 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void click(boolean isButtonClick, int position) {
                         if (position == 0) {
-                            num = 1;
-                            goodluck();
+                            goodluck(1);
                         } else if (position == 1) {
-                            num = 5;
-                            goodluck();
+                            goodluck(5);
                         } else {
-                            num = 15;
-                            goodluck();
+                            goodluck(15);
                         }
-                        RequestParams params = new RequestParams("http://itgowo.com/game/stzb");
-                        x.http().get(params, new Callback.CommonCallback<String>() {
-                            @Override
-                            public void onSuccess(String result) {
-                                JSONObject object = JSON.parseObject(result);
-                                seed = object.getIntValue("seed");
-                            }
-
-                            @Override
-                            public void onError(Throwable ex, boolean isOnCallback) {
-                                ex.printStackTrace();
-                            }
-
-                            @Override
-                            public void onCancelled(CancelledException cex) {
-
-                            }
-
-                            @Override
-                            public void onFinished() {
-
-                            }
-                        });
                     }
                 }).show();
 
             }
         });
-        try {
-            int count = 0;
+//        try {
+//            int count = 0;
 //            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.simpledata));
 //            simpleEntities = JSON.parseArray(temp, SimpleEntity.class);
 //            Collections.sort(simpleEntities);
-            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.herolist));
-            manager.setTotalHeroList(JSON.parseArray(temp, HeroEntity.class));
-            heroEntities = manager.getTotalHeroList();
+//            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.herolist));
+//            manager.setTotalHeroList(JSON.parseArray(temp, HeroEntity.class));
+//            heroEntities = manager.getTotalHeroList();
 
-            for (int i = 0; i < heroEntities.size(); i++) {
-                File h=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"stzb/hero_"+heroEntities.get(i).getId()+".jpg");
-                Utils.download(h,"https://stzb.res.netease.com/pc/qt/20170323200251/data/role/card_"+heroEntities.get(i).getId()+".jpg");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//            for (int i = 0; i < heroEntities.size(); i++) {
+//                File h=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"stzb/hero_"+heroEntities.get(i).getId()+".jpg");
+//                Utils.download(h,"https://stzb.res.netease.com/pc/qt/20170323200251/data/role/card_"+heroEntities.get(i).getId()+".jpg");
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 
     }
 
-    private void onResult() {
+    private void onRandomResult() {
         msg5.setText("5 星：" + count5);
         msg4.setText("4 星：" + count4);
         msg3.setText("3 星：" + count3);
@@ -230,47 +188,87 @@ public class MainActivity extends AppCompatActivity {
      * 135-219 3星
      * <p>
      */
-    private void goodluck() {
-        if (num <= 0) {
-            onResult();
+    private void goodluck(int num) {
+        NetManager.getRandomHero(num, new NetManager.onNetResultListener<BaseResponse<List<HeroEntity>>>() {
+
+            @Override
+            public void onResult(String requestStr, String responseStr, BaseResponse<List<HeroEntity>> result) {
+                randomHeroEntities = result.getData();
+                for (int i = 0; i < randomHeroEntities.size(); i++) {
+                    switch (randomHeroEntities.get(i).getQuality()) {
+                        case 1:
+                            count1++;
+                            break;
+                        case 2:
+                            count2++;
+                            break;
+                        case 3:
+                            count3++;
+                            break;
+                        case 4:
+                            count4++;
+                            break;
+                        case 5:
+                            count5++;
+                            break;
+                    }
+                }
+                onRandomResult();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
+
+
+    }
+
+    public void showHeroDialog(Context context) {
+        if (randomHeroEntities == null || randomHeroEntities.size() == 0) {
             return;
         }
-        num--;
-        final HeroEntity entity;
-        int temp = random.nextInt(30);
-        if (temp < seed) {
-            entity = heroEntities.get(random.nextInt(221));
-        } else if (temp < seed * 2) {
-            entity = heroEntities.get(48 + random.nextInt(173));
-        } else {
-            entity = heroEntities.get(137 + random.nextInt(84));
-        }
-        if (entity.getQuality() == 3) {
-            count3++;
-            goodluck();
-            return;
-        }
-        if (entity.getQuality() == 4) {
-            count4++;
-        }
-        if (entity.getQuality() == 5) {
-            count5++;
-        }
+        final HeroEntity entity = randomHeroEntities.remove(0);
         SuperDialog dialog = new SuperDialog(MainActivity.this).setShowButtonLayout(false);
         dialog.setImageListener(new SuperDialog.onDialogImageListener() {
             @Override
             public void onInitImageView(ImageView imageView) {
                 RequestOptions options = new RequestOptions().dontAnimate().dontTransform();
-                final int res = getResources().getIdentifier("hero_" + entity.getId(), "drawable", getPackageName());
-                Glide.with(imageView).load(res).apply(options).into(imageView);
+                if (entity.getId() < 600000) {
+                    final int res = getResources().getIdentifier("hero_" + entity.getId(), "drawable", getPackageName());
+                    Glide.with(imageView).load(res).apply(options).into(imageView);
+                } else {
+                    Glide.with(imageView).load(entity.getIcon()).apply(options).into(imageView);
+                }
             }
-        }).setTitleTextSize(17).setContent("恭喜主公喜获 " + entity.getQuality() + "星 " + entity.getContory() + " " + entity.getType() + " " + entity.getName()).setTitle("枫林制作，仅供娱乐").show();
+        }).setTitleTextSize(17)
+                .setContent("恭喜主公喜获 " + entity.getQuality() + "星 " + entity.getContory() + " " + entity.getType() + " " + entity.getName())
+                .setTitle("枫林制作，仅供娱乐");
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                goodluck();
+                if (entity.getQuality() == 3) {
+                    count3++;
+                    return;
+                }
+                if (entity.getQuality() == 4) {
+                    count4++;
+                }
+                if (entity.getQuality() == 5) {
+                    count5++;
+                }
+                if (entity.getQuality() == 2) {
+                    count2++;
+                }
+                if (entity.getQuality() == 1) {
+                    count1++;
+                }
+                onRandomResult();
+                showHeroDialog(context);
             }
         });
+        dialog.show();
     }
 
     class Myadapter extends RecyclerView.Adapter<viewHolder> {
@@ -289,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
             p.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // 把PhotoView当普通的控件把触摸功能关掉
             p.disenable();
-            final HeroEntity entity = manager.getHeroList5().get(position);
+            final HeroEntity entity = randomHeroEntities.get(position);
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
 //            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
             final int res = getResources().getIdentifier("hero_" + entity.getId(), "drawable", getPackageName());
@@ -318,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return manager.getHeroList5().size();
+            return randomHeroEntities.size();
         }
     }
 

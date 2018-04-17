@@ -3,9 +3,9 @@ package com.itgowo.gamestzb;
 import com.alibaba.fastjson.JSON;
 
 public class BaseRequest<PostData> {
-    public static final String GET_HEROLIST = "get_heroList";
-    public static final String GET_CUSTOMHEROLIST = "get_customHeroList";
-    public static final String GET_GOODLUCKNUMBER = "get_GOODLUCK";
+    public static final String GET_HERO_LIST = "getHeroList";
+    public static final String GET_CUSTOM_HERO_LIST = "getCustomHeroList";
+    public static final String GET_RANDOM_HERO = "getRandomHero";
     private String flag = "GameSTZB";
     private String action;
     private String token;
@@ -75,6 +75,19 @@ public class BaseRequest<PostData> {
     }
 
     public void initToken() {
+        token = "aaaaaaaaaaaaaaaa";
+    }
 
+    public static class getRandomHeroEntity {
+        private int randomNum;
+
+        public int getRandomNum() {
+            return randomNum;
+        }
+
+        public getRandomHeroEntity setRandomNum(int mRandomNum) {
+            randomNum = mRandomNum;
+            return this;
+        }
     }
 }
