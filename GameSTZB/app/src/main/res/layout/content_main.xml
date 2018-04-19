@@ -3,41 +3,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background2"
     android:orientation="vertical"
     tools:context="com.itgowo.gamestzb.MainActivity">
 
     <LinearLayout
         android:id="@+id/ll"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/holo_blue_bright"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingBottom="5dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="5dp">
+        android:layout_marginTop="30dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
 
         <TextView
             android:id="@+id/msg5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            style="@style/HeroNum"
             android:text="5星：" />
 
         <TextView
             android:id="@+id/msg4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            style="@style/HeroNum"
             android:text="4星：" />
 
         <TextView
             android:id="@+id/msg3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            style="@style/HeroNum"
             android:text="3星：" />
 
+        <TextView
+            android:id="@+id/msg2"
+            style="@style/HeroNum"
+            android:text="2星：" />
+
+        <TextView
+            android:id="@+id/msg1"
+            style="@style/HeroNum"
+            android:text="1星：" />
     </LinearLayout>
 
 
@@ -45,7 +48,10 @@
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/ll"
+        android:layout_marginBottom="60dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@id/ll"
         android:visibility="visible" />
 
     <GridView

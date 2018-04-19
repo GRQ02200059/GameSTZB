@@ -2,9 +2,11 @@ package com.itgowo.gamestzb;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,7 +33,6 @@ import com.itgowo.gamestzb.Entity.HeroEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import library.Info;
 import library.PhotoView;
@@ -40,22 +41,27 @@ public class MainActivity extends AppCompatActivity {
     private STZBManager manager = new STZBManager();
     private RecyclerView recyclerView;
     private List<HeroEntity> randomHeroEntities = new ArrayList<>();
-    private Random random = new Random(System.currentTimeMillis());
-    private int height, width;
     private TextView msg5;
     private TextView msg4;
     private TextView msg3;
+    private TextView msg2;
+    private TextView msg1;
     private int count5, count4, count3, count2, count1;
     private View mParent;
     private View mBg;
     private PhotoView mPhotoView;
     private Info mInfo;
-
+    private int spanCount = 8;
     private AlphaAnimation in = new AlphaAnimation(0, 1);
     private AlphaAnimation out = new AlphaAnimation(1, 0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
@@ -68,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
         msg5 = (TextView) findViewById(R.id.msg5);
         msg4 = (TextView) findViewById(R.id.msg4);
         msg3 = (TextView) findViewById(R.id.msg3);
+        msg2 = (TextView) findViewById(R.id.msg2);
+        msg1 = (TextView) findViewById(R.id.msg1);
         mParent = findViewById(R.id.parent);
         mBg = findViewById(R.id.bg);
         mPhotoView = (PhotoView) findViewById(R.id.img);
         mPhotoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        width = getResources().getDisplayMetrics().widthPixels / 5;
-        height = width * 410 / 300;
         in.setDuration(200);
         out.setDuration(200);
         out.setAnimationListener(new Animation.AnimationListener() {
@@ -99,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(this, R.anim.anim_layout_animation_fall_down);
         recyclerView.setLayoutAnimation(controller);
         recyclerView.scheduleLayoutAnimation();
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 5));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
         recyclerView.setAdapter(new Myadapter());
         mPhotoView.enable();
         mPhotoView.setOnClickListener(new View.OnClickListener() {
@@ -180,6 +186,8 @@ public class MainActivity extends AppCompatActivity {
         msg5.setText("5 星：" + count5);
         msg4.setText("4 星：" + count4);
         msg3.setText("3 星：" + count3);
+        msg2.setText("2 星：" + count2);
+        msg1.setText("1 星：" + count1);
     }
 
     /**
@@ -189,11 +197,12 @@ public class MainActivity extends AppCompatActivity {
      * <p>
      */
     private void goodluck(int num) {
-        NetManager.getRandomHero(num, new NetManager.onNetResultListener<BaseResponse<List<HeroEntity>>>() {
+        NetManager.getRandomHero(num, new NetTool.onNetResultListener<BaseResponse<List<HeroEntity>>>() {
 
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<List<HeroEntity>> result) {
                 randomHeroEntities = result.getData();
+                recyclerView.getAdapter().notifyDataSetChanged();
                 for (int i = 0; i < randomHeroEntities.size(); i++) {
                     switch (randomHeroEntities.get(i).getQuality()) {
                         case 1:
@@ -283,6 +292,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final viewHolder holder, final int position) {
             final PhotoView p = (PhotoView) holder.itemView;
+            int width = recyclerView.getWidth() / spanCount;
+            int height = width * 410 / 300;
             p.setLayoutParams(new LinearLayout.LayoutParams(width, height));
             p.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // 把PhotoView当普通的控件把触摸功能关掉
@@ -301,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                             mPhotoView.setImageDrawable(resource);
-                            mPhotoView.setScaleType(ImageView.ScaleType.FIT_XY);
+                            mPhotoView.setScaleType(ImageView.ScaleType.CENTER);
                             mBg.startAnimation(in);
                             mBg.setVisibility(View.VISIBLE);
                             mParent.setVisibility(View.VISIBLE);

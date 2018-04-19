@@ -9,18 +9,18 @@ import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-//    public static final String ROOTURL = "http://10.0.4.34:1666/GameSTZB";
+    //    public static final String ROOTURL = "http://10.0.4.34:1666/GameSTZB";
     public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
 
-    public static void getRandomHero(int num, onNetResultListener listener) {
+    public static void getRandomHero(int num,  NetTool.onNetResultListener listener) {
         BaseRequest request = new BaseRequest();
         request.setAction(BaseRequest.GET_RANDOM_HERO).setData(new BaseRequest.getRandomHeroEntity().setRandomNum(num)).initToken();
         basePost(request, listener);
+
     }
 
     public static void download(final File file, final String url) {
@@ -51,7 +51,7 @@ public class NetManager {
         });
     }
 
-    public static void basePost(Object requestObject, final onNetResultListener listener) {
+    public static void basePost(Object requestObject, final NetTool.onNetResultListener listener) {
         String requestJson = "";
         if (requestObject instanceof BaseRequest) {
             requestJson = ((BaseRequest) requestObject).toJson();
@@ -71,19 +71,8 @@ public class NetManager {
             @Override
             public void onSuccess(String result) {
                 if (listener != null) {
-                    Type[] types = listener.getClass().getGenericInterfaces();
-                    if (types == null || types.length == 0) {
-                        listener.onResult(finalRequestJson, result, null);
-                        return;
-                    }
-                    ParameterizedType type = (ParameterizedType) types[0];
-                    types = type.getActualTypeArguments();
-                    if (types == null || types.length == 0) {
-                        listener.onResult(finalRequestJson, result, null);
-                        return;
-                    }
-                    type = (ParameterizedType) types[0];
-                    listener.onResult(finalRequestJson, result, JSON.parseObject(result, type));
+                    Object o=JSON.parseObject(result,classTool.getObjectParameterizedType(listener) );
+                    listener.onResult(finalRequestJson, result, o);
                 }
             }
 
@@ -107,11 +96,5 @@ public class NetManager {
 
             }
         });
-    }
-
-    public interface onNetResultListener<resultType> {
-        void onResult(String requestStr, String responseStr, resultType result);
-
-        void onError(Throwable throwable);
     }
 }
