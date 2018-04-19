@@ -1,11 +1,17 @@
 package com.itgowo.gamestzb;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +22,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -23,6 +30,7 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
@@ -30,6 +38,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Entity.HeroEntity;
+import com.itgowo.gamestzb.View.FillVideoView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +48,7 @@ import library.PhotoView;
 
 public class MainActivity extends AppCompatActivity {
     private STZBManager manager = new STZBManager();
+    private View rootLayout;
     private RecyclerView recyclerView;
     private List<HeroEntity> randomHeroEntities = new ArrayList<>();
     private TextView msg5;
@@ -54,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private int spanCount = 8;
     private AlphaAnimation in = new AlphaAnimation(0, 1);
     private AlphaAnimation out = new AlphaAnimation(1, 0);
-
+    private VideoView videoView1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -67,6 +77,42 @@ public class MainActivity extends AppCompatActivity {
         initView();
         init();
         initRecyclerView();
+
+        start();
+
+    }
+
+    private void start() {
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.cg_1);
+        videoView1.setVideoURI(uri);
+        videoView1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer mPlayer) {
+                mPlayer.start();
+                mPlayer.setLooping(true);
+                videoView1.setClickable(true);
+            }
+        });
+        videoView1.start();
+        videoView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rootLayout.setVisibility(View.VISIBLE);
+                ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
+
+                anim.setDuration(1000);// 动画持续时间
+                anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        System.out.println("animation = " + animation);
+                    }
+                });
+
+                anim.start();
+
+            }
+        });
     }
 
     private void initView() {
@@ -77,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
         msg2 = (TextView) findViewById(R.id.msg2);
         msg1 = (TextView) findViewById(R.id.msg1);
         mParent = findViewById(R.id.parent);
+        videoView1 = findViewById(R.id.videoview);
+        rootLayout=findViewById(R.id.rootlayout);
         mBg = findViewById(R.id.bg);
         mPhotoView = (PhotoView) findViewById(R.id.img);
         mPhotoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
