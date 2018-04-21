@@ -124,6 +124,10 @@ public class HeroEntity {
     public String getIcon() {
         return icon;
     }
+    public String getIconName(){
+        int index=icon.lastIndexOf(".");
+        return icon.substring(0,index);
+    }
 
     public void setIcon(String icon) {
         this.icon = icon;

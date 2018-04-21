@@ -1,9 +1,8 @@
 package com.itgowo.gamestzb;
 
 import android.app.Application;
-import android.content.res.Configuration;
-import android.graphics.Point;
-import android.view.WindowManager;
+
+import com.itgowo.itgowolib.itgowo;
 
 import org.xutils.x;
 
@@ -21,5 +20,6 @@ public class BaseApp extends Application {
     private void init() {
         x.Ext.init(app);
         x.Ext.setDebug(BuildConfig.DEBUG);
+        itgowo.netTool().initHttpClient(new NetManager.HttpClient());
     }
 }

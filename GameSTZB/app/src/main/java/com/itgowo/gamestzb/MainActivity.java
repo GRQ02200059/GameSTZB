@@ -1,9 +1,6 @@
 package com.itgowo.gamestzb;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -22,7 +19,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -38,7 +34,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Entity.HeroEntity;
-import com.itgowo.gamestzb.View.FillVideoView;
+import com.itgowo.itgowolib.itgowoNetTool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private AlphaAnimation in = new AlphaAnimation(0, 1);
     private AlphaAnimation out = new AlphaAnimation(1, 0);
     private VideoView videoView1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -80,6 +77,24 @@ public class MainActivity extends AppCompatActivity {
 
         start();
 
+    }
+
+    @Override
+    protected void onPause() {
+        videoView1.pause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        videoView1.start();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        videoView1.start();
     }
 
     private void start() {
@@ -100,19 +115,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 rootLayout.setVisibility(View.VISIBLE);
                 ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
-
-                anim.setDuration(1000);// 动画持续时间
-                anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        System.out.println("animation = " + animation);
-                    }
-                });
-
+                anim.setDuration(1200);// 动画持续时间
                 anim.start();
 
             }
         });
+
     }
 
     private void initView() {
@@ -124,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         msg1 = (TextView) findViewById(R.id.msg1);
         mParent = findViewById(R.id.parent);
         videoView1 = findViewById(R.id.videoview);
-        rootLayout=findViewById(R.id.rootlayout);
+        rootLayout = findViewById(R.id.rootlayout);
         mBg = findViewById(R.id.bg);
         mPhotoView = (PhotoView) findViewById(R.id.img);
         mPhotoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -245,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
      * <p>
      */
     private void goodluck(int num) {
-        NetManager.getRandomHero(num, new NetTool.onNetResultListener<BaseResponse<List<HeroEntity>>>() {
+        NetManager.getRandomHero(num, new itgowoNetTool.onReceviceDataListener<BaseResponse<List<HeroEntity>>>() {
 
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<List<HeroEntity>> result) {
@@ -275,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable throwable) {
-
+                throwable.printStackTrace();
             }
         });
 
@@ -349,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
             final HeroEntity entity = randomHeroEntities.get(position);
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
 //            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
-            final int res = getResources().getIdentifier("hero_" + entity.getId(), "drawable", getPackageName());
+            final int res = getResources().getIdentifier(entity.getIconName(), "drawable", getPackageName());
             Glide.with(holder.itemView).load(res).apply(options).into(p);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

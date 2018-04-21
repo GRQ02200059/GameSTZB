@@ -3,20 +3,22 @@ package com.itgowo.gamestzb;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.itgowo.itgowolib.itgowo;
+import com.itgowo.itgowolib.itgowoNetTool;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
-import java.lang.reflect.Type;
+import java.util.Map;
 
 public class NetManager {
     private static final String TAG = "NetManager";
     //    public static final String ROOTURL = "http://10.0.4.34:1666/GameSTZB";
     public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
 
-    public static void getRandomHero(int num,  NetTool.onNetResultListener listener) {
+    public static void getRandomHero(int num, itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();
         request.setAction(BaseRequest.GET_RANDOM_HERO).setData(new BaseRequest.getRandomHeroEntity().setRandomNum(num)).initToken();
         basePost(request, listener);
@@ -51,7 +53,7 @@ public class NetManager {
         });
     }
 
-    public static void basePost(Object requestObject, final NetTool.onNetResultListener listener) {
+    public static void basePost(Object requestObject, final itgowoNetTool.onReceviceDataListener listener) {
         String requestJson = "";
         if (requestObject instanceof BaseRequest) {
             requestJson = ((BaseRequest) requestObject).toJson();
@@ -61,40 +63,44 @@ public class NetManager {
             Log.e(TAG, "basePOST:requestObject is not supposed");
             return;
         }
-        RequestParams requestParams = new RequestParams(ROOTURL);
-        requestParams.setBodyContent(requestJson);
-        requestParams.setAsJsonContent(true);
-        requestParams.setConnectTimeout(5000);
-        requestParams.setReadTimeout(5000);
-        final String finalRequestJson = requestJson;
-        x.http().post(requestParams, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                if (listener != null) {
-                    Object o=JSON.parseObject(result,classTool.getObjectParameterizedType(listener) );
-                    listener.onResult(finalRequestJson, result, o);
+       itgowo.netTool().Request(ROOTURL,null,requestJson,listener);
+    }
+
+     public static class HttpClient implements itgowoNetTool.onRequestDataListener {
+
+        @Override
+        public void onRequest(String url, Map head, String body, itgowoNetTool.onRequestDataListener onRequestDataListener, itgowoNetTool.onReceviceDataListener listener) {
+            RequestParams requestParams = new RequestParams(url);
+            requestParams.setBodyContent(body);
+            requestParams.setAsJsonContent(true);
+            requestParams.setConnectTimeout(5000);
+            requestParams.setReadTimeout(5000);
+            x.http().post(requestParams, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    itgowo.netTool().onRequestComplete(body, result, listener);
                 }
-            }
 
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                if (x.isDebug()) {
-                    ex.printStackTrace();
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    if (x.isDebug()) {
+                        ex.printStackTrace();
+                    }
+                    if (listener != null) {
+                        listener.onError(ex);
+                    }
                 }
-                if (listener != null) {
-                    listener.onError(ex);
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
                 }
-            }
 
-            @Override
-            public void onCancelled(CancelledException cex) {
+                @Override
+                public void onFinished() {
 
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
+                }
+            });
+        }
     }
 }
