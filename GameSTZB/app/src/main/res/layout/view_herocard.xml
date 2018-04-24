@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
     <library.PhotoView
         android:id="@+id/headimg"
         android:layout_width="105dp"
         android:layout_height="134dp"
         android:foreground="@drawable/hero_mask_5"
-        android:src="@drawable/hero_100005" />
+        android:scaleType="centerCrop"
+        android:src="@drawable/hero_000000"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -21,54 +22,77 @@
             android:id="@+id/star1"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:src="@drawable/star1" />
+            android:src="@drawable/star1"/>
 
         <ImageView
             android:id="@+id/star2"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:src="@drawable/star1" />
+            android:src="@drawable/star1"/>
 
         <ImageView
             android:id="@+id/star3"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:src="@drawable/star1" />
+            android:src="@drawable/star1"/>
 
         <ImageView
             android:id="@+id/star4"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:src="@drawable/star1" />
+            android:src="@drawable/star1"/>
 
         <ImageView
             android:id="@+id/star5"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:src="@drawable/star1" />
+            android:src="@drawable/star1"/>
+
+        <ImageView
+            android:id="@+id/star6"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/star1"
+            android:visibility="visible"/>
     </LinearLayout>
 
     <TextView
         android:id="@+id/country"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="3dp"
-        android:layout_marginTop="4dp"
-        android:text="汉"
-        android:textColor="@color/country_han"
-        android:textSize="13sp" />
+        android:text="神"
+        android:textColor="@color/country_shen"
+        android:textSize="13sp"/>
 
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/country"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="4dp"
         android:ems="1"
-        android:text="貂蝉"
+        android:text="枫林"
         android:textColor="@android:color/holo_orange_dark"
-        android:textSize="9sp" />
+        android:textSize="9sp"/>
+
+    <TextView
+        android:id="@+id/type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/headimg"
+        android:layout_alignRight="@id/headimg"
+        android:background="@drawable/type_qi"
+        android:gravity="right|bottom"
+        android:text="5"
+        android:textColor="@android:color/white"
+        android:textSize="6sp"></TextView>
+
+    <TextView
+        android:id="@+id/cost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/headimg"
+        android:layout_centerHorizontal="true"
+        android:text="1"
+        android:textColor="@android:color/white"
+        android:textSize="6sp"></TextView>
 </RelativeLayout>

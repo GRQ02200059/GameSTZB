@@ -27,6 +27,15 @@ public class HeroEntity {
     private String src;
     private String url;
     private int skillId;
+    private int length;
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int mLength) {
+        length = mLength;
+    }
 
     public int getSkillId() {
         return skillId;

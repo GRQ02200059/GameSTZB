@@ -116,11 +116,12 @@ public class MainActivity extends AppCompatActivity {
         videoView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                videoView1.setClickable(false);
                 rootLayout.setVisibility(View.VISIBLE);
                 ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
                 anim.setDuration(1200);// 动画持续时间
                 anim.start();
-                videoView1.setClickable(false);
+
             }
         });
 
@@ -220,24 +221,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-//        try {
-//            int count = 0;
-//            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.simpledata));
-//            simpleEntities = JSON.parseArray(temp, SimpleEntity.class);
-//            Collections.sort(simpleEntities);
-//            String temp = Utils.ReadFile2String(getResources().openRawResource(R.raw.herolist));
-//            manager.setTotalHeroList(JSON.parseArray(temp, HeroEntity.class));
-//            heroEntities = manager.getTotalHeroList();
-
-//            for (int i = 0; i < heroEntities.size(); i++) {
-//                File h=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"stzb/hero_"+heroEntities.get(i).getId()+".jpg");
-//                Utils.download(h,"https://stzb.res.netease.com/pc/qt/20170323200251/data/role/card_"+heroEntities.get(i).getId()+".jpg");
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
     }
 
     private void onRandomResult() {
@@ -344,6 +327,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public viewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             HeroCard heroCard = new HeroCard(parent.getContext());
+            heroCard .setMiniMode();
             return new viewHolder(heroCard);
         }
 
@@ -363,13 +347,13 @@ public class MainActivity extends AppCompatActivity {
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
 //            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
             final int res = getResources().getIdentifier(entity.getIconName(), "drawable", getPackageName());
-            Glide.with(holder.itemView).load(res).apply(options).into(p);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
+            Glide.with(heroCard .headimg).load(res).apply(options).into(p);
+            heroCard .headimg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     PhotoView p = (PhotoView) v;
                     mInfo = p.getInfo();
-                    Glide.with(holder.itemView).load(res).apply(options).into(new SimpleTarget<Drawable>() {
+                    Glide.with(heroCard .headimg).load(res).apply(options).into(new SimpleTarget<Drawable>() {
                         @Override
                         public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                             mPhotoView.setImageDrawable(resource);
