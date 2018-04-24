@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="country_shu">#7ac740</color>
+    <color name="country_han">#64409f</color>
+    <color name="country_wei">#3c7acf</color>
+    <color name="country_wu">#d1382d</color>
+    <color name="country_qun">#FFFFFF</color>
 </resources>

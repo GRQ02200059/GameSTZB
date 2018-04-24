@@ -28,8 +28,8 @@ dependencies {
     implementation 'com.android.support:design:27.1.0'
     implementation 'com.github.bumptech.glide:glide:4.6.1'
     implementation 'com.alibaba:fastjson:1.1.68.android'
-//    implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'org.xutils:xutils:3.5.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.itgowo:itgowolib:0.0.19'
+    implementation 'me.weyye.hipermission:library:1.0.7'
 }

@@ -1,6 +1,7 @@
 package com.itgowo.gamestzb;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -24,7 +25,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -34,6 +35,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Entity.HeroEntity;
+import com.itgowo.gamestzb.View.HeroCard;
 import com.itgowo.itgowolib.itgowoNetTool;
 
 import java.util.ArrayList;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
+        Utils.checkPermission(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
@@ -117,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
                 anim.setDuration(1200);// 动画持续时间
                 anim.start();
-
+                videoView1.setClickable(false);
             }
         });
 
@@ -154,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private void initRecyclerView() {
@@ -341,20 +343,23 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public viewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            PhotoView p = new PhotoView(parent.getContext());
-            return new viewHolder(p);
+            HeroCard heroCard = new HeroCard(parent.getContext());
+            return new viewHolder(heroCard);
         }
 
+        @SuppressLint("NewApi")
         @Override
         public void onBindViewHolder(final viewHolder holder, final int position) {
-            final PhotoView p = (PhotoView) holder.itemView;
+            final HeroEntity entity = randomHeroEntities.get(position);
+            final HeroCard heroCard = (HeroCard) holder.itemView;
+            heroCard.setData(entity);
             int width = recyclerView.getWidth() / spanCount;
             int height = width * 410 / 300;
-            p.setLayoutParams(new LinearLayout.LayoutParams(width, height));
+            PhotoView p = (PhotoView) heroCard.headimg;
+            p.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
             p.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // 把PhotoView当普通的控件把触摸功能关掉
             p.disenable();
-            final HeroEntity entity = randomHeroEntities.get(position);
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
 //            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
             final int res = getResources().getIdentifier(entity.getIconName(), "drawable", getPackageName());

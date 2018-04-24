@@ -1,5 +1,6 @@
 package com.itgowo.gamestzb;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
@@ -10,17 +11,16 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
 
-import org.xutils.common.Callback;
-import org.xutils.http.RequestParams;
-import org.xutils.x;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import me.weyye.hipermission.HiPermission;
+import me.weyye.hipermission.PermissionCallback;
+import me.weyye.hipermission.PermissionItem;
 
 public class Utils {
     public static void setupShortcuts() {
@@ -53,7 +53,33 @@ public class Utils {
         return temp;
     }
 
+    public static void checkPermission(Context context) {
+        HiPermission hiPermission = HiPermission.create(context);
+        List<PermissionItem> permissionItems = new ArrayList<>();
+        permissionItems.add(new PermissionItem(Manifest.permission.WRITE_EXTERNAL_STORAGE, "外部存储", R.drawable.permission_ic_storage));
+        permissionItems.add(new PermissionItem(Manifest.permission.ACCESS_FINE_LOCATION, "定位", R.drawable.permission_ic_location));
+        hiPermission.permissions(permissionItems).msg("为了APP能提供更好的服务，需要以下权限").title("枫林提示")
+                .style(R.style.PermissionDefaultNormalStyle).checkMutiPermission(new PermissionCallback() {
+            @Override
+            public void onClose() {
 
+            }
+
+            @Override
+            public void onFinish() {
+            }
+
+            @Override
+            public void onDeny(String permission, int position) {
+
+            }
+
+            @Override
+            public void onGuarantee(String permission, int position) {
+
+            }
+        });
+    }
 
 
     public static boolean hasNotificationPermission(Context context) {
@@ -61,7 +87,8 @@ public class Utils {
         boolean isOpened = manager.areNotificationsEnabled();
         return isOpened;
     }
-    public static void intentDetailsSettingActivity(Context context){
+
+    public static void intentDetailsSettingActivity(Context context) {
         Intent intent = new Intent();
         intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

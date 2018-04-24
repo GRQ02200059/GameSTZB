@@ -10,15 +10,21 @@
         android:id="@+id/ll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:orientation="vertical"
         android:paddingBottom="5dp"
-        android:layout_marginTop="30dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
+
+        <com.itgowo.gamestzb.View.HeroCard
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></com.itgowo.gamestzb.View.HeroCard>
+
 
         <TextView
             android:id="@+id/msg5"
             style="@style/HeroNum"
+            android:layout_marginTop="5dp"
             android:text="5星：" />
 
         <TextView
