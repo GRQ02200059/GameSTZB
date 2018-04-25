@@ -41,18 +41,18 @@ public class HeroCard extends RelativeLayout {
     }
 
     public void setLargerMode() {
-        setSizeMode(13, 11, 105, 144, 10, 2, 2, 6);
+        setSizeMode(13, 11, 105, 144, 10, 2, 2, 6, 2, 3);
     }
 
     public void setMiniMode() {
-        setSizeMode(8, 6, 35, 48, 5, 1, 1, 4);
+        setSizeMode(8, 6, 35, 48, 5, 1, 1, 4, 1, 1);
     }
 
     public void setMiddleMode() {
-        setSizeMode(12, 11, 70, 96, 8, 2, 2, 5);
+        setSizeMode(12, 11, 70, 96, 8, 2, 2, 5, 2, 2);
     }
 
-    public void setSizeMode(int countryTextSize, int nameTextSize, int headWidth, int headHeight, int starWidth, int paddingLeft, int paddingTop, int otherTextSize) {
+    public void setSizeMode(int countryTextSize, int nameTextSize, int headWidth, int headHeight, int starWidth, int paddingLeft, int paddingTop, int otherTextSize, int typePaddingRight, int typePaddingBottom) {
         country.setTextSize(countryTextSize);
         name.setTextSize(nameTextSize);
         headimg.getLayoutParams().width = DensityUtil.dip2px(headWidth);
@@ -73,7 +73,7 @@ public class HeroCard extends RelativeLayout {
         mLayoutParams.setMargins(0, 0, DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop));
         type.setLayoutParams(mLayoutParams);
         RelativeLayout.LayoutParams mLayoutParams1 = (LayoutParams) cost.getLayoutParams();
-        mLayoutParams1.setMargins(0, 0, DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop));
+        mLayoutParams1.setMargins(0, 0, DensityUtil.dip2px(typePaddingRight), DensityUtil.dip2px(typePaddingBottom));
         cost.setLayoutParams(mLayoutParams1);
         type.setTextSize(otherTextSize);
         cost.setTextSize(otherTextSize);
@@ -107,6 +107,7 @@ public class HeroCard extends RelativeLayout {
                 star5.setVisibility(VISIBLE);
                 headimg.setForeground(getResources().getDrawable(R.drawable.hero_mask_5));
                 star6.setVisibility(VISIBLE);
+                break;
             case 5:
                 star1.setVisibility(VISIBLE);
                 star2.setVisibility(VISIBLE);
@@ -185,6 +186,7 @@ public class HeroCard extends RelativeLayout {
                 break;
         }
         type.setText(entity.getLength() == 0 ? "" : String.valueOf(entity.getLength()));
-        cost.setText(String.valueOf(entity.getCost()));
+        String costStr = String.valueOf(entity.getCost()).replace(".0", "");
+        cost.setText(costStr);
     }
 }
