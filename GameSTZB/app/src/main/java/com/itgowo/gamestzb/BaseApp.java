@@ -2,6 +2,7 @@ package com.itgowo.gamestzb;
 
 import android.app.Application;
 
+import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.itgowolib.itgowo;
 
 import org.xutils.x;
@@ -21,5 +22,6 @@ public class BaseApp extends Application {
         x.Ext.init(app);
         x.Ext.setDebug(BuildConfig.DEBUG);
         itgowo.netTool().initHttpClient(new NetManager.HttpClient());
+        UserManager .init(this);
     }
 }

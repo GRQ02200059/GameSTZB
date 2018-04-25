@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -35,6 +36,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Entity.HeroEntity;
+import com.itgowo.gamestzb.Entity.QQLoginEntity;
 import com.itgowo.gamestzb.View.HeroCard;
 import com.itgowo.itgowolib.itgowoNetTool;
 
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private AlphaAnimation in = new AlphaAnimation(0, 1);
     private AlphaAnimation out = new AlphaAnimation(1, 0);
     private VideoView videoView1;
+    private HeroCard userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +78,37 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        initLstener();
         init();
         initRecyclerView();
 
         start();
 
+    }
+
+    private void initLstener() {
+        userInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View mView) {
+                UserManager.login(MainActivity.this, new UserManager.onUserLoginListener() {
+                    @Override
+                    public void onSuccess(QQLoginEntity mQQLoginEntity) {
+                        Glide.with(userInfo).load(mQQLoginEntity.getFigureurl_qq_2()).into(userInfo.headimg);
+                        userInfo.setName(mQQLoginEntity.getNickname());
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+
+                    @Override
+                    public void onError(Object e) {
+
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -128,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        userInfo = findViewById(R.id.userInfo);
         recyclerView = findViewById(R.id.recyclerview);
         msg5 = (TextView) findViewById(R.id.msg5);
         msg4 = (TextView) findViewById(R.id.msg4);
@@ -327,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public viewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             HeroCard heroCard = new HeroCard(parent.getContext());
-            heroCard .setMiniMode();
+            heroCard.setMiniMode();
             return new viewHolder(heroCard);
         }
 
@@ -347,13 +377,13 @@ public class MainActivity extends AppCompatActivity {
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
 //            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
             final int res = getResources().getIdentifier(entity.getIconName(), "drawable", getPackageName());
-            Glide.with(heroCard .headimg).load(res).apply(options).into(p);
-            heroCard .headimg.setOnClickListener(new View.OnClickListener() {
+            Glide.with(heroCard.headimg).load(res).apply(options).into(p);
+            heroCard.headimg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     PhotoView p = (PhotoView) v;
                     mInfo = p.getInfo();
-                    Glide.with(heroCard .headimg).load(res).apply(options).into(new SimpleTarget<Drawable>() {
+                    Glide.with(heroCard.headimg).load(res).apply(options).into(new SimpleTarget<Drawable>() {
                         @Override
                         public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                             mPhotoView.setImageDrawable(resource);
@@ -396,4 +426,11 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        UserManager.onActivityResult(requestCode, resultCode, data);
+    }
+
 }

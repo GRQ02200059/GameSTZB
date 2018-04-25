@@ -8,7 +8,7 @@
         android:layout_width="105dp"
         android:layout_height="134dp"
         android:foreground="@drawable/hero_mask_5"
-        android:scaleType="centerCrop"
+        android:scaleType="center"
         android:src="@drawable/hero_000000"/>
 
     <LinearLayout

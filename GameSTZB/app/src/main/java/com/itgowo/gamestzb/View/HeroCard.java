@@ -95,6 +95,10 @@ public class HeroCard extends RelativeLayout {
         cost = (TextView) findViewById(R.id.cost);
     }
 
+    public void setName(String mName) {
+        name.setText(mName);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void setData(HeroEntity entity) {
         name.setText(entity.getName());
