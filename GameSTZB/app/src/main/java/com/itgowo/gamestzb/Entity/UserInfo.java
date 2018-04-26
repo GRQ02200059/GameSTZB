@@ -2,6 +2,7 @@ package com.itgowo.gamestzb.Entity;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.itgowo.gamestzb.UserManager;
 
 import java.util.Date;
 
@@ -180,10 +181,12 @@ public class UserInfo {
         return this;
     }
 
-    public static UserInfo covertUserInfoFormQQ(Object json) {
-        QQLoginEntity entity = JSON.parseObject(json.toString(), QQLoginEntity.class);
+    public static UserInfo covertUserInfoFormQQ(String json) {
+
+        QQLoginEntity entity = JSON.parseObject(json, QQLoginEntity.class);
         UserInfo userInfo = new UserInfo();
-        userInfo.setHead(entity.getFigureurl_qq_2()).setNickname(entity.getNickname()).setUuid(entity.getOpenid()).setLogintype(UserInfo.LOGIN_TYPE_QQ).setLogininfo(json);
+        userInfo.setHead(entity.getFigureurl_qq_2()).setNickname(entity.getNickname()).setUuid(UserManager.mTencent.getOpenId())
+                .setLogintype(UserInfo.LOGIN_TYPE_QQ).setLogininfo(json);
         return userInfo;
     }
 

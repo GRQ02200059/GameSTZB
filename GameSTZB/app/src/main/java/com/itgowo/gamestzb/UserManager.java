@@ -31,6 +31,7 @@ public class UserManager {
 
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<UserInfo> result) {
+                BaseConfig.putData(BaseConfig.USER_INFO, result.getData().toJson());
                 if (listener != null) {
                     listener.onSuccess(result.getData());
                 }
@@ -57,8 +58,7 @@ public class UserManager {
                     mIUiListener = new IUiListener() {
                         @Override
                         public void onComplete(Object mO) {
-                            UserInfo userInfo = UserInfo.covertUserInfoFormQQ(mO);
-                            BaseConfig.putData(BaseConfig.USER_INFO, userInfo.toJson());
+                            UserInfo userInfo = UserInfo.covertUserInfoFormQQ(mO.toString());
                             login4Server(userInfo, listener);
                         }
 

@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-        public static final String ROOTURL = "http://192.168.1.119:1666/GameSTZB";
-//    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
+//        public static final String ROOTURL = "http://192.168.1.119:1666/GameSTZB";
+    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
 
     public static void getRandomHero(int num, itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();

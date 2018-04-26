@@ -9,6 +9,7 @@ public class BaseConfig {
     public static UserInfo userInfo;
     public static final String SP_NAME_APPCONFIG = "AppConfig";
     public static final String USER_INFO = "UserInfo";
+    public static final String USER_UUID = "UserUUID";
     public static final String USER_ISPLAYVIDEO = "isPlayVideo";
     public static final String USER_ISPLAYMUSIC = "isPlayMusic";
     public static String SP_NAME_USERINFO = "UserInfo";

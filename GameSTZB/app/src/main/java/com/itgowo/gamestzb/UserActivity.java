@@ -33,6 +33,7 @@ public class UserActivity extends BaseActivity {
     private void initData() {
         isPlayVideo.setChecked(BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true));
         isPlayMusic.setChecked(BaseConfig.getData(BaseConfig.USER_ISPLAYMUSIC, true));
+        heroCard.refreshInfo();
     }
 
     private void initListener() {
