@@ -2,7 +2,6 @@ package com.itgowo.gamestzb;
 
 import android.util.Log;
 
-import com.alibaba.fastjson.JSON;
 import com.itgowo.itgowolib.itgowo;
 import com.itgowo.itgowolib.itgowoNetTool;
 
@@ -15,14 +14,13 @@ import java.util.Map;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-    //    public static final String ROOTURL = "http://10.0.4.34:1666/GameSTZB";
-    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
+        public static final String ROOTURL = "http://192.168.1.119:1666/GameSTZB";
+//    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
 
     public static void getRandomHero(int num, itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();
         request.setAction(BaseRequest.GET_RANDOM_HERO).setData(new BaseRequest.getRandomHeroEntity().setRandomNum(num)).initToken();
         basePost(request, listener);
-
     }
 
     public static void download(final File file, final String url) {

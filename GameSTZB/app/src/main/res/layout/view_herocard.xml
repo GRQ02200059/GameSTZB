@@ -5,10 +5,10 @@
 
     <library.PhotoView
         android:id="@+id/headimg"
-        android:layout_width="105dp"
-        android:layout_height="134dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:foreground="@drawable/hero_mask_5"
-        android:scaleType="center"
+        android:scaleType="fitXY"
         android:src="@drawable/hero_000000"/>
 
     <LinearLayout

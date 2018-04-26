@@ -1,5 +1,7 @@
 package com.itgowo.gamestzb;
 
+import android.content.SharedPreferences;
+
 import com.itgowo.gamestzb.Entity.HeroEntity;
 
 import org.xutils.common.Callback;
@@ -72,31 +74,8 @@ public class STZBManager {
         }
     }
 
-    public void loadNetData(boolean isCustom) {
-        BaseRequest request = new BaseRequest();
-        request.setAction(isCustom ? BaseRequest.GET_CUSTOM_HERO_LIST : BaseRequest.GET_HERO_LIST);
-        RequestParams requestParams = new RequestParams(ROOTURL);
-        requestParams.setBodyContent(request.toJson());
-        x.http().post(requestParams, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
+   public static void AutoLogin(){
 
-            }
+   }
 
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
-    }
 }

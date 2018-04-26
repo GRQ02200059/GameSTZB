@@ -55,17 +55,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="60dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="50dp"
         android:layout_marginTop="30dp"
         android:layout_toRightOf="@id/ll"
         android:visibility="visible" />
 
-    <GridView
-        android:id="@+id/gv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="5"
-        android:visibility="gone"></GridView>
+    <ImageView
+        android:id="@+id/helpDev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/shang"
+       ></ImageView>
 
     <FrameLayout
         android:id="@+id/parent"

@@ -13,12 +13,15 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -35,8 +38,10 @@ import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.itgowo.gamestzb.Base.BaseActivity;
+import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.Entity.HeroEntity;
-import com.itgowo.gamestzb.Entity.QQLoginEntity;
+import com.itgowo.gamestzb.Entity.UserInfo;
 import com.itgowo.gamestzb.View.HeroCard;
 import com.itgowo.itgowolib.itgowoNetTool;
 
@@ -46,7 +51,7 @@ import java.util.List;
 import library.Info;
 import library.PhotoView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private STZBManager manager = new STZBManager();
     private View rootLayout;
     private RecyclerView recyclerView;
@@ -65,48 +70,72 @@ public class MainActivity extends AppCompatActivity {
     private AlphaAnimation in = new AlphaAnimation(0, 1);
     private AlphaAnimation out = new AlphaAnimation(1, 0);
     private VideoView videoView1;
-    private HeroCard userInfo;
+    private HeroCard view_UserInfo;
+    private Handler handler = new Handler() {
+        @SuppressLint("NewApi")
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            final int M = 1024 * 1024;
+            final Runtime runtime = Runtime.getRuntime();
+
+            Log.i("Memory", "最大可用内存：" + runtime.maxMemory() / M + "M");
+            Log.i("Memory", "当前可用内存：" + runtime.totalMemory() / M + "M");
+            Log.i("Memory", "当前空闲内存：" + runtime.freeMemory() / M + "M");
+            Log.i("Memory", "当前已使用内存：" + (runtime.totalMemory() - runtime.freeMemory()) / M + "M");
+            handler.sendEmptyMessageDelayed(1, 2000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= 21) {
-            View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
-        Utils.checkPermission(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
         initLstener();
         init();
         initRecyclerView();
-
         start();
+//        handler.sendEmptyMessageDelayed(1, 2000);
 
     }
 
     private void initLstener() {
-        userInfo.setOnClickListener(new View.OnClickListener() {
+        in.setDuration(200);
+        out.setDuration(200);
+        out.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mBg.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        view_UserInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View mView) {
-                UserManager.login(MainActivity.this, new UserManager.onUserLoginListener() {
+                Intent intent=new Intent(MainActivity.this,UserActivity.class);
+                startActivityForResult(intent,INTENT_UserActivity);
+            }
+        });
+        findViewById(R.id.helpDev).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SuperDialog dialog=new SuperDialog(context).setShowImage().setImageListener(new SuperDialog.onDialogImageListener() {
                     @Override
-                    public void onSuccess(QQLoginEntity mQQLoginEntity) {
-                        Glide.with(userInfo).load(mQQLoginEntity.getFigureurl_qq_2()).into(userInfo.headimg);
-                        userInfo.setName(mQQLoginEntity.getNickname());
+                    public void onInitImageView(ImageView imageView) {
+                        Glide.with(imageView).load("http://file.itgowo.com/game/pay/allpay.png").into(imageView);
                     }
-
-                    @Override
-                    public void onCancel() {
-
-                    }
-
-                    @Override
-                    public void onError(Object e) {
-
-                    }
-                });
+                }).setShowButtonLayout(false);
+                dialog.show();
             }
         });
     }
@@ -132,32 +161,26 @@ public class MainActivity extends AppCompatActivity {
     private void start() {
         Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.cg_1);
         videoView1.setVideoURI(uri);
+        videoView1.setClickable(false);
         videoView1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
             @Override
             public void onCompletion(MediaPlayer mPlayer) {
                 mPlayer.start();
                 mPlayer.setLooping(true);
-                videoView1.setClickable(true);
-            }
-        });
-        videoView1.start();
-        videoView1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
                 videoView1.setClickable(false);
                 rootLayout.setVisibility(View.VISIBLE);
                 ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
                 anim.setDuration(1200);// 动画持续时间
                 anim.start();
-
             }
         });
-
+        videoView1.start();
     }
 
     private void initView() {
-        userInfo = findViewById(R.id.userInfo);
+        view_UserInfo = findViewById(R.id.userInfo);
+        view_UserInfo.setLargerMode();
         recyclerView = findViewById(R.id.recyclerview);
         msg5 = (TextView) findViewById(R.id.msg5);
         msg4 = (TextView) findViewById(R.id.msg4);
@@ -170,24 +193,7 @@ public class MainActivity extends AppCompatActivity {
         mBg = findViewById(R.id.bg);
         mPhotoView = (PhotoView) findViewById(R.id.img);
         mPhotoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        in.setDuration(200);
-        out.setDuration(200);
-        out.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
 
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mBg.setVisibility(View.INVISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
     }
 
     private void initRecyclerView() {
@@ -431,6 +437,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         UserManager.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==INTENT_UserActivity){
+           view_UserInfo.refreshInfo();
+        }
     }
 
 }

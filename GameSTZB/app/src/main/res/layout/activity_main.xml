@@ -9,6 +9,7 @@
     <com.itgowo.gamestzb.View.FillVideoView
         android:id="@+id/videoview"
         android:layout_width="match_parent"
+        android:visibility="visible"
         android:layout_height="match_parent" />
 
     <android.support.design.widget.CoordinatorLayout

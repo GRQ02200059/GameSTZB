@@ -3,9 +3,9 @@ package com.itgowo.gamestzb;
 import com.alibaba.fastjson.JSON;
 
 public class BaseRequest<PostData> {
-    public static final String GET_HERO_LIST = "getHeroList";
-    public static final String GET_CUSTOM_HERO_LIST = "getCustomHeroList";
     public static final String GET_RANDOM_HERO = "getRandomHero";
+    public static final String GET_HERO_LIST = "getHeroList";
+    public static final String REG_USER = "regUser";
     private String flag = "GameSTZB";
     private String action;
     private String token;

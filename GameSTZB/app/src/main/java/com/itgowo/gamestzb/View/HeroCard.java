@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.R;
 
@@ -41,7 +43,7 @@ public class HeroCard extends RelativeLayout {
     }
 
     public void setLargerMode() {
-        setSizeMode(13, 11, 105, 144, 10, 2, 2, 6, 2, 3);
+        setSizeMode(13, 10, 105, 144, 10, 2, 2, 6, 2, 3);
     }
 
     public void setMiniMode() {
@@ -81,6 +83,11 @@ public class HeroCard extends RelativeLayout {
         name.setPadding(DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop), 0, 0);
     }
 
+    public void setHeadImgMode(int width) {
+        getLayoutParams().width = DensityUtil.dip2px(width);
+        getLayoutParams().height = DensityUtil.dip2px(width);
+    }
+
     private void initView() {
         headimg = (ImageView) findViewById(R.id.headimg);
         star1 = (ImageView) findViewById(R.id.star1);
@@ -97,6 +104,13 @@ public class HeroCard extends RelativeLayout {
 
     public void setName(String mName) {
         name.setText(mName);
+    }
+
+    public void refreshInfo() {
+        if (BaseConfig.userInfo != null) {
+            Glide.with(this).load(BaseConfig.userInfo.getHead()).into(this.headimg);
+            this.setName(BaseConfig.userInfo.getNickname());
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

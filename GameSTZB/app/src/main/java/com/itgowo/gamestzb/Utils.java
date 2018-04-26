@@ -3,6 +3,7 @@ package com.itgowo.gamestzb;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
@@ -52,6 +53,7 @@ public class Utils {
         String temp = reader.readLine();
         return temp;
     }
+
 
     public static void checkPermission(Context context) {
         HiPermission hiPermission = HiPermission.create(context);
