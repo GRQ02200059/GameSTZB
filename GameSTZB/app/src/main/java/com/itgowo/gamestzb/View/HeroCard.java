@@ -110,6 +110,9 @@ public class HeroCard extends RelativeLayout {
         if (BaseConfig.userInfo != null) {
             Glide.with(this).load(BaseConfig.userInfo.getHead()).into(this.headimg);
             this.setName(BaseConfig.userInfo.getNickname());
+        }else {
+            headimg.setImageResource(R.drawable.hero_000000);
+            setName(getContext().getString(R.string.pleaseLogin));
         }
     }
 

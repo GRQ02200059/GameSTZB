@@ -17,7 +17,7 @@ import com.itgowo.gamestzb.View.HeroCard;
 public class UserActivity extends BaseActivity {
     private HeroCard heroCard;
     private CheckBox isPlayVideo, isPlayMusic;
-    private Button btnLoginQQ, btnLoginWeixin;
+    private Button btnLoginQQ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,11 @@ public class UserActivity extends BaseActivity {
         isPlayVideo.setChecked(BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true));
         isPlayMusic.setChecked(BaseConfig.getData(BaseConfig.USER_ISPLAYMUSIC, true));
         heroCard.refreshInfo();
+        refreshLogonBtnStatus();
+    }
+
+    private void refreshLogonBtnStatus() {
+        btnLoginQQ.setText(UserManager.isLogin ? R.string.logout : R.string.loginqq);
     }
 
     private void initListener() {
@@ -52,25 +57,35 @@ public class UserActivity extends BaseActivity {
         btnLoginQQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserManager.login4QQ(UserActivity.this, new UserManager.onUserLoginListener() {
-                    @Override
-                    public void onSuccess(UserInfo userInfo) {
-                        BaseConfig.userInfo = userInfo;
-                        heroCard.refreshInfo();
-                        setResult(Activity.RESULT_OK);
-                    }
+                v.setEnabled(false);
+                if (UserManager.isLogin) {
+                    UserManager.logout();
+                    refreshLogonBtnStatus();
+                    heroCard.refreshInfo();
+                    v.setEnabled(true);
+                } else {
+                    UserManager.login4QQ(UserActivity.this, new UserManager.onUserLoginListener() {
+                        @Override
+                        public void onSuccess(UserInfo userInfo) {
+                            heroCard.refreshInfo();
+                            setResult(Activity.RESULT_OK);
+                            refreshLogonBtnStatus();
+                            v.setEnabled(true);
+                        }
 
-                    @Override
-                    public void onCancel() {
+                        @Override
+                        public void onCancel() {
 
-                    }
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        Toast.makeText(context, "登录失败，请重试！", Toast.LENGTH_LONG).show();
-                    }
-                });
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            v.setEnabled(true);
+                            Toast.makeText(context, "登录失败，请重试！", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
         });
     }
@@ -80,7 +95,6 @@ public class UserActivity extends BaseActivity {
         isPlayVideo = findViewById(R.id.isPlayVideo);
         isPlayMusic = findViewById(R.id.isPlayMusic);
         btnLoginQQ = findViewById(R.id.btn_login_qq);
-        btnLoginWeixin = findViewById(R.id.btn_login_weixin);
     }
 
     @Override

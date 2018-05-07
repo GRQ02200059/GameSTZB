@@ -47,7 +47,7 @@ import java.util.List;
 import library.Info;
 import library.PhotoView;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements UserManager.onUserStatusListener {
     private STZBManager manager = new STZBManager();
     private View rootLayout;
     private RecyclerView recyclerView;
@@ -92,7 +92,6 @@ public class MainActivity extends BaseActivity {
         init();
         initRecyclerView();
         start();
-        view_UserInfo.refreshInfo();
 //        handler.sendEmptyMessageDelayed(1, 2000);
 
     }
@@ -139,20 +138,21 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        videoView1.pause();
+        if (videoView1 != null) {
+            videoView1.pause();
+        }
         super.onPause();
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        videoView1.start();
+        UserManager.removeUserStatusListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        videoView1.start();
+        if (videoView1 != null) {
+            videoView1.start();
+        }
+        view_UserInfo.refreshInfo();
+        UserManager.addUserStatusListener(this);
     }
 
     private void reSetStyle() {
@@ -387,6 +387,11 @@ public class MainActivity extends BaseActivity {
             }
         });
         dialog.show();
+    }
+
+    @Override
+    public void onChanged() {
+        view_UserInfo.refreshInfo();
     }
 
     class Myadapter extends RecyclerView.Adapter<viewHolder> {

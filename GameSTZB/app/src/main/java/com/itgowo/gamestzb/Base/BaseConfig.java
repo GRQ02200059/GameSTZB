@@ -6,6 +6,11 @@ import com.itgowo.gamestzb.BaseApp;
 import com.itgowo.gamestzb.Entity.UserInfo;
 
 public class BaseConfig {
+    public static final String TENCENTQQ_APP_ID = "1106861720";
+    public static final String WEIXIN_APP_ID = "1106861720";
+    public static final String UMENG_APPKEY = "5af037c4f43e4819780001f4";
+    public static final String UMENG_MESSAGE_SECRET = "174c980990d7e8bb5b8a517b60ea99f7";
+    public static String UMENG_DEVICE_TOKEN = "";
     public static UserInfo userInfo;
     public static final String SP_NAME_APPCONFIG = "AppConfig";
     public static final String USER_INFO = "UserInfo";

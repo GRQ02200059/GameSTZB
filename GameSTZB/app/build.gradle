@@ -14,6 +14,14 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            ndk {
+                 abiFilters "x86", "armeabi"
+                }
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
         }
     }
     compileOptions {
@@ -21,7 +29,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs' //this way we can find the .aar file in libs folder
+    }
+}
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
@@ -34,4 +47,10 @@ dependencies {
     implementation 'me.weyye.hipermission:library:1.0.7'
     //    implementation 'com.github.vondear:RxTools:v1.7.8.3'
     implementation files('libs/open_sdk_r5990_lite.jar')
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4'
+    implementation 'com.umeng.sdk:common:1.5.0'
+    implementation 'com.umeng.sdk:analytics:7.5.0'
+
+    debugImplementation 'com.umeng.sdk:debug:1.0.0'
+    implementation 'com.umeng.sdk:utdid:1.1.5.3'
 }

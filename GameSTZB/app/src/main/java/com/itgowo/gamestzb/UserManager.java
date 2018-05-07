@@ -10,18 +10,73 @@ import com.itgowo.gamestzb.Entity.QQLoginEntity;
 import com.itgowo.gamestzb.Entity.UserInfo;
 import com.itgowo.itgowolib.itgowoNetTool;
 import com.tencent.connect.common.Constants;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.itgowo.gamestzb.Base.BaseConfig.TENCENTQQ_APP_ID;
+import static com.itgowo.gamestzb.Base.BaseConfig.WEIXIN_APP_ID;
 
 public class UserManager {
-    public static final String TENCENT_APP_ID = "1106861720";
+    public static boolean isLogin = false;
+
     public static final String SCOPE = "all";
     public static Tencent mTencent;
     private static IUiListener mIUiListener;
+    private static IWXAPI mWeixinAPI;
+    private static List<onUserStatusListener> onUserStatusListeners = new ArrayList<>();
 
     public static void init(Context context) {
-        mTencent = Tencent.createInstance(TENCENT_APP_ID, context);
+        mTencent = Tencent.createInstance(TENCENTQQ_APP_ID, context);
+        mWeixinAPI = WXAPIFactory.createWXAPI(context, WEIXIN_APP_ID, true);
+        mWeixinAPI.registerApp(WEIXIN_APP_ID);
+    }
+
+    public static void addUserStatusListener(onUserStatusListener listener) {
+        onUserStatusListeners.add(listener);
+    }
+
+    public static void removeUserStatusListener(onUserStatusListener listener) {
+        onUserStatusListeners.remove(listener);
+    }
+
+    public static void refreshUserStatus(boolean isLogin1, UserInfo userInfo) {
+        String uuid = "";
+        if (BaseConfig.userInfo != null) {
+            uuid = BaseConfig.userInfo.getUuid();
+        }
+        BaseConfig.userInfo = userInfo;
+        isLogin = isLogin1;
+        if (isLogin1) {
+            BaseConfig.putData(BaseConfig.USER_INFO, userInfo.toJson());
+            MobclickAgent.onProfileSignIn(String.valueOf(BaseConfig.userInfo.getLogintype()), BaseConfig.userInfo.getUuid());
+            PushAgent.getInstance(BaseApp.app).deleteAlias(uuid, "自有id", (isSuccess, message) -> {
+
+            });
+            PushAgent.getInstance(BaseApp.app).addAlias(userInfo.getUuid(), "自有id", (isSuccess, message) -> {
+
+            });
+        } else {
+            PushAgent.getInstance(BaseApp.app).deleteAlias(uuid, "自有id", (isSuccess, message) -> {
+
+            });
+            MobclickAgent.onProfileSignOff();
+            BaseConfig.putData(BaseConfig.USER_INFO, "");
+        }
+        for (onUserStatusListener onUserStatusListener : onUserStatusListeners) {
+            if (onUserStatusListener == null) {
+                onUserStatusListeners.remove(onUserStatusListener);
+            } else {
+                onUserStatusListener.onChanged();
+            }
+        }
     }
 
     public static void login4Server(UserInfo userInfo, onUserLoginListener listener) {
@@ -31,7 +86,7 @@ public class UserManager {
 
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<UserInfo> result) {
-                BaseConfig.putData(BaseConfig.USER_INFO, result.getData().toJson());
+                refreshUserStatus(true, result.getData());
                 if (listener != null) {
                     listener.onSuccess(result.getData());
                 }
@@ -42,6 +97,7 @@ public class UserManager {
                 if (listener != null) {
                     listener.onError(throwable);
                 }
+                logout();
             }
         });
     }
@@ -65,7 +121,7 @@ public class UserManager {
                         @Override
                         public void onError(UiError mError) {
                             if (listener != null) {
-                                listener.onError(new Throwable(mError.errorCode+" "+mError.errorMessage+"\r\n"+mError.errorDetail));
+                                listener.onError(new Throwable(mError.errorCode + " " + mError.errorMessage + "\r\n" + mError.errorDetail));
                             }
                         }
 
@@ -82,7 +138,7 @@ public class UserManager {
                 @Override
                 public void onError(UiError mError) {
                     if (listener != null) {
-                        listener.onError(new Throwable(mError.errorCode+" "+mError.errorMessage+"\r\n"+mError.errorDetail));
+                        listener.onError(new Throwable(mError.errorCode + " " + mError.errorMessage + "\r\n" + mError.errorDetail));
                     }
                 }
 
@@ -98,8 +154,21 @@ public class UserManager {
     }
 
 
-    public static void logout(Activity context) {
-        mTencent.logout(context);
+    public static void logout() {
+        mTencent.logout(null);
+        refreshUserStatus(false, null);
+
+    }
+
+    public static void autoLogin() {
+        try {
+            UserInfo info = JSON.parseObject(BaseConfig.getData(BaseConfig.USER_INFO, ""), UserInfo.class);
+            if (info != null) {
+                login4Server(info, null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public interface onUserLoginListener {
@@ -110,9 +179,15 @@ public class UserManager {
         void onError(Throwable e);
     }
 
+    public interface onUserStatusListener {
+        void onChanged();
+    }
+
     public static void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.REQUEST_LOGIN) {
             Tencent.onActivityResultData(requestCode, resultCode, data, mIUiListener);
         }
     }
+
+
 }

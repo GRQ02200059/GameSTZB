@@ -43,46 +43,27 @@
             android:textSize="11sp" />
     </LinearLayout>
 
-    <LinearLayout
+
+    <Button
+        android:id="@+id/btn_login_qq"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
         android:layout_marginBottom="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
-        android:orientation="horizontal">
+        android:background="@drawable/btn_background_white"
+        android:drawableLeft="@drawable/share_qq"
+        android:gravity="center"
+        android:minWidth="150dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="@string/loginqq"
+        android:visibility="visible" />
 
-        <Button
-            android:id="@+id/btn_login_qq"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/btn_background_white"
-            android:drawableLeft="@drawable/share_qq"
-            android:gravity="center"
-            android:minWidth="150dp"
-            android:layout_margin="10dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/loginqq" />
-
-        <Button
-            android:id="@+id/btn_login_weixin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="30dp"
-            android:background="@drawable/btn_background_white"
-            android:drawableLeft="@drawable/share_weixin"
-            android:gravity="center"
-            android:minWidth="150dp"
-            android:layout_margin="10dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/loginweixin" />
-    </LinearLayout>
-<ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </RelativeLayout>

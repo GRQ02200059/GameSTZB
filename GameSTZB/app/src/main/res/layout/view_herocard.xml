@@ -70,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/country"
         android:ems="1"
-        android:text="枫林"
+        android:text="@string/pleaseLogin"
         android:textColor="@android:color/holo_orange_dark"
         android:textSize="9sp"/>
 
