@@ -1,4 +1,4 @@
-package com.itgowo.gamestzb;
+package com.itgowo.views;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -81,6 +81,10 @@ public class SuperDialog extends Dialog {
     private int buttonTextSize = 14;
     private int buttonTextColor = Color.DKGRAY;
     private ColorStateList colorStateList;
+    /**
+     * 宽高比
+     */
+    private float aspectRatio = 0.6f;
 
     public SuperDialog(@NonNull Context context) {
         super(context);
@@ -88,11 +92,27 @@ public class SuperDialog extends Dialog {
         init();
     }
 
+    /**
+     * 设置宽高比例，竖屏0.6f,横屏一般2f就可以
+     * 比例为Dialog宽度和屏幕方向对应屏幕高度
+     * dialog高度由内容确定
+     *
+     * @param aspectRatio
+     * @return
+     */
+    public SuperDialog setAspectRatio(float aspectRatio) {
+        this.aspectRatio = aspectRatio;
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.width = (int) (displayMetrics.widthPixels * aspectRatio);
+        getWindow().setAttributes(layoutParams);
+        return this;
+    }
+
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-        layoutParams.width = displayMetrics.widthPixels / 3 * 2;
+        layoutParams.width = (int) (displayMetrics.widthPixels * aspectRatio);
         getWindow().setAttributes(layoutParams);
         getWindow().setBackgroundDrawable(null);
     }
@@ -234,7 +254,7 @@ public class SuperDialog extends Dialog {
     private void initContentView(ViewGroup viewRoot) {
         contentView = new TextView(context);
         contentView.setText(content);
-        contentView.setGravity(Gravity.CENTER);
+        contentView.setGravity(Gravity.LEFT);
         contentView.setTextSize(contentTextSize);
         contentView.setTextColor(contentTextColor);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

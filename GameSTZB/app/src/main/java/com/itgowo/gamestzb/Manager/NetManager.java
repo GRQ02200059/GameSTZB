@@ -1,7 +1,9 @@
-package com.itgowo.gamestzb;
+package com.itgowo.gamestzb.Manager;
 
 import android.util.Log;
 
+import com.itgowo.gamestzb.Entity.BaseRequest;
+import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.itgowolib.itgowo;
 import com.itgowo.itgowolib.itgowoNetTool;
 
@@ -14,13 +16,20 @@ import java.util.Map;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-//        public static final String ROOTURL = "http://192.168.1.119:1666/GameSTZB";
+    //        public static final String ROOTURL = "http://192.168.1.119:1666/GameSTZB";
     public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
+    public static final String ROOTURL_UPDATEVERSION = "http://itgowo.com:1888/Version";
 
     public static void getRandomHero(int num, itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();
         request.setAction(BaseRequest.GET_RANDOM_HERO).setData(new BaseRequest.getRandomHeroEntity().setRandomNum(num)).initToken();
         basePost(request, listener);
+    }
+
+    public static void getUpdateInfo(itgowoNetTool.onReceviceDataListener listener) {
+        BaseRequest request = new BaseRequest();
+        request.setAction(UpdateVersion.GET_UPDATE_VERSION).setFlag(UpdateVersion.GET_UPDATE_VERSION_FLAG).initToken();
+        basePost(ROOTURL_UPDATEVERSION, request, listener);
     }
 
     public static void download(final File file, final String url) {
@@ -52,6 +61,10 @@ public class NetManager {
     }
 
     public static void basePost(Object requestObject, final itgowoNetTool.onReceviceDataListener listener) {
+        basePost(ROOTURL, requestObject, listener);
+    }
+
+    public static void basePost(String rooturl, Object requestObject, final itgowoNetTool.onReceviceDataListener listener) {
         String requestJson = "";
         if (requestObject instanceof BaseRequest) {
             requestJson = ((BaseRequest) requestObject).toJson();
@@ -61,10 +74,10 @@ public class NetManager {
             Log.e(TAG, "basePOST:requestObject is not supposed");
             return;
         }
-       itgowo.netTool().Request(ROOTURL,null,requestJson,listener);
+        itgowo.netTool().Request(rooturl, null, requestJson, listener);
     }
 
-     public static class HttpClient implements itgowoNetTool.onRequestDataListener {
+    public static class HttpClient implements itgowoNetTool.onRequestDataListener {
 
         @Override
         public void onRequest(String url, Map head, String body, itgowoNetTool.onRequestDataListener onRequestDataListener, itgowoNetTool.onReceviceDataListener listener) {

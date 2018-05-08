@@ -2,7 +2,7 @@ package com.itgowo.gamestzb.Base;
 
 import android.content.Context;
 
-import com.itgowo.gamestzb.BaseApp;
+import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.gamestzb.Entity.UserInfo;
 
 public class BaseConfig {
@@ -18,6 +18,7 @@ public class BaseConfig {
     public static final String USER_ISPLAYVIDEO = "isPlayVideo";
     public static final String USER_ISPLAYMUSIC = "isPlayMusic";
     public static String SP_NAME_USERINFO = "UserInfo";
+    public static UpdateVersion updateInfo  ;
 
     public static void putData(String key, String data) {
         BaseApp.app.getSharedPreferences(SP_NAME_APPCONFIG, Context.MODE_PRIVATE).edit().putString(key, data).apply();

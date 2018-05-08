@@ -1,12 +1,6 @@
-package com.itgowo.gamestzb;
-
-import android.content.SharedPreferences;
+package com.itgowo.gamestzb.Manager;
 
 import com.itgowo.gamestzb.Entity.HeroEntity;
-
-import org.xutils.common.Callback;
-import org.xutils.http.RequestParams;
-import org.xutils.x;
 
 import java.util.ArrayList;
 import java.util.List;

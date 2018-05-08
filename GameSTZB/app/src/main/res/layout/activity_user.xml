@@ -6,20 +6,43 @@
     android:background="@drawable/background2"
     tools:context=".UserActivity">
 
-    <com.itgowo.gamestzb.View.HeroCard
-        android:id="@+id/hero"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
-        android:layout_marginTop="40dp"></com.itgowo.gamestzb.View.HeroCard>
+        android:layout_marginTop="40dp"
+        android:background="@drawable/background3"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="10dp">
+
+        <com.itgowo.gamestzb.View.HeroCard
+            android:id="@+id/hero"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             ></com.itgowo.gamestzb.View.HeroCard>
+
+        <Button
+            android:id="@+id/btn_login_qq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/btn_background_white"
+            android:drawableLeft="@drawable/share_qq"
+            android:gravity="center"
+            android:minWidth="110dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/loginqq"
+            android:visibility="visible" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/hero"
+        android:layout_alignParentRight="true"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="40dp"
-        android:layout_toRightOf="@+id/hero"
         android:background="@drawable/photoframe"
         android:orientation="vertical"
         android:padding="20dp">
@@ -43,27 +66,4 @@
             android:textSize="11sp" />
     </LinearLayout>
 
-
-    <Button
-        android:id="@+id/btn_login_qq"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/btn_background_white"
-        android:drawableLeft="@drawable/share_qq"
-        android:gravity="center"
-        android:minWidth="150dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:text="@string/loginqq"
-        android:visibility="visible" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 </RelativeLayout>

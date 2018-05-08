@@ -1,4 +1,4 @@
-package com.itgowo.gamestzb;
+package com.itgowo.gamestzb.Entity;
 
 import com.alibaba.fastjson.JSON;
 import com.itgowo.gamestzb.Base.BaseConfig;

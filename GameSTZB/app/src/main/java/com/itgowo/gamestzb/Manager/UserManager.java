@@ -1,11 +1,14 @@
-package com.itgowo.gamestzb;
+package com.itgowo.gamestzb.Manager;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
 import com.alibaba.fastjson.JSON;
+import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Base.BaseConfig;
+import com.itgowo.gamestzb.Entity.BaseRequest;
+import com.itgowo.gamestzb.Entity.BaseResponse;
 import com.itgowo.gamestzb.Entity.QQLoginEntity;
 import com.itgowo.gamestzb.Entity.UserInfo;
 import com.itgowo.itgowolib.itgowoNetTool;

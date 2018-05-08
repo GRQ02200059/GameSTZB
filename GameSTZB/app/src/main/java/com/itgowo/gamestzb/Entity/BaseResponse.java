@@ -1,4 +1,4 @@
-package com.itgowo.gamestzb;
+package com.itgowo.gamestzb.Entity;
 
 public class BaseResponse<Data> {
     private Integer code;

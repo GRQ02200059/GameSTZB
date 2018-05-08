@@ -25,6 +25,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,9 +39,16 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Base.BaseActivity;
 import com.itgowo.gamestzb.Base.BaseConfig;
+import com.itgowo.gamestzb.Entity.BaseResponse;
 import com.itgowo.gamestzb.Entity.HeroEntity;
+import com.itgowo.gamestzb.Entity.UpdateVersion;
+import com.itgowo.gamestzb.Manager.NetManager;
+import com.itgowo.gamestzb.Manager.STZBManager;
+import com.itgowo.gamestzb.Manager.UserManager;
+import com.itgowo.gamestzb.View.FillVideoView;
 import com.itgowo.gamestzb.View.HeroCard;
 import com.itgowo.itgowolib.itgowoNetTool;
+import com.itgowo.views.SuperDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +60,15 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     private STZBManager manager = new STZBManager();
     private View rootLayout;
     private RecyclerView recyclerView;
+    private ImageButton fab;
+    private FloatingActionButton fabNotice;
     private List<HeroEntity> randomHeroEntities = new ArrayList<>();
     private TextView msg5;
     private TextView msg4;
     private TextView msg3;
     private TextView msg2;
     private TextView msg1;
+    private FrameLayout videoRoot;
     private int count5, count4, count3, count2, count1;
     private View mParent;
     private View mBg;
@@ -89,9 +101,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         setContentView(R.layout.activity_main);
         initView();
         initLstener();
-        init();
         initRecyclerView();
         start();
+        checkVersion();
 //        handler.sendEmptyMessageDelayed(1, 2000);
 
     }
@@ -131,7 +143,82 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                         Glide.with(imageView).load("http://file.itgowo.com/game/pay/allpay.png").into(imageView);
                     }
                 }).setShowButtonLayout(false);
+                dialog.setAspectRatio(0.8f).show();
+            }
+        });
+        fabNotice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (BaseConfig.updateInfo == null) {
+                    return;
+                }
+               String string= "是是是\r\n   \r\n sss";
+                String tip = String.format(getResources().getString(R.string.versionTip), BuildConfig.VERSION_NAME, BaseConfig.updateInfo.getVersionname(), BaseConfig.updateInfo.getVersioninfo());
+                SuperDialog dialog = new SuperDialog(context).setTitle("发现新版本").setContent(tip).setListener(new SuperDialog.onDialogClickListener() {
+                    @Override
+                    public void click(boolean isButtonClick, int position) {
+                        try {
+                            Uri uri = Uri.parse(BaseConfig.updateInfo.getDownloadurl());
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
                 dialog.show();
+            }
+        });
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mParent.getVisibility() == View.VISIBLE) {
+                    mBg.startAnimation(out);
+                    mPhotoView.animaTo(mInfo, new Runnable() {
+                        @Override
+                        public void run() {
+                            mParent.setVisibility(View.GONE);
+                        }
+                    });
+                }
+                SuperDialog dialog = new SuperDialog(MainActivity.this);
+                List<SuperDialog.DialogMenuItem> menuItems = new ArrayList<>();
+                menuItems.add(new SuperDialog.DialogMenuItem("小试牛刀(1)", R.mipmap.caocao));
+                menuItems.add(new SuperDialog.DialogMenuItem("大胆尝试(5)", R.mipmap.liubei));
+                menuItems.add(new SuperDialog.DialogMenuItem("疯狂剁手(15)", R.mipmap.sunquan));
+                dialog.setTitle("选择抽取次数").setDialogMenuItemList(menuItems).setListener(new SuperDialog.onDialogClickListener() {
+                    @Override
+                    public void click(boolean isButtonClick, int position) {
+                        if (position == 0) {
+                            goodluck(1);
+                        } else if (position == 1) {
+                            goodluck(5);
+                        } else {
+                            goodluck(15);
+                        }
+                    }
+                }).setAspectRatio(0.3f).show();
+
+            }
+        });
+    }
+
+    private void checkVersion() {
+        NetManager.getUpdateInfo(new itgowoNetTool.onReceviceDataListener<BaseResponse<UpdateVersion>>() {
+
+            @Override
+            public void onResult(String requestStr, String responseStr, BaseResponse<UpdateVersion> result) {
+                if (result.getCode() == 1) {
+                    if (result.getData().getVersioncode() > BuildConfig.VERSION_CODE) {
+                        fabNotice.show();
+                        BaseConfig.updateInfo = result.getData();
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
             }
         });
     }
@@ -163,10 +250,13 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                     videoView1.stopPlayback();
                 }
                 videoView1.setVisibility(View.GONE);
+                videoRoot.removeAllViews();
+                videoView1 = null;
             }
         } else {
             rootLayout.setBackground(null);
-            videoView1.setVisibility(View.VISIBLE);
+            videoView1 = new FillVideoView(this);
+            videoRoot.addView(videoView1);
             Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.cg_1);
             videoView1.setVideoURI(uri);
             videoView1.setClickable(false);
@@ -179,11 +269,15 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                 }
             });
         }
+        if (BaseConfig.getData(BaseConfig.USER_ISPLAYMUSIC, true)) {
+            MusicService.playMusic(this, null);
+        } else {
+            MusicService.stopMusic(this);
+        }
     }
 
     private void start() {
         if (!BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true)) {
-            videoView1.setVisibility(View.GONE);
             rootLayout.setVisibility(View.VISIBLE);
             rootLayout.setBackgroundResource(R.drawable.background2);
             ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
@@ -191,6 +285,8 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             anim.start();
             return;
         }
+        videoView1 = new FillVideoView(this);
+        videoRoot.addView(videoView1);
         Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.cg_1);
         videoView1.setVideoURI(uri);
         videoView1.setClickable(false);
@@ -208,6 +304,11 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             }
         });
         videoView1.start();
+        if (BaseConfig.getData(BaseConfig.USER_ISPLAYMUSIC, true)) {
+            MusicService.playMusic(this, null);
+        } else {
+            MusicService.stopMusic(this);
+        }
     }
 
     private void initView() {
@@ -225,7 +326,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         mBg = findViewById(R.id.bg);
         mPhotoView = (PhotoView) findViewById(R.id.img);
         mPhotoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-
+        videoRoot = findViewById(R.id.videoRoot);
+        fab = findViewById(R.id.fab);
+        fabNotice = findViewById(R.id.fabNotice);
     }
 
     private void initRecyclerView() {
@@ -253,42 +356,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         return mWifi.isConnected();
-    }
-
-    private void init() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mParent.getVisibility() == View.VISIBLE) {
-                    mBg.startAnimation(out);
-                    mPhotoView.animaTo(mInfo, new Runnable() {
-                        @Override
-                        public void run() {
-                            mParent.setVisibility(View.GONE);
-                        }
-                    });
-                }
-                SuperDialog dialog = new SuperDialog(MainActivity.this);
-                List<SuperDialog.DialogMenuItem> menuItems = new ArrayList<>();
-                menuItems.add(new SuperDialog.DialogMenuItem("小试牛刀(1)", R.mipmap.ic_launcher_round));
-                menuItems.add(new SuperDialog.DialogMenuItem("大胆尝试(5)", R.mipmap.liubei_round));
-                menuItems.add(new SuperDialog.DialogMenuItem("疯狂剁手(15)", R.mipmap.sunquan_round));
-                dialog.setTitle("选择抽取次数").setDialogMenuItemList(menuItems).setListener(new SuperDialog.onDialogClickListener() {
-                    @Override
-                    public void click(boolean isButtonClick, int position) {
-                        if (position == 0) {
-                            goodluck(1);
-                        } else if (position == 1) {
-                            goodluck(5);
-                        } else {
-                            goodluck(15);
-                        }
-                    }
-                }).show();
-
-            }
-        });
     }
 
     private void onRandomResult() {
@@ -478,6 +545,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             view_UserInfo.refreshInfo();
             reSetStyle();
         }
+        System.gc();
     }
 
 }

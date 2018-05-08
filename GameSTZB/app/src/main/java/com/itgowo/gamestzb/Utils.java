@@ -3,7 +3,6 @@ package com.itgowo.gamestzb;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
@@ -11,6 +10,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
+
+import com.itgowo.gamestzb.Base.BaseApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class Utils {
                 ShortcutInfo info = new ShortcutInfo.Builder(BaseApp.app, "id" + i)
                         .setShortLabel(i + "aaa")
                         .setLongLabel("联系人:" + i)
-                        .setIcon(Icon.createWithResource(BaseApp.app, R.mipmap.ic_launcher))
+                        .setIcon(Icon.createWithResource(BaseApp.app, R.mipmap.zhugeliang))
                         .setIntent(intent)
                         .build();
                 infos.add(info);

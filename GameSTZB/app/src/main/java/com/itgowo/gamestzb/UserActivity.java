@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.itgowo.gamestzb.Base.BaseActivity;
 import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.Entity.UserInfo;
+import com.itgowo.gamestzb.Manager.UserManager;
 import com.itgowo.gamestzb.View.HeroCard;
 
 public class UserActivity extends BaseActivity {
