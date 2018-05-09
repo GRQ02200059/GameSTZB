@@ -6,21 +6,22 @@
     android:background="@drawable/background2"
     tools:context=".UserActivity">
 
+
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="40dp"
         android:background="@drawable/background3"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:padding="10dp">
 
         <com.itgowo.gamestzb.View.HeroCard
             android:id="@+id/hero"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-             ></com.itgowo.gamestzb.View.HeroCard>
+            android:layout_height="wrap_content"></com.itgowo.gamestzb.View.HeroCard>
 
         <Button
             android:id="@+id/btn_login_qq"
@@ -65,5 +66,11 @@
             android:textColor="@android:color/white"
             android:textSize="11sp" />
     </LinearLayout>
-
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_margin="15dp"
+        android:id="@+id/goback"
+        android:tint="@color/country_qun"
+        android:src="@drawable/goback" />
 </RelativeLayout>

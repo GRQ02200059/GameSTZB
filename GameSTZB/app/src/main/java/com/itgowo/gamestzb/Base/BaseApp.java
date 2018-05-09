@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.itgowo.gamestzb.BuildConfig;
 import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.UserManager;
+import com.itgowo.gamestzb.MusicService;
 import com.itgowo.itgowolib.itgowo;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
@@ -17,6 +18,7 @@ import org.xutils.x;
 
 public class BaseApp extends Application {
     public static BaseApp app;
+    private int activityCount=0;
 
     @Override
     public void onCreate() {
@@ -62,6 +64,7 @@ public class BaseApp extends Application {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 PushAgent.getInstance(activity).onAppStart();
+                activityCount++;
             }
 
             @Override
@@ -91,11 +94,12 @@ public class BaseApp extends Application {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-
+                activityCount--;
+                if (activityCount==0){
+                    MusicService.stopMusic(app);
+                }
             }
         });
-
-
 
     }
 

@@ -1,5 +1,11 @@
 package com.itgowo.gamestzb.Entity;
 
+import android.content.Context;
+
+import com.itgowo.gamestzb.Base.BaseApp;
+
+import java.io.File;
+
 public class HeroEntity {
     /**
      * contory : 群
@@ -28,6 +34,10 @@ public class HeroEntity {
     private String url;
     private int skillId;
     private int length;
+
+    public String getHeroFilePath() {
+        return new File(BaseApp.app.getDir("hero", Context.MODE_PRIVATE), getIcon()).getAbsolutePath();
+    }
 
     public int getLength() {
         return length;
@@ -97,7 +107,6 @@ public class HeroEntity {
     }
 
 
-
     public double getCost() {
         return cost;
     }
@@ -133,10 +142,11 @@ public class HeroEntity {
     public String getIcon() {
         return icon;
     }
-    public String getIconName(){
 
-        int index=icon.lastIndexOf(".");
-        return icon.substring(0,index);
+    public String getIconName() {
+
+        int index = icon.lastIndexOf(".");
+        return icon.substring(0, index);
     }
 
     public void setIcon(String icon) {

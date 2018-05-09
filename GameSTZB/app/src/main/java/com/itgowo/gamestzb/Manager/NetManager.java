@@ -1,8 +1,12 @@
 package com.itgowo.gamestzb.Manager;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Entity.BaseRequest;
+import com.itgowo.gamestzb.Entity.BaseResponse;
+import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.itgowolib.itgowo;
 import com.itgowo.itgowolib.itgowoNetTool;
@@ -12,6 +16,7 @@ import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public class NetManager {
@@ -19,6 +24,7 @@ public class NetManager {
     //        public static final String ROOTURL = "http://192.168.1.119:1666/GameSTZB";
     public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
     public static final String ROOTURL_UPDATEVERSION = "http://itgowo.com:1888/Version";
+    public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://itgowo.oss-cn-qingdao.aliyuncs.com/game/app/hero/";
 
     public static void getRandomHero(int num, itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();
@@ -30,6 +36,12 @@ public class NetManager {
         BaseRequest request = new BaseRequest();
         request.setAction(UpdateVersion.GET_UPDATE_VERSION).setFlag(UpdateVersion.GET_UPDATE_VERSION_FLAG).initToken();
         basePost(ROOTURL_UPDATEVERSION, request, listener);
+    }
+
+    public static void getHeroListAndDown(itgowoNetTool.onReceviceDataListener listener) {
+        BaseRequest request = new BaseRequest();
+        request.setAction(BaseRequest.GET_HERO_LIST).initToken();
+        basePost(request, listener);
     }
 
     public static void download(final File file, final String url) {

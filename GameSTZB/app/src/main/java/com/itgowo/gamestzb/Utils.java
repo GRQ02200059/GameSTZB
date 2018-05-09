@@ -56,32 +56,13 @@ public class Utils {
     }
 
 
-    public static void checkPermission(Context context) {
+    public static void checkPermission(Context context, PermissionCallback callback) {
         HiPermission hiPermission = HiPermission.create(context);
         List<PermissionItem> permissionItems = new ArrayList<>();
         permissionItems.add(new PermissionItem(Manifest.permission.WRITE_EXTERNAL_STORAGE, "外部存储", R.drawable.permission_ic_storage));
         permissionItems.add(new PermissionItem(Manifest.permission.ACCESS_FINE_LOCATION, "定位", R.drawable.permission_ic_location));
         hiPermission.permissions(permissionItems).msg("为了APP能提供更好的服务，需要以下权限").title("枫林提示")
-                .style(R.style.PermissionDefaultNormalStyle).checkMutiPermission(new PermissionCallback() {
-            @Override
-            public void onClose() {
-
-            }
-
-            @Override
-            public void onFinish() {
-            }
-
-            @Override
-            public void onDeny(String permission, int position) {
-
-            }
-
-            @Override
-            public void onGuarantee(String permission, int position) {
-
-            }
-        });
+                .style(R.style.PermissionDefaultNormalStyle).checkMutiPermission(callback);
     }
 
 

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.itgowo.gamestzb.Base.BaseActivity;
 import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.Entity.UserInfo;
+import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.UserManager;
 import com.itgowo.gamestzb.View.HeroCard;
 
@@ -19,12 +20,12 @@ public class UserActivity extends BaseActivity {
     private HeroCard heroCard;
     private CheckBox isPlayVideo, isPlayMusic;
     private Button btnLoginQQ;
+    private View goBackBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
-
         Toast.makeText(this, "开发测试版，账户信息未完善，很多功能还只是摆设，请留意后续更新", Toast.LENGTH_LONG).show();
         initView();
         initListener();
@@ -46,13 +47,19 @@ public class UserActivity extends BaseActivity {
         isPlayVideo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                BaseConfig.putData(BaseConfig.USER_ISPLAYVIDEO, isChecked);
+                if (BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true) != isChecked) {
+                    BaseConfig.putData(BaseConfig.USER_ISPLAYVIDEO, isChecked);
+                    setResult(Activity.RESULT_OK);
+                }
             }
         });
         isPlayMusic.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                BaseConfig.putData(BaseConfig.USER_ISPLAYMUSIC, isChecked);
+                if (BaseConfig.getData(BaseConfig.USER_ISPLAYMUSIC, true) != isChecked) {
+                    BaseConfig.putData(BaseConfig.USER_ISPLAYMUSIC, isChecked);
+                    setResult(Activity.RESULT_OK);
+                }
             }
         });
         btnLoginQQ.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +96,12 @@ public class UserActivity extends BaseActivity {
                 }
             }
         });
+        goBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void initView() {
@@ -96,6 +109,7 @@ public class UserActivity extends BaseActivity {
         isPlayVideo = findViewById(R.id.isPlayVideo);
         isPlayMusic = findViewById(R.id.isPlayMusic);
         btnLoginQQ = findViewById(R.id.btn_login_qq);
+        goBackBtn = findViewById(R.id.goback);
     }
 
     @Override

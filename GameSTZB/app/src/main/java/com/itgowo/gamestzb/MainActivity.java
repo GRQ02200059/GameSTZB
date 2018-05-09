@@ -2,6 +2,7 @@ package com.itgowo.gamestzb;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
@@ -38,6 +40,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Base.BaseActivity;
+import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.Entity.BaseResponse;
 import com.itgowo.gamestzb.Entity.HeroEntity;
@@ -50,11 +53,13 @@ import com.itgowo.gamestzb.View.HeroCard;
 import com.itgowo.itgowolib.itgowoNetTool;
 import com.itgowo.views.SuperDialog;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import library.Info;
 import library.PhotoView;
+import me.weyye.hipermission.PermissionCallback;
 
 public class MainActivity extends BaseActivity implements UserManager.onUserStatusListener {
     private STZBManager manager = new STZBManager();
@@ -70,10 +75,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     private TextView msg1;
     private FrameLayout videoRoot;
     private int count5, count4, count3, count2, count1;
-    private View mParent;
-    private View mBg;
-    private PhotoView mPhotoView;
-    private Info mInfo;
+    private View parentLayout, imageShow;
+    private PhotoView photoView;
+    private Info photoViewInfo;
     private int spanCount = 8;
     private AlphaAnimation in = new AlphaAnimation(0, 1);
     private AlphaAnimation out = new AlphaAnimation(1, 0);
@@ -99,13 +103,79 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
-        initLstener();
-        initRecyclerView();
-        start();
-        checkVersion();
+        Utils.checkPermission(this, new PermissionCallback() {
+            @Override
+            public void onClose() {
+
+            }
+
+            @Override
+            public void onFinish() {
+                initView();
+                initLstener();
+                initRecyclerView();
+                start();
+                checkVersion();
+                initData();
+            }
+
+            @Override
+            public void onDeny(String permission, int position) {
+
+            }
+
+            @Override
+            public void onGuarantee(String permission, int position) {
+
+            }
+        });
+
 //        handler.sendEmptyMessageDelayed(1, 2000);
 
+    }
+
+    private void initData() {
+
+        NetManager.getHeroListAndDown(new itgowoNetTool.onReceviceDataListener<BaseResponse<List<HeroEntity>>>() {
+            @Override
+            public void onResult(String requestStr, String responseStr, BaseResponse<List<HeroEntity>> result) {
+                if (result != null && result.getCode() == 1 && result.getData() != null) {
+                    File file = context.getDir("hero", Context.MODE_PRIVATE);
+                    int num = 0;
+                    if (!file.exists()) {
+                        num = result.getData().size();
+                    } else {
+                        num = result.getData().size() - file.listFiles().length;
+                    }
+                    if (num > 0) {
+                        SuperDialog dialog = new SuperDialog(context).setContent("共" + result.getData().size() + "名武将数据，有" + num + "名武将数据缺失，需要更新， 如果您不是使用wifi上网，下载可能消耗您的流量，请点击确定下载更新，点击其他区域或者返回键取消").setListener(new SuperDialog.onDialogClickListener() {
+                            @Override
+                            public void click(boolean isButtonClick, int position) {
+                                downData(result.getData());
+                            }
+                        });
+                        dialog.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
+    }
+
+    private void downData(List<HeroEntity> heroEntities) {
+        File rootFile = BaseApp.app.getDir("hero", Context.MODE_PRIVATE);
+        rootFile.mkdirs();
+        for (int i = 0; i < heroEntities.size(); i++) {
+            HeroEntity entity = heroEntities.get(i);
+            File file = new File(rootFile, entity.getIcon());
+            if (!file.exists()) {
+                NetManager.download(file, NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE + entity.getIcon());
+            }
+        }
     }
 
     private void initLstener() {
@@ -119,7 +189,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                mBg.setVisibility(View.INVISIBLE);
+                imageShow.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -152,7 +222,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                 if (BaseConfig.updateInfo == null) {
                     return;
                 }
-               String string= "是是是\r\n   \r\n sss";
                 String tip = String.format(getResources().getString(R.string.versionTip), BuildConfig.VERSION_NAME, BaseConfig.updateInfo.getVersionname(), BaseConfig.updateInfo.getVersioninfo());
                 SuperDialog dialog = new SuperDialog(context).setTitle("发现新版本").setContent(tip).setListener(new SuperDialog.onDialogClickListener() {
                     @Override
@@ -172,12 +241,12 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mParent.getVisibility() == View.VISIBLE) {
-                    mBg.startAnimation(out);
-                    mPhotoView.animaTo(mInfo, new Runnable() {
+                if (parentLayout.getVisibility() == View.VISIBLE) {
+                    imageShow.startAnimation(out);
+                    photoView.animaTo(photoViewInfo, new Runnable() {
                         @Override
                         public void run() {
-                            mParent.setVisibility(View.GONE);
+                            parentLayout.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -201,6 +270,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
             }
         });
+
     }
 
     private void checkVersion() {
@@ -238,7 +308,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         if (videoView1 != null) {
             videoView1.start();
         }
-        view_UserInfo.refreshInfo();
+        if (view_UserInfo != null) {
+            view_UserInfo.refreshInfo();
+        }
         UserManager.addUserStatusListener(this);
     }
 
@@ -283,27 +355,27 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
             anim.setDuration(1200);// 动画持续时间
             anim.start();
-            return;
-        }
-        videoView1 = new FillVideoView(this);
-        videoRoot.addView(videoView1);
-        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.cg_1);
-        videoView1.setVideoURI(uri);
-        videoView1.setClickable(false);
-        videoView1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        } else {
+            videoView1 = new FillVideoView(this);
+            videoRoot.addView(videoView1);
+            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.cg_1);
+            videoView1.setVideoURI(uri);
+            videoView1.setClickable(false);
+            videoView1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
-            @Override
-            public void onCompletion(MediaPlayer mPlayer) {
-                mPlayer.start();
-                mPlayer.setLooping(true);
-                videoView1.setClickable(false);
-                rootLayout.setVisibility(View.VISIBLE);
-                ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
-                anim.setDuration(1200);// 动画持续时间
-                anim.start();
-            }
-        });
-        videoView1.start();
+                @Override
+                public void onCompletion(MediaPlayer mPlayer) {
+                    mPlayer.start();
+                    mPlayer.setLooping(true);
+                    videoView1.setClickable(false);
+                    rootLayout.setVisibility(View.VISIBLE);
+                    ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
+                    anim.setDuration(1200);// 动画持续时间
+                    anim.start();
+                }
+            });
+            videoView1.start();
+        }
         if (BaseConfig.getData(BaseConfig.USER_ISPLAYMUSIC, true)) {
             MusicService.playMusic(this, null);
         } else {
@@ -320,12 +392,12 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         msg3 = (TextView) findViewById(R.id.msg3);
         msg2 = (TextView) findViewById(R.id.msg2);
         msg1 = (TextView) findViewById(R.id.msg1);
-        mParent = findViewById(R.id.parent);
+        parentLayout = findViewById(R.id.parent);
         videoView1 = findViewById(R.id.videoview);
         rootLayout = findViewById(R.id.rootlayout);
-        mBg = findViewById(R.id.bg);
-        mPhotoView = (PhotoView) findViewById(R.id.img);
-        mPhotoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        imageShow = findViewById(R.id.bg);
+        photoView = (PhotoView) findViewById(R.id.img);
+        photoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         videoRoot = findViewById(R.id.videoRoot);
         fab = findViewById(R.id.fab);
         fabNotice = findViewById(R.id.fabNotice);
@@ -337,15 +409,15 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         recyclerView.scheduleLayoutAnimation();
         recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
         recyclerView.setAdapter(new Myadapter());
-        mPhotoView.enable();
-        mPhotoView.setOnClickListener(new View.OnClickListener() {
+        photoView.enable();
+        photoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mBg.startAnimation(out);
-                mPhotoView.animaTo(mInfo, new Runnable() {
+                imageShow.startAnimation(out);
+                photoView.animaTo(photoViewInfo, new Runnable() {
                     @Override
                     public void run() {
-                        mParent.setVisibility(View.GONE);
+                        parentLayout.setVisibility(View.GONE);
                     }
                 });
             }
@@ -377,28 +449,35 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<List<HeroEntity>> result) {
-                randomHeroEntities = result.getData();
-                recyclerView.getAdapter().notifyDataSetChanged();
-                for (int i = 0; i < randomHeroEntities.size(); i++) {
-                    switch (randomHeroEntities.get(i).getQuality()) {
-                        case 1:
-                            count1++;
-                            break;
-                        case 2:
-                            count2++;
-                            break;
-                        case 3:
-                            count3++;
-                            break;
-                        case 4:
-                            count4++;
-                            break;
-                        case 5:
-                            count5++;
-                            break;
+                if (result.getCode() == 1) {
+                    if (result.getData() == null) {
+                        return;
                     }
+                    randomHeroEntities = result.getData();
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                    for (int i = 0; i < randomHeroEntities.size(); i++) {
+                        switch (randomHeroEntities.get(i).getQuality()) {
+                            case 1:
+                                count1++;
+                                break;
+                            case 2:
+                                count2++;
+                                break;
+                            case 3:
+                                count3++;
+                                break;
+                            case 4:
+                                count4++;
+                                break;
+                            case 5:
+                                count5++;
+                                break;
+                        }
+                    }
+                    onRandomResult();
+                } else {
+                    Toast.makeText(context, result.getMsg(), Toast.LENGTH_SHORT).show();
                 }
-                onRandomResult();
             }
 
             @Override
@@ -458,7 +537,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
     @Override
     public void onChanged() {
-        view_UserInfo.refreshInfo();
+        if (view_UserInfo != null) {
+            view_UserInfo.refreshInfo();
+        }
     }
 
     class Myadapter extends RecyclerView.Adapter<viewHolder> {
@@ -485,23 +566,28 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             // 把PhotoView当普通的控件把触摸功能关掉
             p.disenable();
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
-//            Glide.with(holder.itemView).load(entity.getSrc()).apply(options).into(p);
-            final int res = getResources().getIdentifier(entity.getIconName(), "drawable", getPackageName());
-            Glide.with(heroCard.headimg).load(res).apply(options).into(p);
+//            final int res = getResources().getIdentifier(entity.getIconName(), "drawable", getPackageName());
+            String uri;
+            if (new File(entity.getHeroFilePath()).exists()) {
+                uri = entity.getHeroFilePath();
+            } else {
+                uri = NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE + entity.getIcon();
+            }
+            Glide.with(heroCard.headimg).load(uri).apply(options).into(p);
             heroCard.headimg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     PhotoView p = (PhotoView) v;
-                    mInfo = p.getInfo();
-                    Glide.with(heroCard.headimg).load(res).apply(options).into(new SimpleTarget<Drawable>() {
+                    photoViewInfo = p.getInfo();
+                    Glide.with(heroCard.headimg).load(uri).apply(options).into(new SimpleTarget<Drawable>() {
                         @Override
                         public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            mPhotoView.setImageDrawable(resource);
-                            mPhotoView.setScaleType(ImageView.ScaleType.CENTER);
-                            mBg.startAnimation(in);
-                            mBg.setVisibility(View.VISIBLE);
-                            mParent.setVisibility(View.VISIBLE);
-                            mPhotoView.animaFrom(mInfo);
+                            photoView.setImageDrawable(resource);
+                            photoView.setScaleType(ImageView.ScaleType.CENTER);
+                            imageShow.startAnimation(in);
+                            imageShow.setVisibility(View.VISIBLE);
+                            parentLayout.setVisibility(View.VISIBLE);
+                            photoView.animaFrom(photoViewInfo);
                         }
                     });
                 }
@@ -524,12 +610,12 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
     @Override
     public void onBackPressed() {
-        if (mParent.getVisibility() == View.VISIBLE) {
-            mBg.startAnimation(out);
-            mPhotoView.animaTo(mInfo, new Runnable() {
+        if (parentLayout.getVisibility() == View.VISIBLE) {
+            imageShow.startAnimation(out);
+            photoView.animaTo(photoViewInfo, new Runnable() {
                 @Override
                 public void run() {
-                    mParent.setVisibility(View.GONE);
+                    parentLayout.setVisibility(View.GONE);
                 }
             });
         } else {
@@ -541,9 +627,11 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         UserManager.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == INTENT_UserActivity) {
-            view_UserInfo.refreshInfo();
-            reSetStyle();
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == INTENT_UserActivity) {
+                view_UserInfo.refreshInfo();
+                reSetStyle();
+            }
         }
         System.gc();
     }
