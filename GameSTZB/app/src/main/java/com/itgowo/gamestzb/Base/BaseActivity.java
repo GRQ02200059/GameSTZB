@@ -26,5 +26,4 @@ public class BaseActivity extends AppCompatActivity {
         context = this;
         super.onCreate(savedInstanceState);
     }
-
 }

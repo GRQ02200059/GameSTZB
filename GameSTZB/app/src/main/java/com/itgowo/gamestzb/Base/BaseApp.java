@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.itgowo.gamestzb.BuildConfig;
 import com.itgowo.gamestzb.Manager.NetManager;
+import com.itgowo.gamestzb.Manager.STZBManager;
 import com.itgowo.gamestzb.Manager.UserManager;
 import com.itgowo.gamestzb.MusicService;
 import com.itgowo.itgowolib.itgowo;
@@ -18,6 +19,7 @@ import org.xutils.x;
 
 public class BaseApp extends Application {
     public static BaseApp app;
+    private static STZBManager stzbManager=new STZBManager();
     private int activityCount=0;
 
     @Override
@@ -28,6 +30,10 @@ public class BaseApp extends Application {
 
         init();
         initData();
+    }
+
+    public static STZBManager getStzbManager() {
+        return stzbManager;
     }
 
     private void initData() {
@@ -97,6 +103,7 @@ public class BaseApp extends Application {
                 activityCount--;
                 if (activityCount==0){
                     MusicService.stopMusic(app);
+                    MobclickAgent.onKillProcess(app);
                 }
             }
         });

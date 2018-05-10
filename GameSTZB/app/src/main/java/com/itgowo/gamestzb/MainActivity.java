@@ -8,8 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,10 +44,10 @@ import com.itgowo.gamestzb.Entity.BaseResponse;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.gamestzb.Manager.NetManager;
-import com.itgowo.gamestzb.Manager.STZBManager;
 import com.itgowo.gamestzb.Manager.UserManager;
 import com.itgowo.gamestzb.View.FillVideoView;
 import com.itgowo.gamestzb.View.HeroCard;
+import com.itgowo.gamestzb.View.RecyclerViewItemDecoration;
 import com.itgowo.itgowolib.itgowoNetTool;
 import com.itgowo.views.SuperDialog;
 
@@ -62,7 +60,6 @@ import library.PhotoView;
 import me.weyye.hipermission.PermissionCallback;
 
 public class MainActivity extends BaseActivity implements UserManager.onUserStatusListener {
-    private STZBManager manager = new STZBManager();
     private View rootLayout;
     private RecyclerView recyclerView;
     private ImageButton fab;
@@ -78,7 +75,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     private View parentLayout, imageShow;
     private PhotoView photoView;
     private Info photoViewInfo;
-    private int spanCount = 8;
+    private int spanCount = 5;
     private AlphaAnimation in = new AlphaAnimation(0, 1);
     private AlphaAnimation out = new AlphaAnimation(1, 0);
     private VideoView videoView1;
@@ -134,12 +131,13 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
     }
 
+
     private void initData() {
 
         NetManager.getHeroListAndDown(new itgowoNetTool.onReceviceDataListener<BaseResponse<List<HeroEntity>>>() {
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<List<HeroEntity>> result) {
-                if (result != null && result.getCode() == 1 && result.getData() != null) {
+                if (result != null && result.isSuccess() && result.getData() != null) {
                     File file = context.getDir("hero", Context.MODE_PRIVATE);
                     int num = 0;
                     if (!file.exists()) {
@@ -207,37 +205,11 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         findViewById(R.id.helpDev).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SuperDialog dialog = new SuperDialog(context).setShowImage().setImageListener(new SuperDialog.onDialogImageListener() {
-                    @Override
-                    public void onInitImageView(ImageView imageView) {
-                        Glide.with(imageView).load("http://file.itgowo.com/game/pay/allpay.png").into(imageView);
-                    }
-                }).setShowButtonLayout(false);
+                SuperDialog dialog = new SuperDialog(context).setShowImage().setImageListener(imageView -> Glide.with(imageView).load("http://file.itgowo.com/game/pay/allpay.png").into(imageView)).setShowButtonLayout(false);
                 dialog.setAspectRatio(0.8f).show();
             }
         });
-        fabNotice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BaseConfig.updateInfo == null) {
-                    return;
-                }
-                String tip = String.format(getResources().getString(R.string.versionTip), BuildConfig.VERSION_NAME, BaseConfig.updateInfo.getVersionname(), BaseConfig.updateInfo.getVersioninfo());
-                SuperDialog dialog = new SuperDialog(context).setTitle("发现新版本").setContent(tip).setListener(new SuperDialog.onDialogClickListener() {
-                    @Override
-                    public void click(boolean isButtonClick, int position) {
-                        try {
-                            Uri uri = Uri.parse(BaseConfig.updateInfo.getDownloadurl());
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            startActivity(intent);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                dialog.show();
-            }
-        });
+        fabNotice.setOnClickListener(v -> BaseApp.getStzbManager().goUpdateVersion(context));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -254,7 +226,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                 List<SuperDialog.DialogMenuItem> menuItems = new ArrayList<>();
                 menuItems.add(new SuperDialog.DialogMenuItem("小试牛刀(1)", R.mipmap.caocao));
                 menuItems.add(new SuperDialog.DialogMenuItem("大胆尝试(5)", R.mipmap.liubei));
-                menuItems.add(new SuperDialog.DialogMenuItem("疯狂剁手(15)", R.mipmap.sunquan));
+//                menuItems.add(new SuperDialog.DialogMenuItem("疯狂剁手(15)", R.mipmap.sunquan));
                 dialog.setTitle("选择抽取次数").setDialogMenuItemList(menuItems).setListener(new SuperDialog.onDialogClickListener() {
                     @Override
                     public void click(boolean isButtonClick, int position) {
@@ -278,7 +250,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<UpdateVersion> result) {
-                if (result.getCode() == 1) {
+                if (result.isSuccess()) {
                     if (result.getData().getVersioncode() > BuildConfig.VERSION_CODE) {
                         fabNotice.show();
                         BaseConfig.updateInfo = result.getData();
@@ -408,6 +380,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         recyclerView.setLayoutAnimation(controller);
         recyclerView.scheduleLayoutAnimation();
         recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
+        recyclerView.addItemDecoration(new RecyclerViewItemDecoration(10, 50));
         recyclerView.setAdapter(new Myadapter());
         photoView.enable();
         photoView.setOnClickListener(new View.OnClickListener() {
@@ -424,11 +397,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         });
     }
 
-    public boolean isWifiConnect() {
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        return mWifi.isConnected();
-    }
 
     private void onRandomResult() {
         msg5.setText("5 星：" + count5);
@@ -449,7 +417,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<List<HeroEntity>> result) {
-                if (result.getCode() == 1) {
+                if (result.isSuccess()) {
                     if (result.getData() == null) {
                         return;
                     }
@@ -512,24 +480,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                if (entity.getQuality() == 3) {
-                    count3++;
-                    return;
-                }
-                if (entity.getQuality() == 4) {
-                    count4++;
-                }
-                if (entity.getQuality() == 5) {
-                    count5++;
-                }
-                if (entity.getQuality() == 2) {
-                    count2++;
-                }
-                if (entity.getQuality() == 1) {
-                    count1++;
-                }
-                onRandomResult();
-                showHeroDialog(context);
+
             }
         });
         dialog.show();

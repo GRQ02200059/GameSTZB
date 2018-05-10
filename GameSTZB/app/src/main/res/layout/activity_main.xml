@@ -39,5 +39,4 @@
             android:src="@android:drawable/ic_dialog_dialer" />
     </RelativeLayout>
 
-
 </FrameLayout>

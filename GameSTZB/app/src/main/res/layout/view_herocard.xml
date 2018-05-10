@@ -1,68 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <library.PhotoView
         android:id="@+id/headimg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:foreground="@drawable/hero_mask_5"
         android:scaleType="fitXY"
-        android:src="@drawable/hero_000000"/>
+        android:src="@drawable/hero_000000" />
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/headForeground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/headimg"
+        android:layout_alignLeft="@+id/headimg"
+        android:layout_alignRight="@+id/headimg"
+        android:layout_alignTop="@+id/headimg"
+        android:scaleType="fitXY"
+        android:src="@drawable/hero_mask_5" />
+
+    <com.itgowo.gamestzb.View.RepeatImageView
+        android:id="@+id/hero_star"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/headimg"
         android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="4dp"
+        android:scaleType="fitEnd"
+        android:src="@drawable/star2" />
 
-        <ImageView
-            android:id="@+id/star1"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:src="@drawable/star1"/>
-
-        <ImageView
-            android:id="@+id/star2"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:src="@drawable/star1"/>
-
-        <ImageView
-            android:id="@+id/star3"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:src="@drawable/star1"/>
-
-        <ImageView
-            android:id="@+id/star4"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:src="@drawable/star1"/>
-
-        <ImageView
-            android:id="@+id/star5"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:src="@drawable/star1"/>
-
-        <ImageView
-            android:id="@+id/star6"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:src="@drawable/star1"
-            android:visibility="visible"/>
-    </LinearLayout>
-
-    <TextView
+    <ImageView
         android:id="@+id/country"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="神"
-        android:textColor="@color/country_shen"
-        android:textSize="13sp"/>
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/name"
@@ -70,19 +42,19 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/country"
         android:ems="1"
+        android:gravity="left|top"
         android:text="@string/pleaseLogin"
         android:textColor="@android:color/holo_orange_dark"
-        android:textSize="9sp"/>
+        android:textSize="9sp" />
 
     <TextView
         android:id="@+id/type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/headimg"
-        android:layout_alignRight="@id/headimg"
+        android:layout_alignRight="@+id/headimg"
         android:background="@drawable/type_qi"
         android:gravity="right|bottom"
-        android:text="5"
         android:textColor="@android:color/white"
         android:textSize="6sp"></TextView>
 

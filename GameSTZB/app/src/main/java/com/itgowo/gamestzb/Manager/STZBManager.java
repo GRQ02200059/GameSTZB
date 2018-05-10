@@ -1,13 +1,19 @@
 package com.itgowo.gamestzb.Manager;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+
+import com.itgowo.gamestzb.Base.BaseConfig;
+import com.itgowo.gamestzb.BuildConfig;
 import com.itgowo.gamestzb.Entity.HeroEntity;
+import com.itgowo.gamestzb.R;
+import com.itgowo.views.SuperDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class STZBManager {
-    //    public static final String ROOTURL = "http://itgowo.com:666/GameSTZB";
-    public static final String ROOTURL = "http://10.0.4.33:666/GameSTZB";
     private List<HeroEntity> totalHeroList = new ArrayList<>();
     private List<HeroEntity> heroList5 = new ArrayList<>();
     private List<HeroEntity> heroList4 = new ArrayList<>();
@@ -67,7 +73,25 @@ public class STZBManager {
             }
         }
     }
-
+    public void goUpdateVersion(Context context){
+        if (BaseConfig.updateInfo == null) {
+            return;
+        }
+        String tip = String.format(context.getResources().getString(R.string.versionTip), BuildConfig.VERSION_NAME, BaseConfig.updateInfo.getVersionname(), BaseConfig.updateInfo.getVersioninfo());
+        SuperDialog dialog = new SuperDialog(context).setTitle("发现新版本").setContent(tip).setListener(new SuperDialog.onDialogClickListener() {
+            @Override
+            public void click(boolean isButtonClick, int position) {
+                try {
+                    Uri uri = Uri.parse(BaseConfig.updateInfo.getDownloadurl());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    context.startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        dialog.show();
+    }
    public static void AutoLogin(){
 
    }

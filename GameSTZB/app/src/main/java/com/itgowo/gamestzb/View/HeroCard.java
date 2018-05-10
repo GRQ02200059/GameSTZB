@@ -1,8 +1,6 @@
 package com.itgowo.gamestzb.View;
 
 import android.content.Context;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,60 +15,49 @@ import com.itgowo.gamestzb.R;
 import org.xutils.common.util.DensityUtil;
 
 public class HeroCard extends RelativeLayout {
-    public ImageView headimg;
-    private ImageView star1;
-    private ImageView star2;
-    private ImageView star3;
-    private ImageView star4;
-    private ImageView star5;
-    private ImageView star6;
-    private TextView country;
+    public android.support.v7.widget.AppCompatImageView headimg;
+    private RepeatImageView heroStar;
+
+    private ImageView headForeground;
+
+    private ImageView country;
     private TextView name;
     private TextView type;
     private TextView cost;
+    private float zoomStar = 2f;
 
     public HeroCard(Context context) {
         super(context);
         View.inflate(context, R.layout.view_herocard, this);
         initView();
+        setDefaultInfo();
     }
 
     public HeroCard(Context context, AttributeSet attrs) {
         super(context, attrs);
         View.inflate(context, R.layout.view_herocard, this);
         initView();
-        setLargerMode();
+        setDefaultInfo();
     }
 
     public void setLargerMode() {
-        setSizeMode(13, 10, 105, 144, 10, 2, 2, 6, 2, 3);
+        setSizeMode(13, 10, 105, 144, 0.85f, 2, 2, 6, 2, 3);
     }
 
     public void setMiniMode() {
-        setSizeMode(8, 6, 35, 48, 5, 1, 1, 4, 1, 1);
+        setSizeMode(8, 6, 35, 48, 0.8f, 1, 1, 4, 1, 1);
     }
 
     public void setMiddleMode() {
-        setSizeMode(12, 11, 70, 96, 8, 2, 2, 5, 2, 2);
+        setSizeMode(12, 11, 70, 96, 2, 2, 2, 5, 2, 2);
     }
 
-    public void setSizeMode(int countryTextSize, int nameTextSize, int headWidth, int headHeight, int starWidth, int paddingLeft, int paddingTop, int otherTextSize, int typePaddingRight, int typePaddingBottom) {
-        country.setTextSize(countryTextSize);
+    public void setSizeMode(int countryTextSize, int nameTextSize, int headWidth, int headHeight, float zoomStar, int paddingLeft, int paddingTop, int otherTextSize, int typePaddingRight, int typePaddingBottom) {
+        this.zoomStar = zoomStar;
+//        country.setTextSize(countryTextSize);
         name.setTextSize(nameTextSize);
         headimg.getLayoutParams().width = DensityUtil.dip2px(headWidth);
         headimg.getLayoutParams().height = DensityUtil.dip2px(headHeight);
-        int width = DensityUtil.dip2px(starWidth);
-        star1.getLayoutParams().width = width;
-        star2.getLayoutParams().width = width;
-        star3.getLayoutParams().width = width;
-        star4.getLayoutParams().width = width;
-        star5.getLayoutParams().width = width;
-        star1.getLayoutParams().height = width;
-        star2.getLayoutParams().height = width;
-        star3.getLayoutParams().height = width;
-        star4.getLayoutParams().height = width;
-        star5.getLayoutParams().height = width;
-        star6.getLayoutParams().height = width;
         RelativeLayout.LayoutParams mLayoutParams = (LayoutParams) type.getLayoutParams();
         mLayoutParams.setMargins(0, 0, DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop));
         type.setLayoutParams(mLayoutParams);
@@ -79,27 +66,63 @@ public class HeroCard extends RelativeLayout {
         cost.setLayoutParams(mLayoutParams1);
         type.setTextSize(otherTextSize);
         cost.setTextSize(otherTextSize);
-        country.setPadding(DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop), 0, 0);
+//        country.setPadding(DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop), 0, 0);
         name.setPadding(DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop), 0, 0);
     }
 
-    public void setHeadImgMode(int width) {
-        getLayoutParams().width = DensityUtil.dip2px(width);
-        getLayoutParams().height = DensityUtil.dip2px(width);
+    public void setDefaultInfo() {
+        HeroEntity entity = new HeroEntity();
+        entity.setId(100000);
+        entity.setIcon("hero_" + entity.getId());
+        entity.setName(getResources().getString(R.string.pleaseLogin));
+        entity.setQuality(6);
+        entity.setContory("神");
+        entity.setCost(5.5);
+        entity.setType("骑");
+        setData(entity);
     }
 
     private void initView() {
-        headimg = (ImageView) findViewById(R.id.headimg);
-        star1 = (ImageView) findViewById(R.id.star1);
-        star2 = (ImageView) findViewById(R.id.star2);
-        star3 = (ImageView) findViewById(R.id.star3);
-        star4 = (ImageView) findViewById(R.id.star4);
-        star5 = (ImageView) findViewById(R.id.star5);
-        star6 = (ImageView) findViewById(R.id.star6);
-        country = (TextView) findViewById(R.id.country);
+        headimg = findViewById(R.id.headimg);
+        heroStar = findViewById(R.id.hero_star);
+        country = (ImageView) findViewById(R.id.country);
         name = (TextView) findViewById(R.id.name);
         type = (TextView) findViewById(R.id.type);
         cost = (TextView) findViewById(R.id.cost);
+        headForeground = findViewById(R.id.headForeground);
+        addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (right != 0 && bottom != 0) {
+                    removeOnLayoutChangeListener(this);
+
+
+                    LayoutParams countryLayoutParams = (LayoutParams) country.getLayoutParams();
+                    countryLayoutParams.leftMargin = v.getWidth() / 90;
+                    countryLayoutParams.topMargin = v.getWidth() / 60;
+                    countryLayoutParams.width = v.getWidth() / 6;
+                    countryLayoutParams.height = v.getWidth() / 6;
+                    country.setLayoutParams(countryLayoutParams);
+
+                    LayoutParams nameLayoutParams = (LayoutParams) name.getLayoutParams();
+                    nameLayoutParams.leftMargin = v.getWidth() / 45;
+                    name.setLayoutParams(nameLayoutParams);
+
+                    LayoutParams typeLayoutParams = (LayoutParams) type.getLayoutParams();
+                    typeLayoutParams.rightMargin = v.getWidth() / 30;
+                    typeLayoutParams.bottomMargin = v.getHeight() / 40;
+                    type.setLayoutParams(typeLayoutParams);
+
+                    LayoutParams costLayoutParams = (LayoutParams) cost.getLayoutParams();
+                    costLayoutParams.bottomMargin = v.getHeight() / 40;
+                    cost.setLayoutParams(costLayoutParams);
+
+                    LayoutParams starLayoutParams = (LayoutParams) heroStar.getLayoutParams();
+                    starLayoutParams.height = v.getHeight() / 15;
+                    heroStar.setLayoutParams(starLayoutParams);
+                }
+            }
+        });
     }
 
     public void setName(String mName) {
@@ -110,89 +133,61 @@ public class HeroCard extends RelativeLayout {
         if (BaseConfig.userInfo != null) {
             Glide.with(this).load(BaseConfig.userInfo.getHead()).into(this.headimg);
             this.setName(BaseConfig.userInfo.getNickname());
-        }else {
+        } else {
             headimg.setImageResource(R.drawable.hero_000000);
             setName(getContext().getString(R.string.pleaseLogin));
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public void setData(HeroEntity entity) {
         name.setText(entity.getName());
         switch (entity.getQuality()) {
             case 6:
-                star1.setVisibility(VISIBLE);
-                star2.setVisibility(VISIBLE);
-                star3.setVisibility(VISIBLE);
-                star4.setVisibility(VISIBLE);
-                star5.setVisibility(VISIBLE);
-                headimg.setForeground(getResources().getDrawable(R.drawable.hero_mask_5));
-                star6.setVisibility(VISIBLE);
+                headForeground.setImageResource(R.drawable.hero_mask_5);
                 break;
             case 5:
-                star1.setVisibility(VISIBLE);
-                star2.setVisibility(VISIBLE);
-                star3.setVisibility(VISIBLE);
-                star4.setVisibility(VISIBLE);
-                star5.setVisibility(VISIBLE);
-                star6.setVisibility(GONE);
-                headimg.setForeground(getResources().getDrawable(R.drawable.hero_mask_5));
+                headForeground.setImageResource(R.drawable.hero_mask_5);
                 break;
             case 4:
-                star1.setVisibility(GONE);
-                star2.setVisibility(VISIBLE);
-                star3.setVisibility(VISIBLE);
-                star4.setVisibility(VISIBLE);
-                star5.setVisibility(VISIBLE);
-                star6.setVisibility(GONE);
-                headimg.setForeground(getResources().getDrawable(R.drawable.hero_mask_4));
+                headForeground.setImageResource(R.drawable.hero_mask_4);
                 break;
             case 3:
-                star1.setVisibility(GONE);
-                star2.setVisibility(GONE);
-                star3.setVisibility(VISIBLE);
-                star4.setVisibility(VISIBLE);
-                star5.setVisibility(VISIBLE);
-                star6.setVisibility(GONE);
-                headimg.setForeground(getResources().getDrawable(R.drawable.hero_mask_3));
+                headForeground.setImageResource(R.drawable.hero_mask_3);
                 break;
             case 2:
-                star1.setVisibility(GONE);
-                star2.setVisibility(GONE);
-                star3.setVisibility(GONE);
-                star4.setVisibility(VISIBLE);
-                star5.setVisibility(VISIBLE);
-                star6.setVisibility(GONE);
-                headimg.setForeground(getResources().getDrawable(R.drawable.hero_mask_2));
+                headForeground.setImageResource(R.drawable.hero_mask_2);
                 break;
             case 1:
-                star1.setVisibility(GONE);
-                star2.setVisibility(GONE);
-                star3.setVisibility(GONE);
-                star4.setVisibility(GONE);
-                star5.setVisibility(VISIBLE);
-                star6.setVisibility(GONE);
-                headimg.setForeground(getResources().getDrawable(R.drawable.hero_mask_1));
+                headForeground.setImageResource(R.drawable.hero_mask_1);
         }
-        country.setText(entity.getContory());
+        heroStar.setRepeatCount(entity.getQuality());
+
+        heroStar.setImage(getResources().getDrawable(R.drawable.star2), zoomStar);
+//        country.setText(entity.getContory());
         switch (entity.getContory()) {
             case "蜀":
-                country.setTextColor(getResources().getColor(R.color.country_shu));
+//                country.setTextColor(getResources().getColor(R.color.country_shu));
+                country.setImageResource(R.drawable.icon_country_shu);
                 break;
             case "汉":
-                country.setTextColor(getResources().getColor(R.color.country_han));
+//                country.setTextColor(getResources().getColor(R.color.country_han));
+                country.setImageResource(R.drawable.icon_country_han);
                 break;
             case "群":
-                country.setTextColor(getResources().getColor(R.color.country_qun));
+//                country.setTextColor(getResources().getColor(R.color.country_qun));
+                country.setImageResource(R.drawable.icon_country_qun);
                 break;
             case "魏":
-                country.setTextColor(getResources().getColor(R.color.country_wei));
+//                country.setTextColor(getResources().getColor(R.color.country_wei));
+                country.setImageResource(R.drawable.icon_country_wei);
                 break;
             case "吴":
-                country.setTextColor(getResources().getColor(R.color.country_wu));
+//                country.setTextColor(getResources().getColor(R.color.country_wu));
+                country.setImageResource(R.drawable.icon_country_wu);
                 break;
             case "神":
-                country.setTextColor(getResources().getColor(R.color.country_shen));
+//                country.setTextColor(getResources().getColor(R.color.country_shen));
+                country.setImageResource(R.drawable.icon_country_shen);
                 break;
         }
         switch (entity.getType()) {
@@ -209,5 +204,8 @@ public class HeroCard extends RelativeLayout {
         type.setText(entity.getLength() == 0 ? "" : String.valueOf(entity.getLength()));
         String costStr = String.valueOf(entity.getCost()).replace(".0", "");
         cost.setText(costStr);
+
     }
+
+
 }

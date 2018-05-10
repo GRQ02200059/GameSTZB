@@ -13,7 +13,9 @@ public class BaseResponse<Data> {
         this.code = code;
         return this;
     }
-
+    public boolean isSuccess(){
+        return getCode()==1;
+    }
     public String getMsg() {
         return msg;
     }

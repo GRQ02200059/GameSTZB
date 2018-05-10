@@ -28,17 +28,22 @@ public class MusicService extends Service {
         intent.putExtra(MUSIC_URL, url);
         context.startService(intent);
     }
+
     public static void stopMusic(Context context) {
         Intent intent = new Intent(context, MusicService.class);
         intent.putExtra(MUSIC_ACTION, MUSIC_ACTION_STOP);
         context.startService(intent);
     }
+
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     private void doAction(Intent intent) {
+        if (intent == null) {
+            return;
+        }
         String temp = intent.getStringExtra(MUSIC_URL);
         if (!TextUtils.isEmpty(temp)) {
             musicUrl = temp;
@@ -58,7 +63,7 @@ public class MusicService extends Service {
                     mp.start();
                 }
             });
-        }else {
+        } else {
             stopSelf();
         }
     }

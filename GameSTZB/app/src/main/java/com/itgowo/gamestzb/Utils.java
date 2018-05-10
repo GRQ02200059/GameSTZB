@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -23,6 +25,8 @@ import java.util.List;
 import me.weyye.hipermission.HiPermission;
 import me.weyye.hipermission.PermissionCallback;
 import me.weyye.hipermission.PermissionItem;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class Utils {
     public static void setupShortcuts() {
@@ -61,10 +65,16 @@ public class Utils {
         List<PermissionItem> permissionItems = new ArrayList<>();
         permissionItems.add(new PermissionItem(Manifest.permission.WRITE_EXTERNAL_STORAGE, "外部存储", R.drawable.permission_ic_storage));
         permissionItems.add(new PermissionItem(Manifest.permission.ACCESS_FINE_LOCATION, "定位", R.drawable.permission_ic_location));
+        permissionItems.add(new PermissionItem(Manifest.permission.READ_PHONE_STATE, "手机IMEI", R.drawable.permission_ic_phone));
         hiPermission.permissions(permissionItems).msg("为了APP能提供更好的服务，需要以下权限").title("枫林提示")
                 .style(R.style.PermissionDefaultNormalStyle).checkMutiPermission(callback);
     }
 
+    public static boolean isWifiConnect() {
+        ConnectivityManager connManager = (ConnectivityManager) BaseApp.app.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return mWifi.isConnected();
+    }
 
     public static boolean hasNotificationPermission(Context context) {
         NotificationManagerCompat manager = NotificationManagerCompat.from(context);
