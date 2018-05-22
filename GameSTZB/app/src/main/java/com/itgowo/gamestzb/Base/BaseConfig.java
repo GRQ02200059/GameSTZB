@@ -7,7 +7,8 @@ import com.itgowo.gamestzb.Entity.UserInfo;
 
 public class BaseConfig {
     public static final String TENCENTQQ_APP_ID = "1106861720";
-    public static final String WEIXIN_APP_ID = "1106861720";
+    public static final String WEIXIN_APP_ID = "wxdbc93bf3e636758c";
+    public static final String WEIXIN_APP_SECRET = "f8720aa2f1c9adb3ecae053aebea1e9f";
     public static final String UMENG_APPKEY = "5af037c4f43e4819780001f4";
     public static final String UMENG_MESSAGE_SECRET = "174c980990d7e8bb5b8a517b60ea99f7";
     public static String UMENG_DEVICE_TOKEN = "";

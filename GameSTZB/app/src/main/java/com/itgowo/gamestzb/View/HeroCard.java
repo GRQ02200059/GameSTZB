@@ -1,6 +1,7 @@
 package com.itgowo.gamestzb.View;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -41,32 +42,21 @@ public class HeroCard extends RelativeLayout {
     }
 
     public void setLargerMode() {
-        setSizeMode(13, 10, 105, 144, 0.85f, 2, 2, 6, 2, 3);
+        setSizeMode(8, 105, 144, 0.8f, 2, 2, 7);
     }
 
     public void setMiniMode() {
-        setSizeMode(8, 6, 35, 48, 0.8f, 1, 1, 4, 1, 1);
+        setSizeMode(6, 35, 48, 0.8f, 1, 1, 5);
     }
 
-    public void setMiddleMode() {
-        setSizeMode(12, 11, 70, 96, 2, 2, 2, 5, 2, 2);
-    }
 
-    public void setSizeMode(int countryTextSize, int nameTextSize, int headWidth, int headHeight, float zoomStar, int paddingLeft, int paddingTop, int otherTextSize, int typePaddingRight, int typePaddingBottom) {
+    public void setSizeMode(int nameTextSize, int headWidth, int headHeight, float zoomStar, int paddingLeft, int paddingTop, int otherTextSize) {
         this.zoomStar = zoomStar;
-//        country.setTextSize(countryTextSize);
         name.setTextSize(nameTextSize);
-        headimg.getLayoutParams().width = DensityUtil.dip2px(headWidth);
-        headimg.getLayoutParams().height = DensityUtil.dip2px(headHeight);
-        RelativeLayout.LayoutParams mLayoutParams = (LayoutParams) type.getLayoutParams();
-        mLayoutParams.setMargins(0, 0, DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop));
-        type.setLayoutParams(mLayoutParams);
-        RelativeLayout.LayoutParams mLayoutParams1 = (LayoutParams) cost.getLayoutParams();
-        mLayoutParams1.setMargins(0, 0, DensityUtil.dip2px(typePaddingRight), DensityUtil.dip2px(typePaddingBottom));
-        cost.setLayoutParams(mLayoutParams1);
+//        headimg.getLayoutParams().width = DensityUtil.dip2px(headWidth);
+//        headimg.getLayoutParams().height = DensityUtil.dip2px(headHeight);
         type.setTextSize(otherTextSize);
         cost.setTextSize(otherTextSize);
-//        country.setPadding(DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop), 0, 0);
         name.setPadding(DensityUtil.dip2px(paddingLeft), DensityUtil.dip2px(paddingTop), 0, 0);
     }
 
@@ -76,9 +66,21 @@ public class HeroCard extends RelativeLayout {
         entity.setIcon("hero_" + entity.getId());
         entity.setName(getResources().getString(R.string.pleaseLogin));
         entity.setQuality(6);
-        entity.setContory("神");
-        entity.setCost(5.5);
-        entity.setType("骑");
+//        entity.setContory("神");
+//        entity.setCost(5.5);
+//        entity.setType("骑");
+        setData(entity);
+    }
+
+    public void setDefaultHead() {
+        HeroEntity entity = new HeroEntity();
+        entity.setId(1000);
+        entity.setIcon("hero_" + entity.getId());
+//        entity.setName(getResources().getString(R.string.pleaseLogin));
+        entity.setQuality(6);
+//        entity.setContory("神");
+//        entity.setCost(5.5);
+//        entity.setType("骑");
         setData(entity);
     }
 
@@ -161,49 +163,52 @@ public class HeroCard extends RelativeLayout {
                 headForeground.setImageResource(R.drawable.hero_mask_1);
         }
         heroStar.setRepeatCount(entity.getQuality());
-
-        heroStar.setImage(getResources().getDrawable(R.drawable.star2), zoomStar);
-//        country.setText(entity.getContory());
-        switch (entity.getContory()) {
-            case "蜀":
-//                country.setTextColor(getResources().getColor(R.color.country_shu));
-                country.setImageResource(R.drawable.icon_country_shu);
-                break;
-            case "汉":
-//                country.setTextColor(getResources().getColor(R.color.country_han));
-                country.setImageResource(R.drawable.icon_country_han);
-                break;
-            case "群":
-//                country.setTextColor(getResources().getColor(R.color.country_qun));
-                country.setImageResource(R.drawable.icon_country_qun);
-                break;
-            case "魏":
-//                country.setTextColor(getResources().getColor(R.color.country_wei));
-                country.setImageResource(R.drawable.icon_country_wei);
-                break;
-            case "吴":
-//                country.setTextColor(getResources().getColor(R.color.country_wu));
-                country.setImageResource(R.drawable.icon_country_wu);
-                break;
-            case "神":
-//                country.setTextColor(getResources().getColor(R.color.country_shen));
-                country.setImageResource(R.drawable.icon_country_shen);
-                break;
+        heroStar.setImage(getResources().getDrawable(R.drawable.star1), zoomStar);
+        if (!TextUtils.isEmpty(entity.getContory())) {
+            country.setVisibility(VISIBLE);
+            switch (entity.getContory()) {
+                case "蜀":
+                    country.setImageResource(R.drawable.icon_country_shu);
+                    break;
+                case "汉":
+                    country.setImageResource(R.drawable.icon_country_han);
+                    break;
+                case "群":
+                    country.setImageResource(R.drawable.icon_country_qun);
+                    break;
+                case "魏":
+                    country.setImageResource(R.drawable.icon_country_wei);
+                    break;
+                case "吴":
+                    country.setImageResource(R.drawable.icon_country_wu);
+                    break;
+                case "神":
+                    country.setImageResource(R.drawable.icon_country_shen);
+                    break;
+                default:
+                    country.setVisibility(INVISIBLE);
+            }
         }
-        switch (entity.getType()) {
-            case "弓":
-                type.setBackgroundResource(R.drawable.type_gong);
-                break;
-            case "骑":
-                type.setBackgroundResource(R.drawable.type_qi);
-                break;
-            case "步":
-                type.setBackgroundResource(R.drawable.type_bu);
-                break;
+        if (!TextUtils.isEmpty(entity.getType())) {
+            switch (entity.getType()) {
+                case "弓":
+                    type.setBackgroundResource(R.drawable.type_gong);
+                    break;
+                case "骑":
+                    type.setBackgroundResource(R.drawable.type_qi);
+                    break;
+                case "步":
+                    type.setBackgroundResource(R.drawable.type_bu);
+                    break;
+            }
         }
         type.setText(entity.getLength() == 0 ? "" : String.valueOf(entity.getLength()));
-        String costStr = String.valueOf(entity.getCost()).replace(".0", "");
-        cost.setText(costStr);
+        if (entity.getCost() > 0) {
+            String costStr = String.valueOf(entity.getCost()).replace(".0", "");
+            cost.setText(costStr);
+        } else {
+            cost.setText(null);
+        }
 
     }
 

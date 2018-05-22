@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-    //        public static final String ROOTURL = "http://192.168.1.119:1666/GameSTZB";
+//            public static final String ROOTURL = "http://10.0.4.40:1666/GameSTZB";
     public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
     public static final String ROOTURL_UPDATEVERSION = "http://itgowo.com:1888/Version";
     public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://itgowo.oss-cn-qingdao.aliyuncs.com/game/app/hero/";

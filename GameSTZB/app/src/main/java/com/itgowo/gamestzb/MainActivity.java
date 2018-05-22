@@ -15,7 +15,8 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -24,9 +25,11 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +37,7 @@ import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -45,11 +49,14 @@ import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.UserManager;
+import com.itgowo.gamestzb.Manager.ViewCacheManager;
 import com.itgowo.gamestzb.View.FillVideoView;
 import com.itgowo.gamestzb.View.HeroCard;
 import com.itgowo.gamestzb.View.RecyclerViewItemDecoration;
 import com.itgowo.itgowolib.itgowoNetTool;
 import com.itgowo.views.SuperDialog;
+
+import org.xutils.common.util.DensityUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -59,27 +66,31 @@ import library.Info;
 import library.PhotoView;
 import me.weyye.hipermission.PermissionCallback;
 
+import static com.umeng.analytics.pro.i.a.i;
+
 public class MainActivity extends BaseActivity implements UserManager.onUserStatusListener {
-    private View rootLayout;
-    private RecyclerView recyclerView;
+    private View layoutRootLayout;
     private ImageButton fab;
+    private LinearLayout countLayout, cardLayout;
     private FloatingActionButton fabNotice;
     private List<HeroEntity> randomHeroEntities = new ArrayList<>();
+    private TextView msg6;
     private TextView msg5;
     private TextView msg4;
     private TextView msg3;
     private TextView msg2;
     private TextView msg1;
     private FrameLayout videoRoot;
-    private int count5, count4, count3, count2, count1;
+    private Button goodLuckBtn1, goodLuckBtn3, goodLuckBtn5;
+    private int count5, count4, count3, count2, count1, countCost;
     private View parentLayout, imageShow;
     private PhotoView photoView;
     private Info photoViewInfo;
     private int spanCount = 5;
     private AlphaAnimation in = new AlphaAnimation(0, 1);
     private AlphaAnimation out = new AlphaAnimation(1, 0);
-    private VideoView videoView1;
-    private HeroCard view_UserInfo;
+    private VideoView viewVideoPlayView;
+    private ImageView viewUserHeadImg;
     private Handler handler = new Handler() {
         @SuppressLint("NewApi")
         @Override
@@ -110,7 +121,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             public void onFinish() {
                 initView();
                 initLstener();
-                initRecyclerView();
                 start();
                 checkVersion();
                 initData();
@@ -164,6 +174,13 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         });
     }
 
+    private void refreshUserInfo() {
+        if (viewUserHeadImg != null && BaseConfig.userInfo != null) {
+            RequestOptions options = new RequestOptions().transform(new RoundedCorners(DensityUtil.dip2px(40)));
+            Glide.with(viewUserHeadImg).load(BaseConfig.userInfo.getHead()).apply(options).into(viewUserHeadImg);
+        }
+    }
+
     private void downData(List<HeroEntity> heroEntities) {
         File rootFile = BaseApp.app.getDir("hero", Context.MODE_PRIVATE);
         rootFile.mkdirs();
@@ -195,7 +212,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
             }
         });
-        view_UserInfo.setOnClickListener(new View.OnClickListener() {
+        viewUserHeadImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View mView) {
                 Intent intent = new Intent(MainActivity.this, UserActivity.class);
@@ -222,27 +239,29 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                         }
                     });
                 }
-                SuperDialog dialog = new SuperDialog(MainActivity.this);
-                List<SuperDialog.DialogMenuItem> menuItems = new ArrayList<>();
-                menuItems.add(new SuperDialog.DialogMenuItem("小试牛刀(1)", R.mipmap.caocao));
-                menuItems.add(new SuperDialog.DialogMenuItem("大胆尝试(5)", R.mipmap.liubei));
-//                menuItems.add(new SuperDialog.DialogMenuItem("疯狂剁手(15)", R.mipmap.sunquan));
-                dialog.setTitle("选择抽取次数").setDialogMenuItemList(menuItems).setListener(new SuperDialog.onDialogClickListener() {
-                    @Override
-                    public void click(boolean isButtonClick, int position) {
-                        if (position == 0) {
-                            goodluck(1);
-                        } else if (position == 1) {
-                            goodluck(5);
-                        } else {
-                            goodluck(15);
-                        }
-                    }
-                }).setAspectRatio(0.3f).show();
+//                SuperDialog dialog = new SuperDialog(MainActivity.this);
+//                List<SuperDialog.DialogMenuItem> menuItems = new ArrayList<>();
+//                menuItems.add(new SuperDialog.DialogMenuItem("小试牛刀(1)", R.mipmap.caocao));
+//                menuItems.add(new SuperDialog.DialogMenuItem("大胆尝试(5)", R.mipmap.liubei));
+////                menuItems.add(new SuperDialog.DialogMenuItem("疯狂剁手(15)", R.mipmap.sunquan));
+//                dialog.setTitle("选择抽取次数").setDialogMenuItemList(menuItems).setListener(new SuperDialog.onDialogClickListener() {
+//                    @Override
+//                    public void click(boolean isButtonClick, int position) {
+//                        if (position == 0) {
+//                            goodluck(1);
+//                        } else if (position == 1) {
+//                            goodluck(5);
+//                        } else {
+//                            goodluck(15);
+//                        }
+//                    }
+//                }).setAspectRatio(0.3f).show();
 
             }
         });
-
+        goodLuckBtn1.setOnClickListener(v -> goodluck(1));
+        goodLuckBtn3.setOnClickListener(v -> goodluck(3));
+        goodLuckBtn5.setOnClickListener(v -> goodluck(5));
     }
 
     private void checkVersion() {
@@ -267,8 +286,8 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
     @Override
     protected void onPause() {
-        if (videoView1 != null) {
-            videoView1.pause();
+        if (viewVideoPlayView != null) {
+            viewVideoPlayView.pause();
         }
         super.onPause();
         UserManager.removeUserStatusListener(this);
@@ -277,34 +296,32 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     @Override
     protected void onResume() {
         super.onResume();
-        if (videoView1 != null) {
-            videoView1.start();
-        }
-        if (view_UserInfo != null) {
-            view_UserInfo.refreshInfo();
+        if (viewVideoPlayView != null) {
+            viewVideoPlayView.start();
         }
         UserManager.addUserStatusListener(this);
+        refreshUserInfo();
     }
 
     private void reSetStyle() {
         if (!BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true)) {
-            rootLayout.setBackgroundResource(R.drawable.background2);
-            if (videoView1 != null) {
-                if (videoView1.isPlaying()) {
-                    videoView1.stopPlayback();
+            layoutRootLayout.setBackgroundResource(R.drawable.background2);
+            if (viewVideoPlayView != null) {
+                if (viewVideoPlayView.isPlaying()) {
+                    viewVideoPlayView.stopPlayback();
                 }
-                videoView1.setVisibility(View.GONE);
+                viewVideoPlayView.setVisibility(View.GONE);
                 videoRoot.removeAllViews();
-                videoView1 = null;
+                viewVideoPlayView = null;
             }
         } else {
-            rootLayout.setBackground(null);
-            videoView1 = new FillVideoView(this);
-            videoRoot.addView(videoView1);
+            layoutRootLayout.setBackground(null);
+            viewVideoPlayView = new FillVideoView(this);
+            videoRoot.addView(viewVideoPlayView);
             Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.cg_1);
-            videoView1.setVideoURI(uri);
-            videoView1.setClickable(false);
-            videoView1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            viewVideoPlayView.setVideoURI(uri);
+            viewVideoPlayView.setClickable(false);
+            viewVideoPlayView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
                 @Override
                 public void onCompletion(MediaPlayer mPlayer) {
@@ -322,31 +339,31 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
     private void start() {
         if (!BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true)) {
-            rootLayout.setVisibility(View.VISIBLE);
-            rootLayout.setBackgroundResource(R.drawable.background2);
-            ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
+            layoutRootLayout.setVisibility(View.VISIBLE);
+            layoutRootLayout.setBackgroundResource(R.drawable.background2);
+            ObjectAnimator anim = ObjectAnimator.ofFloat(layoutRootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
             anim.setDuration(1200);// 动画持续时间
             anim.start();
         } else {
-            videoView1 = new FillVideoView(this);
-            videoRoot.addView(videoView1);
+            viewVideoPlayView = new FillVideoView(this);
+            videoRoot.addView(viewVideoPlayView);
             Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.cg_1);
-            videoView1.setVideoURI(uri);
-            videoView1.setClickable(false);
-            videoView1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            viewVideoPlayView.setVideoURI(uri);
+            viewVideoPlayView.setClickable(false);
+            viewVideoPlayView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
                 @Override
                 public void onCompletion(MediaPlayer mPlayer) {
                     mPlayer.start();
                     mPlayer.setLooping(true);
-                    videoView1.setClickable(false);
-                    rootLayout.setVisibility(View.VISIBLE);
-                    ObjectAnimator anim = ObjectAnimator.ofFloat(rootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
+                    viewVideoPlayView.setClickable(false);
+                    layoutRootLayout.setVisibility(View.VISIBLE);
+                    ObjectAnimator anim = ObjectAnimator.ofFloat(layoutRootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
                     anim.setDuration(1200);// 动画持续时间
                     anim.start();
                 }
             });
-            videoView1.start();
+            viewVideoPlayView.start();
         }
         if (BaseConfig.getData(BaseConfig.USER_ISPLAYMUSIC, true)) {
             MusicService.playMusic(this, null);
@@ -356,49 +373,35 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     }
 
     private void initView() {
-        view_UserInfo = findViewById(R.id.userInfo);
-        view_UserInfo.setLargerMode();
-        recyclerView = findViewById(R.id.recyclerview);
+        viewUserHeadImg = findViewById(R.id.User_Head_Img);
+        msg6 = (TextView) findViewById(R.id.msg6);
         msg5 = (TextView) findViewById(R.id.msg5);
         msg4 = (TextView) findViewById(R.id.msg4);
         msg3 = (TextView) findViewById(R.id.msg3);
         msg2 = (TextView) findViewById(R.id.msg2);
         msg1 = (TextView) findViewById(R.id.msg1);
         parentLayout = findViewById(R.id.parent);
-        videoView1 = findViewById(R.id.videoview);
-        rootLayout = findViewById(R.id.rootlayout);
+        viewVideoPlayView = findViewById(R.id.videoview);
+        layoutRootLayout = findViewById(R.id.rootlayout);
         imageShow = findViewById(R.id.bg);
         photoView = (PhotoView) findViewById(R.id.img);
         photoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         videoRoot = findViewById(R.id.videoRoot);
         fab = findViewById(R.id.fab);
         fabNotice = findViewById(R.id.fabNotice);
+        goodLuckBtn1 = findViewById(R.id.goodBt1);
+        goodLuckBtn3 = findViewById(R.id.goodBt3);
+        goodLuckBtn5 = findViewById(R.id.goodBt5);
+        countLayout = findViewById(R.id.countLayout);
+        cardLayout = findViewById(R.id.cardLayout);
     }
 
-    private void initRecyclerView() {
-        final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(this, R.anim.anim_layout_animation_fall_down);
-        recyclerView.setLayoutAnimation(controller);
-        recyclerView.scheduleLayoutAnimation();
-        recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
-        recyclerView.addItemDecoration(new RecyclerViewItemDecoration(10, 50));
-        recyclerView.setAdapter(new Myadapter());
-        photoView.enable();
-        photoView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageShow.startAnimation(out);
-                photoView.animaTo(photoViewInfo, new Runnable() {
-                    @Override
-                    public void run() {
-                        parentLayout.setVisibility(View.GONE);
-                    }
-                });
-            }
-        });
-    }
+
 
 
     private void onRandomResult() {
+        countLayout.setVisibility(View.VISIBLE);
+        msg6.setText(String.valueOf(countCost));
         msg5.setText("5 星：" + count5);
         msg4.setText("4 星：" + count4);
         msg3.setText("3 星：" + count3);
@@ -421,28 +424,15 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                     if (result.getData() == null) {
                         return;
                     }
-                    randomHeroEntities = result.getData();
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                    for (int i = 0; i < randomHeroEntities.size(); i++) {
-                        switch (randomHeroEntities.get(i).getQuality()) {
-                            case 1:
-                                count1++;
-                                break;
-                            case 2:
-                                count2++;
-                                break;
-                            case 3:
-                                count3++;
-                                break;
-                            case 4:
-                                count4++;
-                                break;
-                            case 5:
-                                count5++;
-                                break;
-                        }
+                    if (num == 10) {
+                        countCost += 1800;
+                    } else if (num == 5) {
+                        countCost += 950;
+                    } else {
+                        countCost += 200 * num;
                     }
-                    onRandomResult();
+                    randomHeroEntities = result.getData();
+                    showHeros();
                 } else {
                     Toast.makeText(context, result.getMsg(), Toast.LENGTH_SHORT).show();
                 }
@@ -455,6 +445,63 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         });
 
 
+    }
+
+    private void showHeros() {
+        if (randomHeroEntities == null) {
+            return;
+        }
+        for (int i = 0; i < randomHeroEntities.size(); i++) {
+            switch (randomHeroEntities.get(i).getQuality()) {
+                case 1:
+                    count1++;
+                    break;
+                case 2:
+                    count2++;
+                    break;
+                case 3:
+                    count3++;
+                    break;
+                case 4:
+                    count4++;
+                    break;
+                case 5:
+                    count5++;
+                    break;
+            }
+        }
+        ViewCacheManager<LinearLayout> cacheManager=new ViewCacheManager<>();
+        cacheManager.setOnCacheListener(new ViewCacheManager.onCacheListener<HeroCard>() {
+            @Override
+            public View onAddView(int position) {
+                HeroCard card = new HeroCard(context);
+                return card;
+            }
+
+            @Override
+            public void onRemoveView(int position) {
+
+            }
+
+            @Override
+            public void onBindView(int position, HeroCard mView) {
+                mView.setData(randomHeroEntities.get(position));
+                mView.clearAnimation();
+                mView.setAnimation(AnimationUtils.loadAnimation(context,R.anim.scale_in));
+                String uri;
+                if (new File(randomHeroEntities.get(position).getHeroFilePath()).exists()) {
+                    uri = randomHeroEntities.get(position).getHeroFilePath();
+                    mView.headimg.setImageURI(Uri.parse(uri));
+                } else {
+                    final RequestOptions options = new RequestOptions().dontTransform().dontAnimate();
+                    uri = NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE + randomHeroEntities.get(i).getIcon();
+                    Glide.with(mView.headimg).load(uri).apply(options).into(mView.headimg);
+                }
+            }
+        });
+        cacheManager.onRefresh(cardLayout,randomHeroEntities.size());
+        cardLayout.startLayoutAnimation();
+        onRandomResult();
     }
 
     public void showHeroDialog(Context context) {
@@ -488,75 +535,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
     @Override
     public void onChanged() {
-        if (view_UserInfo != null) {
-            view_UserInfo.refreshInfo();
-        }
-    }
-
-    class Myadapter extends RecyclerView.Adapter<viewHolder> {
-
-
-        @Override
-        public viewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            HeroCard heroCard = new HeroCard(parent.getContext());
-            heroCard.setMiniMode();
-            return new viewHolder(heroCard);
-        }
-
-        @SuppressLint("NewApi")
-        @Override
-        public void onBindViewHolder(final viewHolder holder, final int position) {
-            final HeroEntity entity = randomHeroEntities.get(position);
-            final HeroCard heroCard = (HeroCard) holder.itemView;
-            heroCard.setData(entity);
-            int width = recyclerView.getWidth() / spanCount;
-            int height = width * 410 / 300;
-            PhotoView p = (PhotoView) heroCard.headimg;
-            p.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
-            p.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            // 把PhotoView当普通的控件把触摸功能关掉
-            p.disenable();
-            final RequestOptions options = new RequestOptions().dontTransform().dontAnimate().format(DecodeFormat.PREFER_RGB_565);
-//            final int res = getResources().getIdentifier(entity.getIconName(), "drawable", getPackageName());
-            String uri;
-            if (new File(entity.getHeroFilePath()).exists()) {
-                uri = entity.getHeroFilePath();
-            } else {
-                uri = NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE + entity.getIcon();
-            }
-            Glide.with(heroCard.headimg).load(uri).apply(options).into(p);
-            heroCard.headimg.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    PhotoView p = (PhotoView) v;
-                    photoViewInfo = p.getInfo();
-                    Glide.with(heroCard.headimg).load(uri).apply(options).into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            photoView.setImageDrawable(resource);
-                            photoView.setScaleType(ImageView.ScaleType.CENTER);
-                            imageShow.startAnimation(in);
-                            imageShow.setVisibility(View.VISIBLE);
-                            parentLayout.setVisibility(View.VISIBLE);
-                            photoView.animaFrom(photoViewInfo);
-                        }
-                    });
-                }
-            });
-
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return randomHeroEntities == null ? 0 : randomHeroEntities.size();
-        }
-    }
-
-    class viewHolder extends RecyclerView.ViewHolder {
-        public viewHolder(View itemView) {
-            super(itemView);
-        }
+        refreshUserInfo();
     }
 
     @Override
@@ -580,7 +559,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         UserManager.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == INTENT_UserActivity) {
-                view_UserInfo.refreshInfo();
                 reSetStyle();
             }
         }

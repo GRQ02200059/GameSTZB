@@ -33,7 +33,7 @@
             android:value="5af037c4f43e4819780001f4" />
         <meta-data
             android:name="UMENG_CHANNEL"
-            android:value="10003" />
+            android:value="10001" />
 
         <activity
             android:name=".MainActivity"

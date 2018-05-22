@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.itgowo.gamestzb.Base.BaseActivity;
 import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.Entity.UserInfo;
-import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.UserManager;
 import com.itgowo.gamestzb.View.HeroCard;
 
@@ -90,7 +89,7 @@ public class UserActivity extends BaseActivity {
                         public void onError(Throwable e) {
                             e.printStackTrace();
                             v.setEnabled(true);
-                            Toast.makeText(context, "登录失败，请重试！", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "登录失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
                 }

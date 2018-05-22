@@ -89,10 +89,17 @@ public class UserManager {
 
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<UserInfo> result) {
-                refreshUserStatus(true, result.getData());
-                if (listener != null) {
-                    listener.onSuccess(result.getData());
+                if (result.isSuccess()) {
+                    refreshUserStatus(true, result.getData());
+                    if (listener != null) {
+                        listener.onSuccess(result.getData());
+                    }
+                } else {
+                    if (listener != null) {
+                        listener.onError(new Throwable(result.getCode() + ":" + result.getMsg()));
+                    }
                 }
+
             }
 
             @Override
