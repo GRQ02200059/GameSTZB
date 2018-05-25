@@ -11,7 +11,8 @@ public class HeroEntity {
      * contory : 群
      * name : 吕布
      * siege : 9
-     * speed : 77
+     * distance : 77
+     * methodDetail : {"id":200012,"name":"辕门射戟","icon":"http://res.stzb.netease.com/gw/15v1/data/jineng/tactics_02.png"}
      * cost : 3.5
      * type : 弓
      * quality : 5
@@ -23,57 +24,18 @@ public class HeroEntity {
 
     private String contory;
     private String name;
-    private int siege;
-    private int speed;
+    private int distance;
     private double cost;
     private String type;
     private int quality;
     private int id;
     private String icon;
-    private String src;
-    private String url;
-    private int skillId;
-    private int length;
-
     public String getHeroFilePath() {
-        return new File(BaseApp.app.getDir("hero", Context.MODE_PRIVATE), getIcon()).getAbsolutePath();
+        return new File(BaseApp.app.getDir("hero", Context.MODE_PRIVATE), getFileName()).getAbsolutePath();
     }
-
-    public int getLength() {
-        return length;
+    public String getFileName(){
+        return String.format("hero_%s.jpg",id);
     }
-
-    public void setLength(int mLength) {
-        length = mLength;
-    }
-
-    public int getSkillId() {
-        return skillId;
-    }
-
-    public HeroEntity setSkillId(int skillId) {
-        this.skillId = skillId;
-        return this;
-    }
-
-    public String getSrc() {
-        return src;
-    }
-
-    public HeroEntity setSrc(String src) {
-        this.src = src;
-        return this;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public HeroEntity setUrl(String url) {
-        this.url = url;
-        return this;
-    }
-
     public String getContory() {
         return contory;
     }
@@ -90,22 +52,13 @@ public class HeroEntity {
         this.name = name;
     }
 
-    public int getSiege() {
-        return siege;
+    public int getDistance() {
+        return distance;
     }
 
-    public void setSiege(int siege) {
-        this.siege = siege;
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
 
     public double getCost() {
         return cost;
@@ -143,12 +96,6 @@ public class HeroEntity {
         return icon;
     }
 
-    public String getIconName() {
-
-        int index = icon.lastIndexOf(".");
-        return icon.substring(0, index);
-    }
-
     public void setIcon(String icon) {
         this.icon = icon;
     }
@@ -158,16 +105,12 @@ public class HeroEntity {
         return "HeroEntity{" +
                 "contory='" + contory + '\'' +
                 ", name='" + name + '\'' +
-                ", siege=" + siege +
-                ", speed=" + speed +
+                ", distance=" + distance +
                 ", cost=" + cost +
                 ", type='" + type + '\'' +
                 ", quality=" + quality +
                 ", id=" + id +
                 ", icon='" + icon + '\'' +
-                ", src='" + src + '\'' +
-                ", url='" + url + '\'' +
                 '}';
     }
-
 }

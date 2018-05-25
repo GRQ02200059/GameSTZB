@@ -14,6 +14,7 @@ import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.itgowo.gamestzb.Base.BaseApp;
+import com.itgowo.gamestzb.Main.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;

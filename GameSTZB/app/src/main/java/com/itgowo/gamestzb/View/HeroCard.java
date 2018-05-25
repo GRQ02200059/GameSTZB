@@ -202,7 +202,7 @@ public class HeroCard extends RelativeLayout {
                     break;
             }
         }
-        type.setText(entity.getLength() == 0 ? "" : String.valueOf(entity.getLength()));
+        type.setText(entity.getDistance() == 0 ? "" : String.valueOf(entity.getDistance()));
         if (entity.getCost() > 0) {
             String costStr = String.valueOf(entity.getCost()).replace(".0", "");
             cost.setText(costStr);

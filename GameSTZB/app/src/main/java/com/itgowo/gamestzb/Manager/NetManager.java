@@ -1,12 +1,8 @@
 package com.itgowo.gamestzb.Manager;
 
-import android.content.Context;
 import android.util.Log;
 
-import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Entity.BaseRequest;
-import com.itgowo.gamestzb.Entity.BaseResponse;
-import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.itgowolib.itgowo;
 import com.itgowo.itgowolib.itgowoNetTool;
@@ -16,15 +12,16 @@ import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-//            public static final String ROOTURL = "http://10.0.4.40:1666/GameSTZB";
-    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
+    public static final String ROOTURL = "http://10.0.4.40:1666/GameSTZB";
+    //    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
     public static final String ROOTURL_UPDATEVERSION = "http://itgowo.com:1888/Version";
-    public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://itgowo.oss-cn-qingdao.aliyuncs.com/game/app/hero/";
+        public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://itgowo.oss-cn-qingdao.aliyuncs.com/game/app/hero/hero_%s.jpg";
+//    public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://stzb.res.netease.com/pc/qt/20170323200251/data/role/card_%s.jpg";
+    public static final String ROOTURL_HERO_INFO = "https://app.gamer.163.com//game-db/g10/hero/";
 
     public static void getRandomHero(int num, itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();
@@ -48,28 +45,12 @@ public class NetManager {
         RequestParams requestParams = new RequestParams(url);
         requestParams.setSaveFilePath(file.getAbsolutePath());
         requestParams.setMultipart(true);
-        x.http().get(requestParams, new Callback.CommonCallback<File>() {
-            @Override
-            public void onSuccess(File result) {
-                System.out.println("download:" + file.getName() + "   " + url);
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                ex.printStackTrace();
-                System.out.println("downloaderror:" + file.getName() + "   " + url);
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
+        try {
+            x.http().getSync(requestParams, File.class);
+            System.out.println("download:" + file.getName() + "   " + url);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     public static void basePost(Object requestObject, final itgowoNetTool.onReceviceDataListener listener) {

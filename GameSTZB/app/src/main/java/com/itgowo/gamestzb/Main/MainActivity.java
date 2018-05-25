@@ -1,58 +1,48 @@
-package com.itgowo.gamestzb;
+package com.itgowo.gamestzb.Main;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Base.BaseActivity;
 import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Base.BaseConfig;
+import com.itgowo.gamestzb.BuildConfig;
 import com.itgowo.gamestzb.Entity.BaseResponse;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.UserManager;
 import com.itgowo.gamestzb.Manager.ViewCacheManager;
+import com.itgowo.gamestzb.MusicService;
+import com.itgowo.gamestzb.R;
+import com.itgowo.gamestzb.UserActivity;
+import com.itgowo.gamestzb.Utils;
 import com.itgowo.gamestzb.View.FillVideoView;
 import com.itgowo.gamestzb.View.HeroCard;
-import com.itgowo.gamestzb.View.RecyclerViewItemDecoration;
 import com.itgowo.itgowolib.itgowoNetTool;
 import com.itgowo.views.SuperDialog;
 
@@ -66,9 +56,8 @@ import library.Info;
 import library.PhotoView;
 import me.weyye.hipermission.PermissionCallback;
 
-import static com.umeng.analytics.pro.i.a.i;
-
-public class MainActivity extends BaseActivity implements UserManager.onUserStatusListener {
+public class MainActivity extends BaseActivity implements UserManager.onUserStatusListener, MainPresenter.onMainActivityActionListener {
+    private MainPresenter presenter;
     private View layoutRootLayout;
     private ImageButton fab;
     private LinearLayout countLayout, cardLayout;
@@ -111,6 +100,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        presenter = new MainPresenter(this, this);
         Utils.checkPermission(this, new PermissionCallback() {
             @Override
             public void onClose() {
@@ -119,11 +109,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
             @Override
             public void onFinish() {
-                initView();
-                initLstener();
-                start();
-                checkVersion();
-                initData();
+                nextBoot();
             }
 
             @Override
@@ -141,38 +127,14 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
     }
 
-
-    private void initData() {
-
-        NetManager.getHeroListAndDown(new itgowoNetTool.onReceviceDataListener<BaseResponse<List<HeroEntity>>>() {
-            @Override
-            public void onResult(String requestStr, String responseStr, BaseResponse<List<HeroEntity>> result) {
-                if (result != null && result.isSuccess() && result.getData() != null) {
-                    File file = context.getDir("hero", Context.MODE_PRIVATE);
-                    int num = 0;
-                    if (!file.exists()) {
-                        num = result.getData().size();
-                    } else {
-                        num = result.getData().size() - file.listFiles().length;
-                    }
-                    if (num > 0) {
-                        SuperDialog dialog = new SuperDialog(context).setContent("共" + result.getData().size() + "名武将数据，有" + num + "名武将数据缺失，需要更新， 如果您不是使用wifi上网，下载可能消耗您的流量，请点击确定下载更新，点击其他区域或者返回键取消").setListener(new SuperDialog.onDialogClickListener() {
-                            @Override
-                            public void click(boolean isButtonClick, int position) {
-                                downData(result.getData());
-                            }
-                        });
-                        dialog.show();
-                    }
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-        });
+    private void nextBoot() {
+        initView();
+        initLstener();
+        startFirst();
+        checkVersion();
+        presenter.CheckAndInitHeroListData();
     }
+
 
     private void refreshUserInfo() {
         if (viewUserHeadImg != null && BaseConfig.userInfo != null) {
@@ -181,17 +143,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         }
     }
 
-    private void downData(List<HeroEntity> heroEntities) {
-        File rootFile = BaseApp.app.getDir("hero", Context.MODE_PRIVATE);
-        rootFile.mkdirs();
-        for (int i = 0; i < heroEntities.size(); i++) {
-            HeroEntity entity = heroEntities.get(i);
-            File file = new File(rootFile, entity.getIcon());
-            if (!file.exists()) {
-                NetManager.download(file, NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE + entity.getIcon());
-            }
-        }
-    }
 
     private void initLstener() {
         in.setDuration(200);
@@ -337,7 +288,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         }
     }
 
-    private void start() {
+    private void startFirst() {
         if (!BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true)) {
             layoutRootLayout.setVisibility(View.VISIBLE);
             layoutRootLayout.setBackgroundResource(R.drawable.background2);
@@ -395,8 +346,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         countLayout = findViewById(R.id.countLayout);
         cardLayout = findViewById(R.id.cardLayout);
     }
-
-
 
 
     private void onRandomResult() {
@@ -470,7 +419,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                     break;
             }
         }
-        ViewCacheManager<LinearLayout> cacheManager=new ViewCacheManager<>();
+        ViewCacheManager<LinearLayout> cacheManager = new ViewCacheManager<>();
         cacheManager.setOnCacheListener(new ViewCacheManager.onCacheListener<HeroCard>() {
             @Override
             public View onAddView(int position) {
@@ -487,50 +436,21 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             public void onBindView(int position, HeroCard mView) {
                 mView.setData(randomHeroEntities.get(position));
                 mView.clearAnimation();
-                mView.setAnimation(AnimationUtils.loadAnimation(context,R.anim.scale_in));
+                mView.setAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_in));
                 String uri;
                 if (new File(randomHeroEntities.get(position).getHeroFilePath()).exists()) {
                     uri = randomHeroEntities.get(position).getHeroFilePath();
                     mView.headimg.setImageURI(Uri.parse(uri));
                 } else {
                     final RequestOptions options = new RequestOptions().dontTransform().dontAnimate();
-                    uri = NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE + randomHeroEntities.get(i).getIcon();
+                    uri = String.format(NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE, randomHeroEntities.get(position).getId());
                     Glide.with(mView.headimg).load(uri).apply(options).into(mView.headimg);
                 }
             }
         });
-        cacheManager.onRefresh(cardLayout,randomHeroEntities.size());
+        cacheManager.onRefresh(cardLayout, randomHeroEntities.size());
         cardLayout.startLayoutAnimation();
         onRandomResult();
-    }
-
-    public void showHeroDialog(Context context) {
-        if (randomHeroEntities == null || randomHeroEntities.size() == 0) {
-            return;
-        }
-        final HeroEntity entity = randomHeroEntities.remove(0);
-        SuperDialog dialog = new SuperDialog(MainActivity.this).setShowButtonLayout(false);
-        dialog.setImageListener(new SuperDialog.onDialogImageListener() {
-            @Override
-            public void onInitImageView(ImageView imageView) {
-                RequestOptions options = new RequestOptions().dontAnimate().dontTransform();
-                if (entity.getId() < 600000) {
-                    final int res = getResources().getIdentifier("hero_" + entity.getId(), "drawable", getPackageName());
-                    Glide.with(imageView).load(res).apply(options).into(imageView);
-                } else {
-                    Glide.with(imageView).load(entity.getIcon()).apply(options).into(imageView);
-                }
-            }
-        }).setTitleTextSize(17)
-                .setContent("恭喜主公喜获 " + entity.getQuality() + "星 " + entity.getContory() + " " + entity.getType() + " " + entity.getName())
-                .setTitle("枫林制作，仅供娱乐");
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-
-            }
-        });
-        dialog.show();
     }
 
     @Override
@@ -565,4 +485,14 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         System.gc();
     }
 
+
+    @Override
+    public void showWaitDialog() {
+
+    }
+
+    @Override
+    public void hideWaitDialog() {
+
+    }
 }
