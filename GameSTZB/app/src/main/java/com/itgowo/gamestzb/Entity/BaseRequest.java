@@ -7,6 +7,11 @@ public class BaseRequest<PostData> {
     public static final String GET_RANDOM_HERO = "getRandomHero";
     public static final String GET_HERO_LIST = "getHeroList";
     public static final String REG_USER = "regUser";
+    public static final String GET_HERO_DETAIL_LIST = "getHeroDetailList";
+    public static final String GET_HERO_DETAIL = "getHeroDetail";
+    public static final String GET_USER_GAME_MONEY = "getUserGameMoney";
+    public static final String GET_HERO_GUESS = "getHeroGuess";//猜图得奖励
+    public static final String POST_HERO_GUESS = "postHeroGuess";//提交猜图得奖励
     private String flag = "GameSTZB";
     private String action;
     private String token;
@@ -83,15 +88,24 @@ public class BaseRequest<PostData> {
         }
     }
 
-    public static class getRandomHeroEntity {
+    public static class DataEntity {
         private int randomNum;
-
+        private int id;
         public int getRandomNum() {
             return randomNum;
         }
 
-        public getRandomHeroEntity setRandomNum(int mRandomNum) {
+        public DataEntity setRandomNum(int mRandomNum) {
             randomNum = mRandomNum;
+            return this;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public DataEntity setId(int id) {
+            this.id = id;
             return this;
         }
     }

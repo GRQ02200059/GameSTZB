@@ -24,24 +24,28 @@ public class HeroEntity {
 
     private String contory;
     private String name;
-    private int distance;
-    private double cost;
+    private Integer distance;
+    private Double cost;
     private String type;
-    private int quality;
-    private int id;
+    private Integer quality;
+    private Integer id;
     private String icon;
+
     public String getHeroFilePath() {
         return new File(BaseApp.app.getDir("hero", Context.MODE_PRIVATE), getFileName()).getAbsolutePath();
     }
-    public String getFileName(){
-        return String.format("hero_%s.jpg",id);
+
+    public String getFileName() {
+        return String.format("hero_%s.jpg", id);
     }
+
     public String getContory() {
         return contory;
     }
 
-    public void setContory(String contory) {
+    public HeroEntity setContory(String contory) {
         this.contory = contory;
+        return this;
     }
 
     public String getName() {
@@ -52,19 +56,19 @@ public class HeroEntity {
         this.name = name;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(Integer distance) {
         this.distance = distance;
     }
 
-    public double getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(double cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 
@@ -76,20 +80,21 @@ public class HeroEntity {
         this.type = type;
     }
 
-    public int getQuality() {
+    public Integer getQuality() {
         return quality;
     }
 
-    public void setQuality(int quality) {
+    public void setQuality(Integer quality) {
         this.quality = quality;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public HeroEntity setId(Integer id) {
         this.id = id;
+        return this;
     }
 
     public String getIcon() {

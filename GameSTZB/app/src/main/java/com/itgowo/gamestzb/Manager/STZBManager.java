@@ -7,7 +7,10 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.BuildConfig;
@@ -36,7 +39,17 @@ public class STZBManager {
         initData();
         return this;
     }
-
+public static void bindView(HeroEntity entity, ImageView imageView){
+    String uri;
+    if (new File(entity.getHeroFilePath()).exists()) {
+        uri = entity.getHeroFilePath();
+        imageView.setImageURI(Uri.parse(uri));
+    } else {
+        final RequestOptions options = new RequestOptions().dontTransform().dontAnimate();
+        uri = String.format(NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE, entity.getId());
+        Glide.with(imageView).load(uri).apply(options).into(imageView);
+    }
+}
     public List<HeroEntity> getTotalHeroList() {
         return totalHeroList;
     }

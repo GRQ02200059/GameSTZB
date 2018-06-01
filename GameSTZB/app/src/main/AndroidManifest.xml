@@ -71,6 +71,11 @@
             android:configChanges="orientation|screenSize"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Guess.GameGuessActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name="com.taobao.accs.ChannelService"
@@ -213,7 +218,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".HeroEditActivity"></activity>
+        <activity android:name=".HeroEditActivity" />
+
     </application>
 
 </manifest>

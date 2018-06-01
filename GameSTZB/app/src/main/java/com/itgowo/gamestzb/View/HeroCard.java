@@ -162,7 +162,7 @@ public class HeroCard extends RelativeLayout {
             case 1:
                 headForeground.setImageResource(R.drawable.hero_mask_1);
         }
-        heroStar.setRepeatCount(entity.getQuality());
+        heroStar.setRepeatCount(entity.getQuality()==null?0:entity.getQuality());
         heroStar.setImage(getResources().getDrawable(R.drawable.star1), zoomStar);
         if (!TextUtils.isEmpty(entity.getContory())) {
             country.setVisibility(VISIBLE);
@@ -202,8 +202,8 @@ public class HeroCard extends RelativeLayout {
                     break;
             }
         }
-        type.setText(entity.getDistance() == 0 ? "" : String.valueOf(entity.getDistance()));
-        if (entity.getCost() > 0) {
+        type.setText(entity.getDistance() == null||entity.getDistance()==0 ? "" : String.valueOf(entity.getDistance()));
+        if (entity.getCost()!=null&&entity.getCost() > 0) {
             String costStr = String.valueOf(entity.getCost()).replace(".0", "");
             cost.setText(costStr);
         } else {

@@ -3,11 +3,13 @@ package com.itgowo.gamestzb.Manager;
 import android.util.Log;
 
 import com.itgowo.gamestzb.Entity.BaseRequest;
+import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.itgowolib.itgowo;
 import com.itgowo.itgowolib.itgowoNetTool;
 
 import org.xutils.common.Callback;
+import org.xutils.common.util.LogUtil;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
@@ -16,8 +18,8 @@ import java.util.Map;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-    public static final String ROOTURL = "http://10.0.4.40:1666/GameSTZB";
-    //    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
+//    public static final String ROOTURL = "http://10.0.4.42:1666/GameSTZB";
+        public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
     public static final String ROOTURL_UPDATEVERSION = "http://itgowo.com:1888/Version";
         public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://itgowo.oss-cn-qingdao.aliyuncs.com/game/app/hero/hero_%s.jpg";
 //    public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://stzb.res.netease.com/pc/qt/20170323200251/data/role/card_%s.jpg";
@@ -25,10 +27,19 @@ public class NetManager {
 
     public static void getRandomHero(int num, itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();
-        request.setAction(BaseRequest.GET_RANDOM_HERO).setData(new BaseRequest.getRandomHeroEntity().setRandomNum(num)).initToken();
+        request.setAction(BaseRequest.GET_RANDOM_HERO).setData(new BaseRequest.DataEntity().setRandomNum(num)).initToken();
+        basePost(request, listener);
+    } public static void getHeroGuess( itgowoNetTool.onReceviceDataListener listener) {
+        basePost(new BaseRequest().setAction(BaseRequest.GET_HERO_GUESS), listener);
+    }
+    public static void postHeroGuess(HeroEntity heroEntity,itgowoNetTool.onReceviceDataListener listener) {
+        basePost(new BaseRequest().setAction(BaseRequest.POST_HERO_GUESS).setData(heroEntity), listener);
+    }
+    public static void getHeroDetail(int id, itgowoNetTool.onReceviceDataListener listener) {
+        BaseRequest request = new BaseRequest();
+        request.setAction(BaseRequest.GET_HERO_DETAIL).setData(new BaseRequest.DataEntity().setId(id)).initToken();
         basePost(request, listener);
     }
-
     public static void getUpdateInfo(itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();
         request.setAction(UpdateVersion.GET_UPDATE_VERSION).setFlag(UpdateVersion.GET_UPDATE_VERSION_FLAG).initToken();
@@ -47,7 +58,7 @@ public class NetManager {
         requestParams.setMultipart(true);
         try {
             x.http().getSync(requestParams, File.class);
-            System.out.println("download:" + file.getName() + "   " + url);
+            LogUtil.d("download:" + file.getName() + "   " + url);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

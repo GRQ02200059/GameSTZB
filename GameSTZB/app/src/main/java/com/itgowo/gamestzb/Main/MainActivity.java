@@ -9,15 +9,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,6 +30,7 @@ import com.itgowo.gamestzb.BuildConfig;
 import com.itgowo.gamestzb.Entity.BaseResponse;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
+import com.itgowo.gamestzb.Guess.GameGuessActivity;
 import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.UserManager;
 import com.itgowo.gamestzb.Manager.ViewCacheManager;
@@ -45,6 +42,9 @@ import com.itgowo.gamestzb.View.FillVideoView;
 import com.itgowo.gamestzb.View.HeroCard;
 import com.itgowo.itgowolib.itgowoNetTool;
 import com.itgowo.views.SuperDialog;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
+import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import org.xutils.common.util.DensityUtil;
 
@@ -52,16 +52,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import library.Info;
-import library.PhotoView;
 import me.weyye.hipermission.PermissionCallback;
 
 public class MainActivity extends BaseActivity implements UserManager.onUserStatusListener, MainPresenter.onMainActivityActionListener {
     private MainPresenter presenter;
     private View layoutRootLayout;
-    private ImageButton fab;
     private LinearLayout countLayout, cardLayout;
-    private FloatingActionButton fabNotice;
+    private TextView fabNotice;
     private List<HeroEntity> randomHeroEntities = new ArrayList<>();
     private TextView msg6;
     private TextView msg5;
@@ -71,13 +68,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     private TextView msg1;
     private FrameLayout videoRoot;
     private Button goodLuckBtn1, goodLuckBtn3, goodLuckBtn5;
-    private int count5, count4, count3, count2, count1, countCost;
-    private View parentLayout, imageShow;
-    private PhotoView photoView;
-    private Info photoViewInfo;
-    private int spanCount = 5;
-    private AlphaAnimation in = new AlphaAnimation(0, 1);
-    private AlphaAnimation out = new AlphaAnimation(1, 0);
+    private int count5, count4, count3, count2, count1;
+    private long countCost;
+    private FloatingActionButton rightLowerButton;
     private VideoView viewVideoPlayView;
     private ImageView viewUserHeadImg;
     private Handler handler = new Handler() {
@@ -140,29 +133,13 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         if (viewUserHeadImg != null && BaseConfig.userInfo != null) {
             RequestOptions options = new RequestOptions().transform(new RoundedCorners(DensityUtil.dip2px(40)));
             Glide.with(viewUserHeadImg).load(BaseConfig.userInfo.getHead()).apply(options).into(viewUserHeadImg);
+            countCost = UserManager.getMoney();
+            msg6.setText(String.valueOf(countCost));
         }
     }
 
 
     private void initLstener() {
-        in.setDuration(200);
-        out.setDuration(200);
-        out.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                imageShow.setVisibility(View.INVISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
         viewUserHeadImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View mView) {
@@ -178,38 +155,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             }
         });
         fabNotice.setOnClickListener(v -> BaseApp.getStzbManager().goUpdateVersion(context));
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (parentLayout.getVisibility() == View.VISIBLE) {
-                    imageShow.startAnimation(out);
-                    photoView.animaTo(photoViewInfo, new Runnable() {
-                        @Override
-                        public void run() {
-                            parentLayout.setVisibility(View.GONE);
-                        }
-                    });
-                }
-//                SuperDialog dialog = new SuperDialog(MainActivity.this);
-//                List<SuperDialog.DialogMenuItem> menuItems = new ArrayList<>();
-//                menuItems.add(new SuperDialog.DialogMenuItem("小试牛刀(1)", R.mipmap.caocao));
-//                menuItems.add(new SuperDialog.DialogMenuItem("大胆尝试(5)", R.mipmap.liubei));
-////                menuItems.add(new SuperDialog.DialogMenuItem("疯狂剁手(15)", R.mipmap.sunquan));
-//                dialog.setTitle("选择抽取次数").setDialogMenuItemList(menuItems).setListener(new SuperDialog.onDialogClickListener() {
-//                    @Override
-//                    public void click(boolean isButtonClick, int position) {
-//                        if (position == 0) {
-//                            goodluck(1);
-//                        } else if (position == 1) {
-//                            goodluck(5);
-//                        } else {
-//                            goodluck(15);
-//                        }
-//                    }
-//                }).setAspectRatio(0.3f).show();
-
-            }
-        });
         goodLuckBtn1.setOnClickListener(v -> goodluck(1));
         goodLuckBtn3.setOnClickListener(v -> goodluck(3));
         goodLuckBtn5.setOnClickListener(v -> goodluck(5));
@@ -222,8 +167,10 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             public void onResult(String requestStr, String responseStr, BaseResponse<UpdateVersion> result) {
                 if (result.isSuccess()) {
                     if (result.getData().getVersioncode() > BuildConfig.VERSION_CODE) {
-                        fabNotice.show();
+                        fabNotice.setVisibility(View.VISIBLE);
                         BaseConfig.updateInfo = result.getData();
+                    } else {
+                        fabNotice.setVisibility(View.GONE);
                     }
                 }
             }
@@ -295,6 +242,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             ObjectAnimator anim = ObjectAnimator.ofFloat(layoutRootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
             anim.setDuration(1200);// 动画持续时间
             anim.start();
+            ObjectAnimator anim1 = ObjectAnimator.ofFloat(rightLowerButton, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
+            anim1.setDuration(1200);// 动画持续时间
+            anim1.start();
         } else {
             viewVideoPlayView = new FillVideoView(this);
             videoRoot.addView(viewVideoPlayView);
@@ -312,6 +262,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                     ObjectAnimator anim = ObjectAnimator.ofFloat(layoutRootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
                     anim.setDuration(1200);// 动画持续时间
                     anim.start();
+                    ObjectAnimator anim1 = ObjectAnimator.ofFloat(rightLowerButton, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
+                    anim1.setDuration(1200);// 动画持续时间
+                    anim1.start();
                 }
             });
             viewVideoPlayView.start();
@@ -331,22 +284,70 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         msg3 = (TextView) findViewById(R.id.msg3);
         msg2 = (TextView) findViewById(R.id.msg2);
         msg1 = (TextView) findViewById(R.id.msg1);
-        parentLayout = findViewById(R.id.parent);
         viewVideoPlayView = findViewById(R.id.videoview);
         layoutRootLayout = findViewById(R.id.rootlayout);
-        imageShow = findViewById(R.id.bg);
-        photoView = (PhotoView) findViewById(R.id.img);
-        photoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         videoRoot = findViewById(R.id.videoRoot);
-        fab = findViewById(R.id.fab);
         fabNotice = findViewById(R.id.fabNotice);
         goodLuckBtn1 = findViewById(R.id.goodBt1);
         goodLuckBtn3 = findViewById(R.id.goodBt3);
         goodLuckBtn5 = findViewById(R.id.goodBt5);
         countLayout = findViewById(R.id.countLayout);
         cardLayout = findViewById(R.id.cardLayout);
+        initFloatingActionButton();
     }
 
+    private void initFloatingActionButton() {
+        final ImageView fabIconNew = new ImageView(this);
+        fabIconNew.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_dialog_dialer));
+        rightLowerButton = new FloatingActionButton.Builder(this).setContentView(fabIconNew).build();
+        rightLowerButton.setAlpha(0.0f);
+        SubActionButton.Builder rLSubBuilder = new SubActionButton.Builder(this);
+        // Build the menu with default options: light theme, 90 degrees, 72dp radius.
+        // Set 4 default SubActionButtons
+        final FloatingActionMenu rightLowerMenu = new FloatingActionMenu.Builder(this)
+                .addSubActionView(rLSubBuilder.setContentView(getAction("图鉴")).build())
+                .addSubActionView(rLSubBuilder.setContentView(getAction("猜将")).build())
+                .addSubActionView(rLSubBuilder.setContentView(getAction("制作")).build())
+                .addSubActionView(rLSubBuilder.setContentView(getAction("反馈")).build())
+                .attachTo(rightLowerButton)
+                .build();
+        for (int i = 0; i < rightLowerMenu.getSubActionItems().size(); i++) {
+            int finalI = i;
+            rightLowerMenu.getSubActionItems().get(i).view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    rightLowerMenu.close(true);
+                    switch (finalI) {
+                        case 0:
+                            break;
+                        case 1:
+                            GameGuessActivity.go(context);
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            break;
+                        default:
+                    }
+
+                }
+            });
+        }
+    }
+
+    private TextView getAction(String text) {
+        TextView textView = new TextView(this);
+//        textView.setBackgroundResource(R.drawable.shape_btn_blue);
+        textView.setText(text);
+        textView.setTextSize(10);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("getAction.onClick" + text);
+            }
+        });
+        return textView;
+    }
 
     private void onRandomResult() {
         countLayout.setVisibility(View.VISIBLE);
@@ -365,6 +366,10 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
      * <p>
      */
     private void goodluck(int num) {
+        if (UserManager.getMoney() < 0) {
+            showToastShort("没玉了，去做任务领取玉符吧");
+            return;
+        }
         NetManager.getRandomHero(num, new itgowoNetTool.onReceviceDataListener<BaseResponse<List<HeroEntity>>>() {
 
             @Override
@@ -374,11 +379,11 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                         return;
                     }
                     if (num == 10) {
-                        countCost += 1800;
+                        countCost -= 1800;
                     } else if (num == 5) {
-                        countCost += 950;
+                        countCost -= 950;
                     } else {
-                        countCost += 200 * num;
+                        countCost -= 200 * num;
                     }
                     randomHeroEntities = result.getData();
                     showHeros();
@@ -460,17 +465,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
     @Override
     public void onBackPressed() {
-        if (parentLayout.getVisibility() == View.VISIBLE) {
-            imageShow.startAnimation(out);
-            photoView.animaTo(photoViewInfo, new Runnable() {
-                @Override
-                public void run() {
-                    parentLayout.setVisibility(View.GONE);
-                }
-            });
-        } else {
-            super.onBackPressed();
-        }
+        super.onBackPressed();
     }
 
     @Override

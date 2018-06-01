@@ -18,6 +18,7 @@ public class BaseConfig {
     public static final String USER_UUID = "UserUUID";
     public static final String USER_ISPLAYVIDEO = "isPlayVideo";
     public static final String USER_ISPLAYMUSIC = "isPlayMusic";
+    public static final String USER_MONEY = "userMoney";
     public static String SP_NAME_USERINFO = "UserInfo";
     public static UpdateVersion updateInfo  ;
 
@@ -43,14 +44,25 @@ public class BaseConfig {
         BaseApp.app.getSharedPreferences(SP_NAME_USERINFO + userInfo.getUuid(), Context.MODE_PRIVATE)
                 .edit().putString(key, data).apply();
     }
-
+    public static void putUserData(String key, long data) {
+        if (userInfo == null || userInfo.getUuid() == null || userInfo.getUuid().length() < 10) {
+            return;
+        }
+        BaseApp.app.getSharedPreferences(SP_NAME_USERINFO + userInfo.getUuid(), Context.MODE_PRIVATE)
+                .edit().putLong(key, data).apply();
+    }
     public static String getUserData(String key, String defaultValue) {
         if (userInfo == null || userInfo.getUuid() == null || userInfo.getUuid().length() < 10) {
             return defaultValue;
         }
         return BaseApp.app.getSharedPreferences(SP_NAME_USERINFO + userInfo.getUuid(), Context.MODE_PRIVATE).getString(key, defaultValue);
     }
-
+    public static Long getUserData(String key, long defaultValue) {
+        if (userInfo == null || userInfo.getUuid() == null || userInfo.getUuid().length() < 10) {
+            return defaultValue;
+        }
+        return BaseApp.app.getSharedPreferences(SP_NAME_USERINFO + userInfo.getUuid(), Context.MODE_PRIVATE).getLong(key, defaultValue);
+    }
     public static void putData(String key, boolean data) {
         BaseApp.app.getSharedPreferences(SP_NAME_APPCONFIG, Context.MODE_PRIVATE).edit().putBoolean(key, data).apply();
     }

@@ -31,7 +31,7 @@ public class UserInfo {
     private transient Integer seed5;
     private int logintype;
     private Object logininfo;
-
+    private Long game_money;
     @JSONField(serialize = false)
     public int getSeedCount() {
         return seed1 + seed2 + seed3 + seed4 + seed5;
@@ -51,6 +51,15 @@ public class UserInfo {
 
     public UserInfo setSeed1(int mSeed1) {
         seed1 = mSeed1;
+        return this;
+    }
+
+    public Long getGame_money() {
+        return game_money;
+    }
+
+    public UserInfo setGame_money(Long game_money) {
+        this.game_money = game_money;
         return this;
     }
 

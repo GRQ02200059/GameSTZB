@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.Entity.BaseRequest;
@@ -42,6 +43,14 @@ public class UserManager {
         mWeixinAPI.registerApp(WEIXIN_APP_ID);
     }
 
+    public static long getMoney() {
+        return BaseConfig.getUserData(BaseConfig.USER_MONEY, 0);
+    }
+
+    public static void setMoney(Long money) {
+        BaseConfig.putUserData(BaseConfig.USER_MONEY, money);
+    }
+
     public static void addUserStatusListener(onUserStatusListener listener) {
         onUserStatusListeners.add(listener);
     }
@@ -50,14 +59,36 @@ public class UserManager {
         onUserStatusListeners.remove(listener);
     }
 
+    public static void reFreshMoneyForNet() {
+        NetManager.basePost(new BaseRequest().setAction(BaseRequest.GET_USER_GAME_MONEY), new itgowoNetTool.onReceviceDataListener<BaseResponse<JSONObject>>() {
+            @Override
+            public void onResult(String requestStr, String responseStr, BaseResponse<JSONObject> result) {
+                if (result != null && result.isSuccess()) {
+                    long money = result.getData().getLong("game_money");
+                    UserManager.setMoney(money);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
+    }
+
     public static void refreshUserStatus(boolean isLogin1, UserInfo userInfo) {
         String uuid = "";
         if (BaseConfig.userInfo != null) {
             uuid = BaseConfig.userInfo.getUuid();
         }
         BaseConfig.userInfo = userInfo;
+
         isLogin = isLogin1;
         if (isLogin1) {
+            Long money = userInfo.getGame_money();
+            if (money != null) {
+                setMoney(money);
+            }
             BaseConfig.putData(BaseConfig.USER_INFO, userInfo.toJson());
             MobclickAgent.onProfileSignIn(String.valueOf(BaseConfig.userInfo.getLogintype()), BaseConfig.userInfo.getUuid());
             PushAgent.getInstance(BaseApp.app).deleteAlias(uuid, "自有id", (isSuccess, message) -> {
