@@ -5,4 +5,7 @@
     <string name="logout">退出账号</string>
     <string name="pleaseLogin">主公 请登录</string>
     <string name="versionTip">当前版本：%s &#160;&#160;&#160;&#160; 最新版本：%s\n\n%s</string>
+    <string name="goodluck5">招募5次</string>
+    <string name="goodluck3">招募3次</string>
+    <string name="goodluck1">招募1次</string>
 </resources>

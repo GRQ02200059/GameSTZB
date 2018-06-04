@@ -45,6 +45,7 @@ import com.itgowo.views.SuperDialog;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
+import com.taobao.sophix.SophixManager;
 
 import org.xutils.common.util.DensityUtil;
 
@@ -143,8 +144,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         viewUserHeadImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View mView) {
-                Intent intent = new Intent(MainActivity.this, UserActivity.class);
-                startActivityForResult(intent, INTENT_UserActivity);
+                UserActivity.go(MainActivity.this, INTENT_UserActivity);
             }
         });
         findViewById(R.id.helpDev).setOnClickListener(new View.OnClickListener() {
@@ -171,6 +171,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                         BaseConfig.updateInfo = result.getData();
                     } else {
                         fabNotice.setVisibility(View.GONE);
+                        SophixManager.getInstance().queryAndLoadNewPatch();
                     }
                 }
             }

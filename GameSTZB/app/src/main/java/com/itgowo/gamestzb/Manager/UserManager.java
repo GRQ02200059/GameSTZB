@@ -75,7 +75,9 @@ public class UserManager {
             }
         });
     }
-
+    public static boolean isLogin(){
+        return isLogin;
+    }
     public static void refreshUserStatus(boolean isLogin1, UserInfo userInfo) {
         String uuid = "";
         if (BaseConfig.userInfo != null) {

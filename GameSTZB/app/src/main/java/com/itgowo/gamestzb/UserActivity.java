@@ -14,12 +14,14 @@ import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.Entity.UserInfo;
 import com.itgowo.gamestzb.Manager.UserManager;
 import com.itgowo.gamestzb.View.HeroCard;
+import com.itgowo.views.SuperDialog;
+import com.taobao.sophix.SophixManager;
 
 public class UserActivity extends BaseActivity {
     private HeroCard heroCard;
     private CheckBox isPlayVideo, isPlayMusic;
     private Button btnLoginQQ;
-    private View goBackBtn;
+    private View goBackBtn, rebootBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,15 @@ public class UserActivity extends BaseActivity {
         initView();
         initListener();
         initData();
+    }
+
+    public static void go(Activity context, Integer result) {
+        Intent intent = new Intent(context, UserActivity.class);
+        if (result == null) {
+            context.startActivity(intent);
+        } else {
+            context.startActivityForResult(intent, result);
+        }
     }
 
     private void initData() {
@@ -43,13 +54,10 @@ public class UserActivity extends BaseActivity {
     }
 
     private void initListener() {
-        isPlayVideo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true) != isChecked) {
-                    BaseConfig.putData(BaseConfig.USER_ISPLAYVIDEO, isChecked);
-                    setResult(Activity.RESULT_OK);
-                }
+        isPlayVideo.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true) != isChecked) {
+                BaseConfig.putData(BaseConfig.USER_ISPLAYVIDEO, isChecked);
+                setResult(Activity.RESULT_OK);
             }
         });
         isPlayMusic.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -95,20 +103,24 @@ public class UserActivity extends BaseActivity {
                 }
             }
         });
-        goBackBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
+        goBackBtn.setOnClickListener(v -> finish());
+        rebootBtn.setOnClickListener(v -> {
+            SuperDialog dialog = new SuperDialog(context);
+            dialog.setContent("如果App出现问题或者提示重启，请选择确定按钮").setTitle("App退出提示").setButtonTexts("确定", "取消").setListener((isButtonClick, position) -> {
+                if (position == 0) {
+                    SophixManager.getInstance().killProcessSafely();
+                }
+            }).show();
         });
     }
 
     private void initView() {
-        heroCard = (HeroCard) findViewById(R.id.hero);
+        heroCard = findViewById(R.id.hero);
         isPlayVideo = findViewById(R.id.isPlayVideo);
         isPlayMusic = findViewById(R.id.isPlayMusic);
         btnLoginQQ = findViewById(R.id.btn_login_qq);
         goBackBtn = findViewById(R.id.goback);
+        rebootBtn = findViewById(R.id.reboot);
     }
 
     @Override

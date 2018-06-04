@@ -10,8 +10,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
+import android.widget.Toast;
 
 import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Main.MainActivity;
@@ -90,5 +92,16 @@ public class Utils {
         Uri uri = Uri.fromParts("package", context.getPackageName(), null);
         intent.setData(uri);
         context.startActivity(intent);
+    }
+
+    public static void showToastShort(String msg) {
+        if (Looper.myLooper() == null) {
+            Looper.prepare();
+            Toast.makeText(BaseApp.app, msg, Toast.LENGTH_SHORT);
+            Looper.loop();
+        } else {
+            Toast.makeText(BaseApp.app, msg, Toast.LENGTH_SHORT);
+        }
+
     }
 }

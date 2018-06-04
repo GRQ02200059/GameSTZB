@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,12 +10,12 @@
         android:id="@+id/User_Head_Img"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginTop="30dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="30dp"
         android:foreground="@drawable/background4"
         android:foregroundTint="@android:color/holo_orange_light"
         android:padding="9dp"
-        android:src="@android:drawable/ic_menu_mylocation" />
+        android:src="@android:drawable/ic_popup_sync" />
 
     <LinearLayout
         android:id="@+id/layout1"
@@ -70,28 +69,35 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:divider="@drawable/line"
+            android:showDividers="middle">
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/goodBt1"
+                style="@style/DefaultButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="28dp"
                 android:drawableRight="@drawable/yufu"
-                android:text="招募1次" />
+                android:text="@string/goodluck1" />
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/goodBt3"
+                style="@style/DefaultButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="28dp"
                 android:drawableRight="@drawable/yufu"
-                android:text="招募3次" />
+                android:text="@string/goodluck3" />
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/goodBt5"
+                style="@style/DefaultButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="28dp"
                 android:drawableRight="@drawable/yufu"
-                android:text="招募5次" />
+                android:text="@string/goodluck5"
+
+                />
         </LinearLayout>
     </LinearLayout>
 
@@ -128,8 +134,8 @@
         android:layout_below="@+id/helpDev"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:visibility="gone"
-        android:background="@android:drawable/ic_dialog_email" />
+        android:background="@android:drawable/ic_dialog_email"
+        android:visibility="gone" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -138,7 +144,8 @@
         android:layout_marginBottom="50dp"
         android:layout_marginLeft="20dp"
         android:background="@android:drawable/editbox_background"
-        android:src="@android:drawable/ic_menu_edit" />
+        android:src="@android:drawable/ic_menu_edit"
+        android:visibility="visible" />
 
     <TextView
         android:id="@+id/msg6"
