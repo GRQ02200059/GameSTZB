@@ -134,8 +134,12 @@
         android:layout_below="@+id/helpDev"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:background="@android:drawable/ic_dialog_email"
-        android:visibility="gone" />
+        android:drawableTop="@android:drawable/ic_dialog_email"
+        android:gravity="center"
+        android:text="3333"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="10sp"
+        android:visibility="visible" />
 
     <ImageView
         android:layout_width="wrap_content"

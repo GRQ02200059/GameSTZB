@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.itgowo.gamestzb.BuildConfig;
 import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.STZBManager;
@@ -107,7 +108,7 @@ public class BaseApp extends Application {
                 }
             }
         });
-
+        FeedbackAPI.init(app,BaseConfig.ALIYUN_HOTFIX_APPID,BaseConfig.ALIYUN_HOTFIX_APPSECRET);
     }
 
 }

@@ -69,6 +69,7 @@ public class Utils {
         permissionItems.add(new PermissionItem(Manifest.permission.WRITE_EXTERNAL_STORAGE, "外部存储", R.drawable.permission_ic_storage));
         permissionItems.add(new PermissionItem(Manifest.permission.ACCESS_FINE_LOCATION, "定位", R.drawable.permission_ic_location));
         permissionItems.add(new PermissionItem(Manifest.permission.READ_PHONE_STATE, "手机IMEI", R.drawable.permission_ic_phone));
+        permissionItems.add(new PermissionItem(Manifest.permission.CAMERA, "相机", R.drawable.permission_ic_camera));
         hiPermission.permissions(permissionItems).msg("为了APP能提供更好的服务，需要以下权限").title("枫林提示")
                 .style(R.style.PermissionDefaultNormalStyle).checkMutiPermission(callback);
     }

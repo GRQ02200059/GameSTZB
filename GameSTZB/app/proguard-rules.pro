@@ -89,3 +89,14 @@ public static final int *;
 }
 # 如果不使用android.support.annotation.Keep则需加上此行
 # -keep class com.my.pkg.SophixStubApplication$RealApplicationStub
+
+
+
+-keep class com.taobao.** {*;}
+-keep class com.alibaba.** {*;}
+-dontwarn com.taobao.**
+-dontwarn com.alibaba.**
+-keep class com.ut.** {*;}
+-dontwarn com.ut.**
+-keep class com.ta.** {*;}
+-dontwarn com.ta.**

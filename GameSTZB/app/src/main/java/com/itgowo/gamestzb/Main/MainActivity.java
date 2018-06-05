@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
+import com.alibaba.sdk.android.feedback.util.IUnreadCountCallback;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -33,6 +35,7 @@ import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.gamestzb.Guess.GameGuessActivity;
 import com.itgowo.gamestzb.Manager.NetManager;
+import com.itgowo.gamestzb.Manager.STZBManager;
 import com.itgowo.gamestzb.Manager.UserManager;
 import com.itgowo.gamestzb.Manager.ViewCacheManager;
 import com.itgowo.gamestzb.MusicService;
@@ -125,7 +128,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         initView();
         initLstener();
         startFirst();
-        checkVersion();
+        SophixManager.getInstance().queryAndLoadNewPatch();
         presenter.CheckAndInitHeroListData();
     }
 
@@ -140,18 +143,10 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
 
     private void initLstener() {
-        viewUserHeadImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View mView) {
-                UserActivity.go(MainActivity.this, INTENT_UserActivity);
-            }
-        });
-        findViewById(R.id.helpDev).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SuperDialog dialog = new SuperDialog(context).setShowImage().setImageListener(imageView -> Glide.with(imageView).load("http://file.itgowo.com/game/pay/allpay.png").into(imageView)).setShowButtonLayout(false);
-                dialog.setAspectRatio(0.8f).show();
-            }
+        viewUserHeadImg.setOnClickListener(mView -> UserActivity.go(MainActivity.this, INTENT_UserActivity));
+        findViewById(R.id.helpDev).setOnClickListener(v -> {
+            SuperDialog dialog = new SuperDialog(context).setShowImage().setImageListener(imageView -> Glide.with(imageView).load("http://file.itgowo.com/game/pay/allpay.png").into(imageView)).setShowButtonLayout(false);
+            dialog.setAspectRatio(0.8f).show();
         });
         fabNotice.setOnClickListener(v -> BaseApp.getStzbManager().goUpdateVersion(context));
         goodLuckBtn1.setOnClickListener(v -> goodluck(1));
@@ -166,11 +161,24 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             public void onResult(String requestStr, String responseStr, BaseResponse<UpdateVersion> result) {
                 if (result.isSuccess()) {
                     if (result.getData().getVersioncode() > BuildConfig.VERSION_CODE) {
-                        fabNotice.setVisibility(View.VISIBLE);
                         BaseConfig.updateInfo = result.getData();
+                        fabNotice.setText("升级");
                     } else {
-                        fabNotice.setVisibility(View.GONE);
-                        SophixManager.getInstance().queryAndLoadNewPatch();
+                        FeedbackAPI.getFeedbackUnreadCount(new IUnreadCountCallback() {
+                            @Override
+                            public void onSuccess(int i) {
+                                if (i > 0) {
+                                    fabNotice.setText("新消息");
+                                } else {
+                                    fabNotice.setText("");
+                                }
+                            }
+
+                            @Override
+                            public void onError(int i, String s) {
+
+                            }
+                        });
                     }
                 }
             }
@@ -180,6 +188,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
             }
         });
+
     }
 
     @Override
@@ -199,6 +208,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         }
         UserManager.addUserStatusListener(this);
         refreshUserInfo();
+        checkVersion();
     }
 
     private void reSetStyle() {
@@ -326,6 +336,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                         case 2:
                             break;
                         case 3:
+                            BaseApp.getStzbManager().goUpdateVersion(context);
                             break;
                         default:
                     }

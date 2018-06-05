@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
+import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.itgowo.gamestzb.Base.BaseApp;
@@ -18,8 +19,12 @@ import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.R;
 import com.itgowo.views.SuperDialog;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,17 +44,19 @@ public class STZBManager {
         initData();
         return this;
     }
-public static void bindView(HeroEntity entity, ImageView imageView){
-    String uri;
-    if (new File(entity.getHeroFilePath()).exists()) {
-        uri = entity.getHeroFilePath();
-        imageView.setImageURI(Uri.parse(uri));
-    } else {
-        final RequestOptions options = new RequestOptions().dontTransform().dontAnimate();
-        uri = String.format(NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE, entity.getId());
-        Glide.with(imageView).load(uri).apply(options).into(imageView);
+
+    public static void bindView(HeroEntity entity, ImageView imageView) {
+        String uri;
+        if (new File(entity.getHeroFilePath()).exists()) {
+            uri = entity.getHeroFilePath();
+            imageView.setImageURI(Uri.parse(uri));
+        } else {
+            final RequestOptions options = new RequestOptions().dontTransform().dontAnimate();
+            uri = String.format(NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE, entity.getId());
+            Glide.with(imageView).load(uri).apply(options).into(imageView);
+        }
     }
-}
+
     public List<HeroEntity> getTotalHeroList() {
         return totalHeroList;
     }
@@ -99,6 +106,33 @@ public static void bindView(HeroEntity entity, ImageView imageView){
 
     public void goUpdateVersion(Context context) {
         if (BaseConfig.updateInfo == null) {
+            if (UserManager.isLogin()) {
+                FeedbackAPI.setDefaultUserContactInfo(String.valueOf(BaseConfig.userInfo.getId()));
+                JSONObject object=new JSONObject();
+                try {
+                    object.put("name",BaseConfig.userInfo.getName());
+                    object.put("uuid",BaseConfig.userInfo.getUuid());
+                    object.put("head",BaseConfig.userInfo.getHead());
+                    object.put("nickname",BaseConfig.userInfo.getNickname());
+                    object.put("phone",BaseConfig.userInfo.getPhone());
+                    object.put("imei",BaseConfig.userInfo.getImei());
+                    object.put("id",BaseConfig.userInfo.getId());
+                    object.put("seed1",BaseConfig.userInfo.getSeed1());
+                    object.put("seed2",BaseConfig.userInfo.getSeed2());
+                    object.put("seed3",BaseConfig.userInfo.getSeed3());
+                    object.put("seed4",BaseConfig.userInfo.getSeed4());
+                    object.put("seed5",BaseConfig.userInfo.getSeed5());
+                    object.put("game_money",BaseConfig.userInfo.getGame_money());
+                    FeedbackAPI.setAppExtInfo(object);
+                    FeedbackAPI.setLogEnabled(true);
+                    FeedbackAPI.openFeedbackActivity();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                SuperDialog dialog = new SuperDialog(context).setContent("请先登录账户");
+                dialog.show();
+            }
             return;
         }
         String tip = String.format(context.getResources().getString(R.string.versionTip), BuildConfig.VERSION_NAME, BaseConfig.updateInfo.getVersionname(), BaseConfig.updateInfo.getVersioninfo());

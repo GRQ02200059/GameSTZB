@@ -87,44 +87,39 @@ public class HeroCard extends RelativeLayout {
     private void initView() {
         headimg = findViewById(R.id.headimg);
         heroStar = findViewById(R.id.hero_star);
-        country = (ImageView) findViewById(R.id.country);
-        name = (TextView) findViewById(R.id.name);
-        type = (TextView) findViewById(R.id.type);
-        cost = (TextView) findViewById(R.id.cost);
+        country = findViewById(R.id.country);
+        name = findViewById(R.id.name);
+        type = findViewById(R.id.type);
+        cost = findViewById(R.id.cost);
         headForeground = findViewById(R.id.headForeground);
-        addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (right != 0 && bottom != 0) {
-                    removeOnLayoutChangeListener(this);
+        post(() -> refreshLayout());
+    }
 
+    private void refreshLayout() {
+        View v = this;
+        LayoutParams countryLayoutParams = (LayoutParams) country.getLayoutParams();
+        countryLayoutParams.leftMargin = v.getWidth() / 90;
+        countryLayoutParams.topMargin = v.getWidth() / 60;
+        countryLayoutParams.width = v.getWidth() / 6;
+        countryLayoutParams.height = v.getWidth() / 6;
+        country.setLayoutParams(countryLayoutParams);
 
-                    LayoutParams countryLayoutParams = (LayoutParams) country.getLayoutParams();
-                    countryLayoutParams.leftMargin = v.getWidth() / 90;
-                    countryLayoutParams.topMargin = v.getWidth() / 60;
-                    countryLayoutParams.width = v.getWidth() / 6;
-                    countryLayoutParams.height = v.getWidth() / 6;
-                    country.setLayoutParams(countryLayoutParams);
+        LayoutParams nameLayoutParams = (LayoutParams) name.getLayoutParams();
+        nameLayoutParams.leftMargin = v.getWidth() / 45;
+        name.setLayoutParams(nameLayoutParams);
 
-                    LayoutParams nameLayoutParams = (LayoutParams) name.getLayoutParams();
-                    nameLayoutParams.leftMargin = v.getWidth() / 45;
-                    name.setLayoutParams(nameLayoutParams);
+        LayoutParams typeLayoutParams = (LayoutParams) type.getLayoutParams();
+        typeLayoutParams.rightMargin = v.getWidth() / 30;
+        typeLayoutParams.bottomMargin = v.getHeight() / 40;
+        type.setLayoutParams(typeLayoutParams);
 
-                    LayoutParams typeLayoutParams = (LayoutParams) type.getLayoutParams();
-                    typeLayoutParams.rightMargin = v.getWidth() / 30;
-                    typeLayoutParams.bottomMargin = v.getHeight() / 40;
-                    type.setLayoutParams(typeLayoutParams);
+        LayoutParams costLayoutParams = (LayoutParams) cost.getLayoutParams();
+        costLayoutParams.bottomMargin = v.getHeight() / 40;
+        cost.setLayoutParams(costLayoutParams);
 
-                    LayoutParams costLayoutParams = (LayoutParams) cost.getLayoutParams();
-                    costLayoutParams.bottomMargin = v.getHeight() / 40;
-                    cost.setLayoutParams(costLayoutParams);
-
-                    LayoutParams starLayoutParams = (LayoutParams) heroStar.getLayoutParams();
-                    starLayoutParams.height = v.getHeight() / 15;
-                    heroStar.setLayoutParams(starLayoutParams);
-                }
-            }
-        });
+        LayoutParams starLayoutParams = (LayoutParams) heroStar.getLayoutParams();
+        starLayoutParams.height = v.getHeight() / 15;
+        heroStar.setLayoutParams(starLayoutParams);
     }
 
     public void setName(String mName) {
@@ -162,7 +157,7 @@ public class HeroCard extends RelativeLayout {
             case 1:
                 headForeground.setImageResource(R.drawable.hero_mask_1);
         }
-        heroStar.setRepeatCount(entity.getQuality()==null?0:entity.getQuality());
+        heroStar.setRepeatCount(entity.getQuality() == null ? 0 : entity.getQuality());
         heroStar.setImage(getResources().getDrawable(R.drawable.star1), zoomStar);
         if (!TextUtils.isEmpty(entity.getContory())) {
             country.setVisibility(VISIBLE);
@@ -202,8 +197,8 @@ public class HeroCard extends RelativeLayout {
                     break;
             }
         }
-        type.setText(entity.getDistance() == null||entity.getDistance()==0 ? "" : String.valueOf(entity.getDistance()));
-        if (entity.getCost()!=null&&entity.getCost() > 0) {
+        type.setText(entity.getDistance() == null || entity.getDistance() == 0 ? "" : String.valueOf(entity.getDistance()));
+        if (entity.getCost() != null && entity.getCost() > 0) {
             String costStr = String.valueOf(entity.getCost()).replace(".0", "");
             cost.setText(costStr);
         } else {
