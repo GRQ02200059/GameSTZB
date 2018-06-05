@@ -19,9 +19,11 @@
     <Button
         android:id="@+id/game_guess_next_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/goback"
+        android:background="@drawable/stzb_button"
+        android:textColor="@color/country_shen"
         android:layout_marginRight="30dp"
         android:text="下一题" />
 

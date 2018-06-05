@@ -2,6 +2,7 @@ package com.itgowo.gamestzb.Entity;
 
 import com.alibaba.fastjson.JSON;
 import com.itgowo.gamestzb.Base.BaseConfig;
+import com.itgowo.gamestzb.BuildConfig;
 
 public class BaseRequest<PostData> {
     public static final String GET_RANDOM_HERO = "getRandomHero";
@@ -17,7 +18,27 @@ public class BaseRequest<PostData> {
     private String token;
     private Integer pageIndex;
     private Integer pageSize;
+    private Integer serverVersion=1;
+    private Integer appVersion;
     private PostData data;
+
+    public Integer getServerVersion() {
+        return serverVersion;
+    }
+
+    public BaseRequest setServerVersion(Integer serverVersion) {
+        this.serverVersion = serverVersion;
+        return this;
+    }
+
+    public Integer getAppVersion() {
+        return appVersion;
+    }
+
+    public BaseRequest setAppVersion(Integer appVersion) {
+        this.appVersion = appVersion;
+        return this;
+    }
 
     public String getFlag() {
         return flag;
@@ -86,6 +107,7 @@ public class BaseRequest<PostData> {
         } else {
             token = BaseConfig.userInfo.getUuid();
         }
+        appVersion= BuildConfig.VERSION_CODE;
     }
 
     public static class DataEntity {

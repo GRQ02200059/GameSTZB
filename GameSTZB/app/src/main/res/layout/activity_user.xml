@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/reboot"
-        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
         android:background="@drawable/photoframe"
         android:orientation="vertical"
         android:padding="20dp">

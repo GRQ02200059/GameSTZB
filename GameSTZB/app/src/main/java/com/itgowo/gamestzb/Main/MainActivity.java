@@ -28,6 +28,7 @@ import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.BuildConfig;
 import com.itgowo.gamestzb.Entity.BaseResponse;
+import com.itgowo.gamestzb.Entity.GetRandomHeroEntity;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.gamestzb.Guess.GameGuessActivity;
@@ -70,7 +71,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     private FrameLayout videoRoot;
     private Button goodLuckBtn1, goodLuckBtn3, goodLuckBtn5;
     private int count5, count4, count3, count2, count1;
-    private long countCost;
     private FloatingActionButton rightLowerButton;
     private VideoView viewVideoPlayView;
     private ImageView viewUserHeadImg;
@@ -134,8 +134,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         if (viewUserHeadImg != null && BaseConfig.userInfo != null) {
             RequestOptions options = new RequestOptions().transform(new RoundedCorners(DensityUtil.dip2px(40)));
             Glide.with(viewUserHeadImg).load(BaseConfig.userInfo.getHead()).apply(options).into(viewUserHeadImg);
-            countCost = UserManager.getMoney();
-            msg6.setText(String.valueOf(countCost));
+            msg6.setText(String.valueOf(UserManager.getMoney()));
         }
     }
 
@@ -352,7 +351,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
 
     private void onRandomResult() {
         countLayout.setVisibility(View.VISIBLE);
-        msg6.setText(String.valueOf(countCost));
+        msg6.setText(String.valueOf(UserManager.getMoney()));
         msg5.setText("5 星：" + count5);
         msg4.setText("4 星：" + count4);
         msg3.setText("3 星：" + count3);
@@ -367,26 +366,20 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
      * <p>
      */
     private void goodluck(int num) {
-        if (UserManager.getMoney() < 0) {
-            showToastShort("没玉了，去做任务领取玉符吧");
-            return;
-        }
-        NetManager.getRandomHero(num, new itgowoNetTool.onReceviceDataListener<BaseResponse<List<HeroEntity>>>() {
+//        if (UserManager.isLogin()&&UserManager.getMoney() < num * 200 - (num == 5 ? 50 : 0)) {
+//            showToastShort("玉不够，去做任务领取玉符吧");
+//            return;
+//        }
+        NetManager.getRandomHero(num, new itgowoNetTool.onReceviceDataListener<BaseResponse<GetRandomHeroEntity>>() {
 
             @Override
-            public void onResult(String requestStr, String responseStr, BaseResponse<List<HeroEntity>> result) {
+            public void onResult(String requestStr, String responseStr, BaseResponse<GetRandomHeroEntity> result) {
                 if (result.isSuccess()) {
                     if (result.getData() == null) {
                         return;
                     }
-                    if (num == 10) {
-                        countCost -= 1800;
-                    } else if (num == 5) {
-                        countCost -= 950;
-                    } else {
-                        countCost -= 200 * num;
-                    }
-                    randomHeroEntities = result.getData();
+                    randomHeroEntities = result.getData().getHerolist();
+                    UserManager.setMoney(result.getData().getGame_money());
                     showHeros();
                 } else {
                     Toast.makeText(context, result.getMsg(), Toast.LENGTH_SHORT).show();
