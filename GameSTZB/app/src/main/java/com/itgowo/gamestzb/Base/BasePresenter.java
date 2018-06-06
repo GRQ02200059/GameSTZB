@@ -4,9 +4,9 @@ import android.content.Context;
 
 public class BasePresenter {
 
-    public Context context;
+    public BaseActivity context;
 
-    public BasePresenter(Context context) {
+    public BasePresenter(BaseActivity context) {
         this.context = context;
     }
     public interface onActionListener{

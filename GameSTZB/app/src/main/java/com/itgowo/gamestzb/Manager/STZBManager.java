@@ -24,7 +24,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,14 +44,15 @@ public class STZBManager {
         return this;
     }
 
-    public static void bindView(HeroEntity entity, ImageView imageView) {
+    public static void bindView(int id, ImageView imageView) {
         String uri;
-        if (new File(entity.getHeroFilePath()).exists()) {
-            uri = entity.getHeroFilePath();
+        File heroFile = HeroEntity.getHeroFilePath(id);
+        if (heroFile.exists()) {
+            uri = heroFile.getAbsolutePath();
             imageView.setImageURI(Uri.parse(uri));
         } else {
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate();
-            uri = String.format(NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE, entity.getId());
+            uri = String.format(NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE, id);
             Glide.with(imageView).load(uri).apply(options).into(imageView);
         }
     }
@@ -108,21 +108,21 @@ public class STZBManager {
         if (BaseConfig.updateInfo == null) {
             if (UserManager.isLogin()) {
                 FeedbackAPI.setDefaultUserContactInfo(String.valueOf(BaseConfig.userInfo.getId()));
-                JSONObject object=new JSONObject();
+                JSONObject object = new JSONObject();
                 try {
-                    object.put("name",BaseConfig.userInfo.getName());
-                    object.put("uuid",BaseConfig.userInfo.getUuid());
-                    object.put("head",BaseConfig.userInfo.getHead());
-                    object.put("nickname",BaseConfig.userInfo.getNickname());
-                    object.put("phone",BaseConfig.userInfo.getPhone());
-                    object.put("imei",BaseConfig.userInfo.getImei());
-                    object.put("id",BaseConfig.userInfo.getId());
-                    object.put("seed1",BaseConfig.userInfo.getSeed1());
-                    object.put("seed2",BaseConfig.userInfo.getSeed2());
-                    object.put("seed3",BaseConfig.userInfo.getSeed3());
-                    object.put("seed4",BaseConfig.userInfo.getSeed4());
-                    object.put("seed5",BaseConfig.userInfo.getSeed5());
-                    object.put("game_money",BaseConfig.userInfo.getGame_money());
+                    object.put("name", BaseConfig.userInfo.getName());
+                    object.put("uuid", BaseConfig.userInfo.getUuid());
+                    object.put("head", BaseConfig.userInfo.getHead());
+                    object.put("nickname", BaseConfig.userInfo.getNickname());
+                    object.put("phone", BaseConfig.userInfo.getPhone());
+                    object.put("imei", BaseConfig.userInfo.getImei());
+                    object.put("id", BaseConfig.userInfo.getId());
+                    object.put("seed1", BaseConfig.userInfo.getSeed1());
+                    object.put("seed2", BaseConfig.userInfo.getSeed2());
+                    object.put("seed3", BaseConfig.userInfo.getSeed3());
+                    object.put("seed4", BaseConfig.userInfo.getSeed4());
+                    object.put("seed5", BaseConfig.userInfo.getSeed5());
+                    object.put("game_money", BaseConfig.userInfo.getGame_money());
                     FeedbackAPI.setAppExtInfo(object);
                     FeedbackAPI.setLogEnabled(true);
                     FeedbackAPI.openFeedbackActivity();
@@ -177,7 +177,7 @@ public class STZBManager {
         final int[] num = {0};
         for (int i = 0; i < heroEntities.size(); i++) {
             HeroEntity entity = heroEntities.get(i);
-            File file = new File(entity.getHeroFilePath());
+            File file = entity.getHeroFilePath();
             if (!file.exists()) {
                 poolExecutor.execute(() -> {
                     num[0]++;

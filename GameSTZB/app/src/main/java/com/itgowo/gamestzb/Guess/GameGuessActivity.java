@@ -132,7 +132,7 @@ public class GameGuessActivity extends BaseActivity {
                     gameGuessBtn3.setText(result.getData().getOption().get(2).getContory() + " " + result.getData().getOption().get(2).getName());
                     gameGuessBtn4.setText(result.getData().getOption().get(3).getContory() + " " + result.getData().getOption().get(3).getName());
                     gameGuessImg.setBackgroundResource(R.drawable.light);
-                    STZBManager.bindView(new HeroEntity().setId(result.getData().getId()), gameGuessImg);
+                    STZBManager.bindView(result.getData().getId(), gameGuessImg);
 
                 } else {
                     if (result != null) {

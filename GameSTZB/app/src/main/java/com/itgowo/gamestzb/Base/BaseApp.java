@@ -18,17 +18,20 @@ import com.umeng.message.PushAgent;
 
 import org.xutils.x;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class BaseApp extends Application {
     public static BaseApp app;
-    private static STZBManager stzbManager=new STZBManager();
-    private int activityCount=0;
-
+    private static STZBManager stzbManager = new STZBManager();
+    private int activityCount = 0;
+   public static ExecutorService threadPool = Executors.newCachedThreadPool();
     @Override
     public void onCreate() {
         super.onCreate();
         app = this;
+//        StrictMode.enableDefaults();
 //        Utils.setupShortcuts();
-
         init();
         initData();
     }
@@ -102,13 +105,13 @@ public class BaseApp extends Application {
             @Override
             public void onActivityDestroyed(Activity activity) {
                 activityCount--;
-                if (activityCount==0){
+                if (activityCount == 0) {
                     MusicService.stopMusic(app);
                     MobclickAgent.onKillProcess(app);
                 }
             }
         });
-        FeedbackAPI.init(app,BaseConfig.ALIYUN_HOTFIX_APPID,BaseConfig.ALIYUN_HOTFIX_APPSECRET);
+        FeedbackAPI.init(app, BaseConfig.ALIYUN_HOTFIX_APPID, BaseConfig.ALIYUN_HOTFIX_APPSECRET);
     }
 
 }

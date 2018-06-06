@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.itgowo.gamestzb.Manager.UserManager;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
 public class UserInfo {
@@ -32,6 +33,15 @@ public class UserInfo {
     private int logintype;
     private Object logininfo;
     private Long game_money;
+    private byte[] herocount;
+    @JSONField(serialize = false)
+    public byte[] getHerocount() {
+        return herocount;
+    }
+    public UserInfo setHerocount(byte[] herocount) {
+        this.herocount = herocount ;
+        return this;
+    }
     @JSONField(serialize = false)
     public int getSeedCount() {
         return seed1 + seed2 + seed3 + seed4 + seed5;
@@ -202,4 +212,22 @@ public class UserInfo {
     public String toJson() {
         return JSON.toJSONString(this);
     }
+
+
+    public static int byte2int(byte b) {
+        return b & 0xff;
+    }
+
+    public static byte int2byte(int i) {
+        return (byte) (i & 0xff);
+    }
+
+    public static int getUserHeroCount(byte[] src, int position) {
+        if (position > 500) {
+            position = 500;
+        }
+        return byte2int(src[position]);
+    }
+
+
 }

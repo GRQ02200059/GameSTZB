@@ -1,6 +1,6 @@
 package com.itgowo.gamestzb.Main;
 
-import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -34,6 +34,8 @@ import com.itgowo.gamestzb.Entity.GetRandomHeroEntity;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.gamestzb.Guess.GameGuessActivity;
+import com.itgowo.gamestzb.HeroEditActivity;
+import com.itgowo.gamestzb.HeroListActivity;
 import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.STZBManager;
 import com.itgowo.gamestzb.Manager.UserManager;
@@ -53,7 +55,6 @@ import com.taobao.sophix.SophixManager;
 
 import org.xutils.common.util.DensityUtil;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,8 +129,15 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         initView();
         initLstener();
         startFirst();
-        SophixManager.getInstance().queryAndLoadNewPatch();
-        presenter.CheckAndInitHeroListData();
+        BaseApp.threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                SophixManager.getInstance().queryAndLoadNewPatch();
+                presenter.CheckAndInitHeroListData();
+                checkVersion();
+            }
+        });
+
     }
 
 
@@ -167,11 +175,13 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                         FeedbackAPI.getFeedbackUnreadCount(new IUnreadCountCallback() {
                             @Override
                             public void onSuccess(int i) {
-                                if (i > 0) {
-                                    fabNotice.setText("新消息");
-                                } else {
-                                    fabNotice.setText("");
-                                }
+                                runOnUiThread(() -> {
+                                    if (i > 0) {
+                                        fabNotice.setText("新消息");
+                                    } else {
+                                        fabNotice.setText("");
+                                    }
+                                });
                             }
 
                             @Override
@@ -208,7 +218,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         }
         UserManager.addUserStatusListener(this);
         refreshUserInfo();
-        checkVersion();
     }
 
     private void reSetStyle() {
@@ -249,12 +258,13 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         if (!BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true)) {
             layoutRootLayout.setVisibility(View.VISIBLE);
             layoutRootLayout.setBackgroundResource(R.drawable.background2);
-            ObjectAnimator anim = ObjectAnimator.ofFloat(layoutRootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
+            ValueAnimator anim = ValueAnimator.ofFloat(0f, 0.4f, 0.7f, 1f);
+            anim.addUpdateListener(animation -> {
+                layoutRootLayout.setAlpha((Float) animation.getAnimatedValue());
+                rightLowerButton.setAlpha((Float) animation.getAnimatedValue());
+            });
             anim.setDuration(1200);// 动画持续时间
             anim.start();
-            ObjectAnimator anim1 = ObjectAnimator.ofFloat(rightLowerButton, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
-            anim1.setDuration(1200);// 动画持续时间
-            anim1.start();
         } else {
             viewVideoPlayView = new FillVideoView(this);
             videoRoot.addView(viewVideoPlayView);
@@ -269,12 +279,13 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                     mPlayer.setLooping(true);
                     viewVideoPlayView.setClickable(false);
                     layoutRootLayout.setVisibility(View.VISIBLE);
-                    ObjectAnimator anim = ObjectAnimator.ofFloat(layoutRootLayout, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
+                    ValueAnimator anim = ValueAnimator.ofFloat(0f, 0.4f, 0.7f, 1f);
+                    anim.addUpdateListener(animation -> {
+                        layoutRootLayout.setAlpha((Float) animation.getAnimatedValue());
+                        rightLowerButton.setAlpha((Float) animation.getAnimatedValue());
+                    });
                     anim.setDuration(1200);// 动画持续时间
                     anim.start();
-                    ObjectAnimator anim1 = ObjectAnimator.ofFloat(rightLowerButton, "alpha", 0f, 0.2f, 0.3f, 0.5f, 1f);
-                    anim1.setDuration(1200);// 动画持续时间
-                    anim1.start();
                 }
             });
             viewVideoPlayView.start();
@@ -329,11 +340,13 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                     rightLowerMenu.close(true);
                     switch (finalI) {
                         case 0:
+                            HeroListActivity.go(context);
                             break;
                         case 1:
                             GameGuessActivity.go(context);
                             break;
                         case 2:
+                            HeroEditActivity.go(context);
                             break;
                         case 3:
                             BaseApp.getStzbManager().goUpdateVersion(context);
@@ -363,11 +376,11 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     private void onRandomResult() {
         countLayout.setVisibility(View.VISIBLE);
         msg6.setText(String.valueOf(UserManager.getMoney()));
-        msg5.setText("5 星：" + count5);
-        msg4.setText("4 星：" + count4);
-        msg3.setText("3 星：" + count3);
-        msg2.setText("2 星：" + count2);
-        msg1.setText("1 星：" + count1);
+        msg5.setText("已有数量：" + count5);
+        msg4.setText("已有数量：" + count4);
+        msg3.setText("已有数量：" + count3);
+        msg2.setText("已有数量：" + count2);
+        msg1.setText("已有数量：" + count1);
     }
 
     /**
@@ -410,25 +423,35 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         if (randomHeroEntities == null) {
             return;
         }
-        for (int i = 0; i < randomHeroEntities.size(); i++) {
-            switch (randomHeroEntities.get(i).getQuality()) {
-                case 1:
-                    count1++;
-                    break;
-                case 2:
-                    count2++;
-                    break;
-                case 3:
-                    count3++;
-                    break;
-                case 4:
-                    count4++;
-                    break;
-                case 5:
-                    count5++;
-                    break;
-            }
+        msg1.setVisibility(View.INVISIBLE);
+        msg2.setVisibility(View.INVISIBLE);
+        msg3.setVisibility(View.INVISIBLE);
+        msg4.setVisibility(View.INVISIBLE);
+        msg5.setVisibility(View.INVISIBLE);
+        if (randomHeroEntities.size() == 1) {
+            msg3.setVisibility(View.VISIBLE);
+            count3 = randomHeroEntities.get(0).getUserCount();
+        } else if (randomHeroEntities.size() == 3) {
+            msg2.setVisibility(View.VISIBLE);
+            msg3.setVisibility(View.VISIBLE);
+            msg4.setVisibility(View.VISIBLE);
+            count2 = randomHeroEntities.get(0).getUserCount();
+            count3 = randomHeroEntities.get(1).getUserCount();
+            count4 = randomHeroEntities.get(2).getUserCount();
         }
+        if (randomHeroEntities.size() == 5) {
+            msg1.setVisibility(View.VISIBLE);
+            msg2.setVisibility(View.VISIBLE);
+            msg3.setVisibility(View.VISIBLE);
+            msg4.setVisibility(View.VISIBLE);
+            msg5.setVisibility(View.VISIBLE);
+            count1 = randomHeroEntities.get(0).getUserCount();
+            count2 = randomHeroEntities.get(1).getUserCount();
+            count3 = randomHeroEntities.get(2).getUserCount();
+            count4 = randomHeroEntities.get(3).getUserCount();
+            count5 = randomHeroEntities.get(4).getUserCount();
+        }
+
         ViewCacheManager<LinearLayout> cacheManager = new ViewCacheManager<>();
         cacheManager.setOnCacheListener(new ViewCacheManager.onCacheListener<HeroCard>() {
             @Override
@@ -447,15 +470,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                 mView.setData(randomHeroEntities.get(position));
                 mView.clearAnimation();
                 mView.setAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_in));
-                String uri;
-                if (new File(randomHeroEntities.get(position).getHeroFilePath()).exists()) {
-                    uri = randomHeroEntities.get(position).getHeroFilePath();
-                    mView.headimg.setImageURI(Uri.parse(uri));
-                } else {
-                    final RequestOptions options = new RequestOptions().dontTransform().dontAnimate();
-                    uri = String.format(NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE, randomHeroEntities.get(position).getId());
-                    Glide.with(mView.headimg).load(uri).apply(options).into(mView.headimg);
-                }
+                STZBManager.bindView(randomHeroEntities.get(position).getId(), mView.headimg);
             }
         });
         cacheManager.onRefresh(cardLayout, randomHeroEntities.size());

@@ -120,6 +120,7 @@ public class HeroCard extends RelativeLayout {
         LayoutParams starLayoutParams = (LayoutParams) heroStar.getLayoutParams();
         starLayoutParams.height = v.getHeight() / 15;
         heroStar.setLayoutParams(starLayoutParams);
+        invalidate();
     }
 
     public void setName(String mName) {

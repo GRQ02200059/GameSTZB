@@ -2,6 +2,7 @@ package com.itgowo.gamestzb.Entity;
 
 import android.content.Context;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.itgowo.gamestzb.Base.BaseApp;
 
 import java.io.File;
@@ -30,12 +31,39 @@ public class HeroEntity {
     private Integer quality;
     private Integer id;
     private String icon;
+    private Integer userCount;
+    private Integer keyid;
 
-    public String getHeroFilePath() {
-        return new File(BaseApp.app.getDir("hero", Context.MODE_PRIVATE), getFileName()).getAbsolutePath();
+    public Integer getKeyid() {
+        return keyid;
     }
 
+    public HeroEntity setKeyid(Integer keyid) {
+        this.keyid = keyid;
+        return this;
+    }
+    public Integer getUserCount() {
+        return userCount;
+    }
+
+    public HeroEntity setUserCount(Integer userCount) {
+        this.userCount = userCount;
+        return this;
+    }
+    @JSONField(serialize = false)
+    public File getHeroFilePath() {
+        return new File(BaseApp.app.getDir("hero", Context.MODE_PRIVATE), getFileName());
+    }
+    @JSONField(serialize = false)
+    public static File getHeroFilePath(int id) {
+        return new File(BaseApp.app.getDir("hero", Context.MODE_PRIVATE), getFileName(id));
+    }
+    @JSONField(serialize = false)
     public String getFileName() {
+        return String.format("hero_%s.jpg", id);
+    }
+    @JSONField(serialize = false)
+    public static String getFileName(int id) {
         return String.format("hero_%s.jpg", id);
     }
 

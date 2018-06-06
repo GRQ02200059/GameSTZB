@@ -7,6 +7,7 @@ import com.itgowo.gamestzb.BuildConfig;
 public class BaseRequest<PostData> {
     public static final String GET_RANDOM_HERO = "getRandomHero";
     public static final String GET_HERO_LIST = "getHeroList";
+    public static final String GET_HERO_LIST_WITH_USER = "getHeroListWithUser";
     public static final String REG_USER = "regUser";
     public static final String GET_HERO_DETAIL_LIST = "getHeroDetailList";
     public static final String GET_HERO_DETAIL = "getHeroDetail";
@@ -18,7 +19,7 @@ public class BaseRequest<PostData> {
     private String token;
     private Integer pageIndex;
     private Integer pageSize;
-    private Integer serverVersion=1;
+    private Integer serverVersion = 1;
     private Integer appVersion;
     private PostData data;
 
@@ -107,12 +108,13 @@ public class BaseRequest<PostData> {
         } else {
             token = BaseConfig.userInfo.getUuid();
         }
-        appVersion= BuildConfig.VERSION_CODE;
+        appVersion = BuildConfig.VERSION_CODE;
     }
 
     public static class DataEntity {
         private int randomNum;
         private int id;
+
         public int getRandomNum() {
             return randomNum;
         }

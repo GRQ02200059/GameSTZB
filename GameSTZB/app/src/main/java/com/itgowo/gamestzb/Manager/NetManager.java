@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-//    public static final String ROOTURL = "http://10.0.4.42:1666/GameSTZB";
+//    public static final String ROOTURL = "http://10.0.4.44:1666/GameSTZB";
         public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
     public static final String ROOTURL_UPDATEVERSION = "http://itgowo.com:1888/Version";
         public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://itgowo.oss-cn-qingdao.aliyuncs.com/game/app/hero/hero_%s.jpg";
@@ -46,12 +46,16 @@ public class NetManager {
         basePost(ROOTURL_UPDATEVERSION, request, listener);
     }
 
-    public static void getHeroListAndDown(itgowoNetTool.onReceviceDataListener listener) {
+    public static void getHeroList(itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();
         request.setAction(BaseRequest.GET_HERO_LIST).initToken();
         basePost(request, listener);
     }
-
+    public static void getHeroDetailList(itgowoNetTool.onReceviceDataListener listener) {
+        BaseRequest request = new BaseRequest();
+        request.setAction(BaseRequest.GET_HERO_DETAIL_LIST).initToken();
+        basePost(request, listener);
+    }
     public static void download(final File file, final String url) {
         RequestParams requestParams = new RequestParams(url);
         requestParams.setSaveFilePath(file.getAbsolutePath());
