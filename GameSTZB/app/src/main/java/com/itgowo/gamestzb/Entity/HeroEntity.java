@@ -43,6 +43,9 @@ public class HeroEntity {
         return this;
     }
     public Integer getUserCount() {
+        if (userCount==null){
+            return 0;
+        }
         return userCount;
     }
 

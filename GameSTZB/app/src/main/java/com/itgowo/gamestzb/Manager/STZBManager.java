@@ -3,15 +3,21 @@ package com.itgowo.gamestzb.Manager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.BuildConfig;
@@ -54,6 +60,25 @@ public class STZBManager {
             final RequestOptions options = new RequestOptions().dontTransform().dontAnimate();
             uri = String.format(NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE, id);
             Glide.with(imageView).load(uri).apply(options).into(imageView);
+        }
+    }
+
+    public static void bindView(int id, TextView textView) {
+        String uri;
+        File heroFile = HeroEntity.getHeroFilePath(id);
+        if (heroFile.exists()) {
+            uri = heroFile.getAbsolutePath();
+            Drawable drawable=Drawable.createFromPath(uri);
+            textView.setBackground(drawable);
+        } else {
+            uri = String.format(NetManager.ROOTURL_DOWNLOAD_HERO_IMAGE, id);
+            final RequestOptions options = new RequestOptions().dontTransform().dontAnimate();
+            Glide.with(textView).load(uri).apply(options).into(new SimpleTarget<Drawable>() {
+                @Override
+                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                    textView.setBackground(resource);
+                }
+            });
         }
     }
 

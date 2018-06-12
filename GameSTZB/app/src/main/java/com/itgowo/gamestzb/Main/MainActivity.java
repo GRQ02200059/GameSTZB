@@ -137,7 +137,6 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                 checkVersion();
             }
         });
-
     }
 
 
@@ -376,11 +375,11 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
     private void onRandomResult() {
         countLayout.setVisibility(View.VISIBLE);
         msg6.setText(String.valueOf(UserManager.getMoney()));
-        msg5.setText("已有数量：" + count5);
-        msg4.setText("已有数量：" + count4);
-        msg3.setText("已有数量：" + count3);
-        msg2.setText("已有数量：" + count2);
-        msg1.setText("已有数量：" + count1);
+        msg5.setText("已收集：" + count5);
+        msg4.setText("已收集：" + count4);
+        msg3.setText("已收集：" + count3);
+        msg2.setText("已收集：" + count2);
+        msg1.setText("已收集：" + count1);
     }
 
     /**

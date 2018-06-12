@@ -22,6 +22,7 @@ public class BaseConfig {
     public static final String USER_ISPLAYVIDEO = "isPlayVideo";
     public static final String USER_ISPLAYMUSIC = "isPlayMusic";
     public static final String USER_MONEY = "userMoney";
+    public static final String USER_HEROLIST = "userHeroList";
     public static String SP_NAME_USERINFO = "UserInfo";
     public static UpdateVersion updateInfo  ;
 

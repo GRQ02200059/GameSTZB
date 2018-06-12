@@ -1,12 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background2"
+    android:orientation="vertical"
     tools:context=".HeroListActivity">
-<android.support.v7.widget.RecyclerView
-    android:layout_width="match_parent"
-    android:id="@+id/herolist_lv"
-    android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/templ1"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"></View>
+
+        <TextView
+            android:id="@+id/herolist_sortrule_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/stzb_button"
+            android:gravity="center"
+            android:minWidth="110dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="排序规则:默认"
+            android:textColor="@android:color/holo_orange_dark" />
+
+        <TextView
+            android:id="@+id/herolist_filterrule_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/stzb_button"
+            android:gravity="center"
+            android:minWidth="110dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="过滤规则：全部"
+            android:textColor="@android:color/holo_orange_dark" />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/herolist_lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 </android.support.v7.widget.LinearLayoutCompat>
