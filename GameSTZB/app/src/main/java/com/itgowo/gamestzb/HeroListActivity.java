@@ -33,8 +33,9 @@ public class HeroListActivity extends BaseActivity {
     private List<HeroEntityWithAttr> srcList;
     private TextView sortRuleTv;
     private TextView FilterRuleTv;
-    private String[] sortRuleListItem = {"全部", "数量", "稀有度", "攻击距离", "Cost", "初始攻击", "初始攻城", "初始谋略", "初始防御", "攻击成长", "攻城成长", "谋略成长", "防御成长"};
+    private String[] sortRuleListItem = {"默认", "数量", "稀有度", "攻击距离", "Cost", "初始攻击", "初始攻城", "初始谋略", "初始防御", "初始速度", "攻击成长", "攻城成长", "谋略成长", "防御成长", "速度成长"};
     private String[] filterRuleListItem = {"全部", "已收集", "未收集"};
+    private int sortRulePosition = 0;
 
     public static void go(Context context) {
         context.startActivity(new Intent(context, HeroListActivity.class));
@@ -73,10 +74,14 @@ public class HeroListActivity extends BaseActivity {
     }
 
     private void doSortRule(int position) {
+        currentList.clear();
+        sortRulePosition = position;
         sortRuleTv.setText("排序规则：" + sortRuleListItem[position]);
+        FilterRuleTv.setText("过滤规则：" + filterRuleListItem[0]);
+        currentList.addAll(srcList);
         switch (position) {
             case 0:
-                currentList = srcList;
+                currentList.addAll(srcList);
                 break;
             case 1://数量
                 Collections.sort(currentList, (o1, o2) -> o2.getUserCount() - o1.getUserCount());
@@ -102,32 +107,40 @@ public class HeroListActivity extends BaseActivity {
             case 8://初始防御
                 Collections.sort(currentList, (o1, o2) -> (o2.getDef() - o1.getDef()));
                 break;
-            case 9://攻击成长
+            case 9://初始速度
+                Collections.sort(currentList, (o1, o2) -> (o2.getSpeed() - o1.getSpeed()));
+                break;
+            case 10://攻击成长
                 Collections.sort(currentList, (o1, o2) -> (int) (o2.getAttGrow() * 1000 - o1.getAttGrow() * 1000));
                 break;
-            case 10://攻城成长
+            case 11://攻城成长
                 Collections.sort(currentList, (o1, o2) -> (int) (o2.getSiegeGrow() * 1000 - o1.getSiegeGrow() * 1000));
                 break;
-            case 11://谋略成长
+            case 12://谋略成长
                 Collections.sort(currentList, (o1, o2) -> (int) (o2.getRuseGrow() * 1000 - o1.getRuseGrow() * 1000));
                 break;
-            case 12://防御成长
+            case 13://防御成长
                 Collections.sort(currentList, (o1, o2) -> (int) (o2.getDefGrow() * 1000 - o1.getDefGrow() * 1000));
                 break;
+            case 14://速度成长
+                Collections.sort(currentList, (o1, o2) -> (int) (o2.getSpeedGrow() * 1000 - o1.getSpeedGrow() * 1000));
+                break;
             default:
-                currentList = srcList;
+                currentList.addAll(srcList);
         }
         heroListLV.getAdapter().notifyDataSetChanged();
     }
 
     private void doFilterRule(int position) {
+        currentList.clear();
         FilterRuleTv.setText("过滤规则：" + filterRuleListItem[position]);
+        sortRuleTv.setText("排序规则：" + sortRuleListItem[0]);
+        sortRulePosition = 0;
         switch (position) {
             case 0:
-                currentList = srcList;
+                currentList.addAll(srcList);
                 break;
             case 1:
-                currentList.clear();
                 for (int i = 0; i < srcList.size(); i++) {
                     if (srcList.get(i).getUserCount() > 0) {
                         currentList.add(srcList.get(i));
@@ -135,7 +148,6 @@ public class HeroListActivity extends BaseActivity {
                 }
                 break;
             case 2:
-                currentList.clear();
                 for (int i = 0; i < srcList.size(); i++) {
                     if (srcList.get(i).getUserCount() == 0) {
                         currentList.add(srcList.get(i));
@@ -143,19 +155,21 @@ public class HeroListActivity extends BaseActivity {
                 }
                 break;
             default:
-                currentList = srcList;
+                currentList.addAll(srcList);
         }
         heroListLV.getAdapter().notifyDataSetChanged();
     }
 
     private void initListener() {
-        sortRuleTv.setOnClickListener(v -> {
+        sortRuleTv.setOnClickListener((View v) -> {
             SuperDialog superDialog = new SuperDialog(context);
             List<SuperDialog.DialogMenuItem> dialogMenuItems = new ArrayList<>();
             for (int i = 0; i < sortRuleListItem.length; i++) {
                 dialogMenuItems.add(new SuperDialog.DialogMenuItem(sortRuleListItem[i], 0));
             }
-            superDialog.setDialogMenuItemList(dialogMenuItems).setContent("选择排序规则").setListener((isButtonClick, position) -> doSortRule(position)).show();
+            superDialog.setDialogMenuItemList(dialogMenuItems).setContent("选择排序规则").setListener((boolean isButtonClick, int position) -> {
+                doSortRule(position);
+            }).show();
         });
         FilterRuleTv.setOnClickListener(v -> {
             SuperDialog superDialog = new SuperDialog(context);
@@ -190,13 +204,12 @@ public class HeroListActivity extends BaseActivity {
             holder.name.setText(entity.getName());
             int width = context.getResources().getDisplayMetrics().widthPixels / 6;
             holder.itemView.setLayoutParams(new LinearLayout.LayoutParams(width, width * 4 / 3));
-            if (entity.getUserCount() <= 0) {
+            if (sortRulePosition == 0 && entity.getUserCount() <= 0) {
                 holder.img.setImageResource(R.drawable.hero_1000);
-                holder.num.setText("未收集");
             } else {
-                holder.num.setText(String.valueOf(entity.getUserCount()));
                 STZBManager.bindView(entity.getId(), holder.img);
             }
+            holder.num.setText(showMsg(entity));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 switch (entity.getQuality()) {
                     case 1:
@@ -218,6 +231,50 @@ public class HeroListActivity extends BaseActivity {
                         holder.img.setForeground(getDrawable(R.drawable.hero_mask_5));
                         break;
                 }
+            }
+        }
+
+        private String showMsg(HeroEntityWithAttr entity) {
+            switch (sortRulePosition) {
+                case 0:
+                case 1:
+                    if (entity.getUserCount() <= 0) {
+                        return "未收集";
+                    } else {
+                        return "已有 " + String.valueOf(entity.getUserCount());
+                    }
+                case 2://稀有度
+                    return "稀有度 " + String.valueOf(entity.getQuality());
+                case 3://攻击距离
+                    return "攻击距离 " + String.valueOf(entity.getDistance());
+                case 4://Cost
+                    return "Cost " + String.valueOf(entity.getCost());
+                case 5://初始攻击
+                    return "初始攻击 " + String.valueOf(entity.getAttack());
+                case 6://初始攻城
+                    return "初始攻城 " + String.valueOf(entity.getSiege());
+                case 7://初始谋略
+                    return "初始谋略 " + String.valueOf(entity.getRuse());
+                case 8://初始防御
+                    return "初始防御 " + String.valueOf(entity.getDef());
+                case 9://初始速度
+                    return "初始速度 " + String.valueOf(entity.getSpeed());
+                case 10://攻击成长
+                    return "攻击成长 " + String.valueOf(entity.getAttGrow());
+                case 11://攻城成长
+                    return "攻城成长 " + String.valueOf(entity.getSiegeGrow());
+                case 12://谋略成长
+                    return "谋略成长 " + String.valueOf(entity.getRuseGrow());
+                case 13://防御成长
+                    return "防御成长 " + String.valueOf(entity.getDefGrow());
+                case 14://速度成长
+                    return "速度成长 " + String.valueOf(entity.getSpeedGrow());
+                default:
+                    if (entity.getUserCount() <= 0) {
+                        return "未收集";
+                    } else {
+                        return "已有 " + String.valueOf(entity.getUserCount());
+                    }
             }
         }
 
