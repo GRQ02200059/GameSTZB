@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -34,7 +35,7 @@ import com.itgowo.gamestzb.Entity.GetRandomHeroEntity;
 import com.itgowo.gamestzb.Entity.HeroEntity;
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.gamestzb.Guess.GameGuessActivity;
-import com.itgowo.gamestzb.HeroEditActivity;
+import com.itgowo.gamestzb.HeroDetailActivity;
 import com.itgowo.gamestzb.HeroListActivity;
 import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.STZBManager;
@@ -167,6 +168,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
             @Override
             public void onResult(String requestStr, String responseStr, BaseResponse<UpdateVersion> result) {
                 if (result.isSuccess()) {
+                    if (result.getData() != null && result.getData().getDownloadurl() != null) {
+                        NetManager.APP_LASTVERSION_DOWNLOAD_URL = result.getData().getDownloadurl();
+                    }
                     if (result.getData().getVersioncode() > BuildConfig.VERSION_CODE) {
                         BaseConfig.updateInfo = result.getData();
                         fabNotice.setText("升级");
@@ -328,6 +332,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                 .addSubActionView(rLSubBuilder.setContentView(getAction("图鉴")).build())
                 .addSubActionView(rLSubBuilder.setContentView(getAction("猜将")).build())
                 .addSubActionView(rLSubBuilder.setContentView(getAction("制作")).build())
+                .addSubActionView(rLSubBuilder.setContentView(getAction("分享")).build())
                 .addSubActionView(rLSubBuilder.setContentView(getAction("反馈")).build())
                 .attachTo(rightLowerButton)
                 .build();
@@ -345,9 +350,12 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                             GameGuessActivity.go(context);
                             break;
                         case 2:
-                            HeroEditActivity.go(context);
+//                            HeroDetailActivity.go(context);
                             break;
                         case 3:
+                            share();
+                            break;
+                        case 4:
                             BaseApp.getStzbManager().goUpdateVersion(context);
                             break;
                         default:
@@ -372,6 +380,31 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
         return textView;
     }
 
+    private void share() {
+        NetManager.APP_LASTVERSION_DOWNLOAD_URL = getString(R.string.app_download_defaulturl);
+        SuperDialog dialog = new SuperDialog(context);
+        List<SuperDialog.DialogMenuItem> list = new ArrayList<>();
+        list.add(new SuperDialog.DialogMenuItem(getResources().getString(R.string.share_qq), R.drawable.share_qq));
+        list.add(new SuperDialog.DialogMenuItem(getResources().getString(R.string.share_weichat), R.drawable.share_weixin));
+        list.add(new SuperDialog.DialogMenuItem(getResources().getString(R.string.share_timeline), R.drawable.share_timeline));
+        dialog.setDialogMenuItemList(list).setListener(new SuperDialog.onDialogClickListener() {
+            @Override
+            public void click(boolean isButtonClick, int position) {
+                switch (position) {
+                    case 0:
+                        shareQQMsg(getString(R.string.share_app_title), getString(R.string.share_app_content), NetManager.APP_LASTVERSION_DOWNLOAD_URL);
+                        break;
+                    case 1:
+                        shareWeixinMsg(getString(R.string.share_app_title), getString(R.string.share_app_content), NetManager.APP_LASTVERSION_DOWNLOAD_URL, false);
+                        break;
+                    case 2:
+                        shareWeixinMsg(getString(R.string.share_app_title), getString(R.string.share_app_content), NetManager.APP_LASTVERSION_DOWNLOAD_URL, true);
+                        break;
+                }
+            }
+        }).show();
+    }
+
     private void onRandomResult() {
         countLayout.setVisibility(View.VISIBLE);
         msg6.setText(String.valueOf(UserManager.getMoney()));
@@ -389,10 +422,9 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
      * <p>
      */
     private void goodluck(int num) {
-//        if (UserManager.isLogin()&&UserManager.getMoney() < num * 200 - (num == 5 ? 50 : 0)) {
-//            showToastShort("玉不够，去做任务领取玉符吧");
-//            return;
-//        }
+        goodLuckBtn1.setEnabled(false);
+        goodLuckBtn3.setEnabled(false);
+        goodLuckBtn5.setEnabled(false);
         NetManager.getRandomHero(num, new itgowoNetTool.onReceviceDataListener<BaseResponse<GetRandomHeroEntity>>() {
 
             @Override
@@ -407,15 +439,20 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                 } else {
                     Toast.makeText(context, result.getMsg(), Toast.LENGTH_SHORT).show();
                 }
+                goodLuckBtn1.setEnabled(true);
+                goodLuckBtn3.setEnabled(true);
+                goodLuckBtn5.setEnabled(true);
             }
 
             @Override
             public void onError(Throwable throwable) {
                 throwable.printStackTrace();
+                showToastShort(getString(R.string.net_error_retry));
+                goodLuckBtn1.setEnabled(true);
+                goodLuckBtn3.setEnabled(true);
+                goodLuckBtn5.setEnabled(true);
             }
         });
-
-
     }
 
     private void showHeros() {
@@ -470,6 +507,7 @@ public class MainActivity extends BaseActivity implements UserManager.onUserStat
                 mView.clearAnimation();
                 mView.setAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_in));
                 STZBManager.bindView(randomHeroEntities.get(position).getId(), mView.headimg);
+                mView.setOnClickListener(v -> HeroDetailActivity.go(context, randomHeroEntities.get(position).getId()));
             }
         });
         cacheManager.onRefresh(cardLayout, randomHeroEntities.size());

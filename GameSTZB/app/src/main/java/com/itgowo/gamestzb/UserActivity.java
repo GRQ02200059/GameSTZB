@@ -97,7 +97,7 @@ public class UserActivity extends BaseActivity {
                         public void onError(Throwable e) {
                             e.printStackTrace();
                             v.setEnabled(true);
-                            Toast.makeText(context, "登录失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
+                            showToastShort("登录失败：" + e.getMessage());
                         }
                     });
                 }

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,12 +15,16 @@ import android.os.Build;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
+import android.view.View;
 import android.widget.Toast;
 
 import com.itgowo.gamestzb.Base.BaseApp;
 import com.itgowo.gamestzb.Main.MainActivity;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -103,6 +109,114 @@ public class Utils {
         } else {
             Toast.makeText(BaseApp.app, msg, Toast.LENGTH_SHORT);
         }
-
     }
+
+    /**
+     * 按指定大小缩放图片
+     *
+     * @param bitmap
+     * @param w
+     * @param h
+     * @return
+     */
+    public static Bitmap bitmap_ResizeImage(Bitmap bitmap, int w, int h) {
+        Bitmap BitmapOrg = bitmap;
+        int width = BitmapOrg.getWidth();
+        int height = BitmapOrg.getHeight();
+        int newWidth = w;
+        int newHeight = h;
+
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        // if you want to rotate the Bitmap
+        // matrix.postRotate(45);
+        Bitmap resizedBitmap = Bitmap.createBitmap(BitmapOrg, 0, 0, width, height, matrix, true);
+        return resizedBitmap;
+    }
+
+    /**
+     * 获取view截图
+     *
+     * @param v
+     * @return
+     */
+    public static Bitmap bitmap_getViewBackground(View v) {
+        if (null == v) {
+            return null;
+        }
+        v.setDrawingCacheEnabled(true);
+        v.buildDrawingCache();
+        if (Build.VERSION.SDK_INT >= 11) {
+            v.measure(View.MeasureSpec.makeMeasureSpec(v.getWidth(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(v.getHeight(), View.MeasureSpec.EXACTLY));
+            v.layout((int) v.getX(), (int) v.getY(), (int) v.getX() + v.getMeasuredWidth(), (int) v.getY() + v.getMeasuredHeight());
+        } else {
+            v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
+        }
+        Bitmap b = Bitmap.createBitmap(v.getDrawingCache(), 0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
+        v.setDrawingCacheEnabled(false);
+        v.destroyDrawingCache();
+        return b;
+    }
+
+    /**
+     * 将bitmap压缩保存到文件中,整型compress表示压缩率，如果填100，表示不压缩，填80，表示压缩20%
+     *
+     * @param bmp
+     * @param file
+     * @param mFileMaxSize 最大文件大小,建议300,单位KB
+     */
+    public static void bitmap_CompressBmpToFile(Bitmap bmp, File file, int mFileMaxSize) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int options = 100;// 个人喜欢从80开始,此处的80表示压缩率，表示压缩20%，如果不压缩，就是100，表示压缩率是0
+            bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+            while (baos.toByteArray().length / 1024 > mFileMaxSize) {
+                baos.reset();
+                options -= 10;
+                bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+            }
+
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(baos.toByteArray());
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static byte[] bmpToByteArray(final Bitmap bmp, final boolean needRecycle) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, output);
+        if (needRecycle) {
+            bmp.recycle();
+        }
+
+        byte[] result = output.toByteArray();
+        try {
+            output.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+//    public static void bitmap_CompressBmpToFile(final Bitmap bmp, final File file, final int mFileMaxSize, final onCompleteListener mListener) {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                bitmap_CompressBmpToFile(bmp,file,mFileMaxSize);
+//                app_runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mListener.onComplete("");
+//                    }
+//                });
+//            }
+//        }).start();
+//    }
 }

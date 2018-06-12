@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/hero_head"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        android:background="@drawable/head_background"
+        android:padding="2dp"
+        android:scaleType="fitXY" />
+
+    <RelativeLayout
+        android:layout_width="250dp"
+        android:layout_height="200dp"
+        android:layout_toRightOf="@+id/hero_head"
+        android:background="@drawable/detail_background">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="9dp"
+            android:text=""
+            android:textColor="@android:color/darker_gray"
+            android:textSize="7sp" />
+
+        <TextView
+            android:id="@+id/birthday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/name"
+            android:layout_marginTop="29dp"
+            android:text="\???"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="7sp" />
+
+        <TextView
+            android:id="@+id/cost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/name"
+            android:layout_marginTop="50dp"
+            android:text="3.5"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="7sp" />
+
+        <TextView
+            android:id="@+id/type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/name"
+            android:layout_marginTop="70dp"
+            android:text=""
+            android:textColor="@android:color/darker_gray"
+            android:textSize="7sp" />
+
+        <TextView
+            android:id="@+id/quality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="170dp"
+            android:layout_marginTop="9dp"
+            android:text=""
+            android:textColor="@android:color/darker_gray"
+            android:textSize="7sp" />
+
+        <ImageView
+            android:id="@+id/country"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_alignLeft="@+id/quality"
+            android:layout_marginTop="28dp"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="7sp" />
+
+        <TextView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/quality"
+            android:layout_marginTop="50dp"
+            android:text="3"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="7sp" />
+
+        <TextView
+            android:id="@+id/skill"
+            android:layout_width="63dp"
+            android:layout_height="14dp"
+            android:layout_alignLeft="@+id/quality"
+            android:layout_marginLeft="-12dp"
+            android:layout_marginTop="67dp"
+            android:background="@drawable/stzb_button"
+            android:gravity="center"
+            android:textColor="@android:color/holo_orange_light"
+            android:textSize="7sp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="13dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="100dp"
+            android:gravity="left"
+            android:textColor="@android:color/white"
+            android:textSize="7sp"
+            android:visibility="visible" />
+    </RelativeLayout>
+</RelativeLayout>

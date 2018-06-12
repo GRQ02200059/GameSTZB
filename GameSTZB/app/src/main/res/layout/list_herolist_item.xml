@@ -24,8 +24,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:textStyle="bold"
         android:paddingBottom="15dp"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="5"
+        android:shadowDy="5"
+        android:shadowRadius="8"
         android:layout_marginRight="8dp"
-        android:textColor="@android:color/holo_orange_dark"
+        android:textColor="@android:color/holo_orange_light"
         android:textSize="13sp" />
 </RelativeLayout>

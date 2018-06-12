@@ -8,4 +8,14 @@
     <string name="goodluck5">招募5次</string>
     <string name="goodluck3">招募3次</string>
     <string name="goodluck1">招募1次</string>
+    <string name="data_error">数据错误</string>
+    <string name="data_error2">数据错误2</string>
+    <string name="net_error_retry">网络异常，请重试</string>
+    <string name="timelien">朋友圈</string>
+    <string name="share_timeline">分享到朋友圈</string>
+    <string name="share_qq">分享到QQ</string>
+    <string name="share_weichat">分享到微信</string>
+    <string name="share_app_title">游戏玩累了不爽，快用率土极皇App</string>
+    <string name="app_download_defaulturl">http://itgowo.com:1666/GameSTZB</string>
+    <string name="share_app_content">抽将到手软，识将得玉符；快速查看武将属性，合理搭配强大阵容；美图音乐欣赏，自定义武将分享</string>
 </resources>

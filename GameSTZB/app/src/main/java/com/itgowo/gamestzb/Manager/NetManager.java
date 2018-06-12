@@ -24,6 +24,7 @@ public class NetManager {
     public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://itgowo.oss-cn-qingdao.aliyuncs.com/game/app/hero/hero_%s.jpg";
     //    public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://stzb.res.netease.com/pc/qt/20170323200251/data/role/card_%s.jpg";
     public static final String ROOTURL_HERO_INFO = "https://app.gamer.163.com//game-db/g10/hero/";
+    public static String APP_LASTVERSION_DOWNLOAD_URL ;
 
     public static void getRandomHero(int num, itgowoNetTool.onReceviceDataListener listener) {
         BaseRequest request = new BaseRequest();

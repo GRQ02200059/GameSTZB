@@ -10,10 +10,16 @@
     <LinearLayout
         android:id="@+id/templ1"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="25dp"
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
-
+        <ImageView
+            android:id="@+id/goback"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/goback"
+            android:tint="@color/country_qun" />
         <View
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,5 +55,9 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/herolist_lv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"></android.support.v7.widget.RecyclerView>
 </android.support.v7.widget.LinearLayoutCompat>

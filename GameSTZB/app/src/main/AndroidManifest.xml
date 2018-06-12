@@ -223,7 +223,7 @@
             android:exported="true" />
 
         <activity
-            android:name=".HeroEditActivity"
+            android:name=".HeroDetailActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -231,7 +231,10 @@
             android:name=".HeroListActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:exported="true"></activity>
     </application>
 
 </manifest>

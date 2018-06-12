@@ -1,9 +1,12 @@
 package com.itgowo.gamestzb.Base;
 
 import android.content.Context;
+import android.os.Environment;
 
 import com.itgowo.gamestzb.Entity.UpdateVersion;
 import com.itgowo.gamestzb.Entity.UserInfo;
+
+import java.io.File;
 
 public class BaseConfig {
     public static final String TENCENTQQ_APP_ID = "1106861720";
@@ -25,7 +28,14 @@ public class BaseConfig {
     public static final String USER_HEROLIST = "userHeroList";
     public static String SP_NAME_USERINFO = "UserInfo";
     public static UpdateVersion updateInfo  ;
-
+    public static File getAppFile(String name){
+        File file=new File( Environment.getExternalStorageDirectory(),"itgowo/Game/stzb");
+        if (!file.exists()){
+            file.mkdirs();
+        }
+        file=new File(file,name);
+        return file;
+    }
     public static void putData(String key, String data) {
         BaseApp.app.getSharedPreferences(SP_NAME_APPCONFIG, Context.MODE_PRIVATE).edit().putString(key, data).apply();
     }

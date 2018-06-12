@@ -6,8 +6,8 @@ android {
         applicationId "com.itgowo.gamestzb"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 205
-        versionName "2.0.5"
+        versionCode 206
+        versionName "2.0.6"
         ndk {
             abiFilters "x86", "armeabi"
         }
@@ -16,6 +16,23 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug{
+            signingConfig signingConfigs.debug;
+        }
+    }
+    signingConfigs {
+        release {//发布版本的签名配置
+            keyAlias 'stzb'
+            keyPassword 'stzb123'
+            storeFile file('../stzb.jks')
+            storePassword 'stzb123'
+        }
+        debug {//调试版本的签名配置
+            keyAlias 'stzb'
+            keyPassword 'stzb123'
+            storeFile file('../stzb.jks')
+            storePassword 'stzb123'
         }
     }
     sourceSets {

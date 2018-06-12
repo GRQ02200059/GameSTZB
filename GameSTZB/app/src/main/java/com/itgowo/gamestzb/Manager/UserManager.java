@@ -34,8 +34,16 @@ public class UserManager {
     public static final String SCOPE = "all";
     public static Tencent mTencent;
     private static IUiListener mIUiListener;
-    private static IWXAPI mWeixinAPI;
+    public static IWXAPI mWeixinAPI;
     private static List<onUserStatusListener> onUserStatusListeners = new ArrayList<>();
+
+    public static Tencent getmTencent() {
+        return mTencent;
+    }
+
+    public static IWXAPI getmWeixinAPI() {
+        return mWeixinAPI;
+    }
 
     public static void init(Context context) {
         mTencent = Tencent.createInstance(TENCENTQQ_APP_ID, context);

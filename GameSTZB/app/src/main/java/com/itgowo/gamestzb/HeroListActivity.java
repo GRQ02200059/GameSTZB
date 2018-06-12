@@ -20,6 +20,7 @@ import com.itgowo.gamestzb.Entity.BaseResponse;
 import com.itgowo.gamestzb.Entity.HeroEntityWithAttr;
 import com.itgowo.gamestzb.Manager.NetManager;
 import com.itgowo.gamestzb.Manager.STZBManager;
+import com.itgowo.gamestzb.View.RecyclerViewItemDecoration;
 import com.itgowo.itgowolib.itgowoNetTool;
 import com.itgowo.views.SuperDialog;
 
@@ -33,6 +34,7 @@ public class HeroListActivity extends BaseActivity {
     private List<HeroEntityWithAttr> srcList;
     private TextView sortRuleTv;
     private TextView FilterRuleTv;
+    private View goBackBtn;
     private String[] sortRuleListItem = {"默认", "数量", "稀有度", "攻击距离", "Cost", "初始攻击", "初始攻城", "初始谋略", "初始防御", "初始速度", "攻击成长", "攻城成长", "谋略成长", "防御成长", "速度成长"};
     private String[] filterRuleListItem = {"全部", "已收集", "未收集"};
     private int sortRulePosition = 0;
@@ -50,6 +52,7 @@ public class HeroListActivity extends BaseActivity {
         GridLayoutManager layoutManager = new GridLayoutManager(this, 6);
         heroListLV.setLayoutManager(layoutManager);
         heroListLV.setAdapter(new HeroListAdapter());
+        heroListLV.addItemDecoration(new RecyclerViewItemDecoration(10, 10));
         STZBManager.showWaitDialog(this, null, "正在请求数据");
         NetManager.getHeroListWithUserAndAttr(new itgowoNetTool.onReceviceDataListener<BaseResponse<List<HeroEntityWithAttr>>>() {
 
@@ -69,6 +72,7 @@ public class HeroListActivity extends BaseActivity {
             public void onError(Throwable throwable) {
                 STZBManager.hideWaitDialog();
                 throwable.printStackTrace();
+                showToastLong(getString(R.string.net_error_retry));
             }
         });
     }
@@ -181,12 +185,14 @@ public class HeroListActivity extends BaseActivity {
                 doFilterRule(position);
             }).show();
         });
+        goBackBtn.setOnClickListener(v -> finish());
     }
 
     private void initView() {
         heroListLV = findViewById(R.id.herolist_lv);
         sortRuleTv = findViewById(R.id.herolist_sortrule_tv);
         FilterRuleTv = findViewById(R.id.herolist_filterrule_tv);
+        goBackBtn = findViewById(R.id.goback);
     }
 
     class HeroListAdapter extends RecyclerView.Adapter<HeroViewHolder> {
@@ -201,8 +207,9 @@ public class HeroListActivity extends BaseActivity {
         @Override
         public void onBindViewHolder(@NonNull HeroViewHolder holder, int position) {
             HeroEntityWithAttr entity = currentList.get(position);
+            holder.itemView.setOnClickListener(v -> HeroDetailActivity.go(context, entity.getId()));
             holder.name.setText(entity.getName());
-            int width = context.getResources().getDisplayMetrics().widthPixels / 6;
+            int width = (heroListLV.getWidth() - 60) / 6;
             holder.itemView.setLayoutParams(new LinearLayout.LayoutParams(width, width * 4 / 3));
             if (sortRulePosition == 0 && entity.getUserCount() <= 0) {
                 holder.img.setImageResource(R.drawable.hero_1000);
