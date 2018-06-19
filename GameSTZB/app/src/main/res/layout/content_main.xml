@@ -14,8 +14,7 @@
         android:layout_marginTop="30dp"
         android:foreground="@drawable/background4"
         android:foregroundTint="@android:color/holo_orange_light"
-        android:padding="9dp"
-        android:src="@android:drawable/ic_popup_sync" />
+        android:padding="9dp" />
 
     <LinearLayout
         android:id="@+id/layout1"

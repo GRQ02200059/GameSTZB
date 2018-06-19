@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background2"
     tools:context=".UserActivity">
 
 
@@ -16,10 +15,15 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <com.itgowo.gamestzb.View.HeroCard
-            android:id="@+id/hero"
-            android:layout_width="100dp"
-            android:layout_height="130dp"></com.itgowo.gamestzb.View.HeroCard>
+        <ImageView
+            android:id="@+id/User_Head_Img"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="30dp"
+            android:foreground="@drawable/background4"
+            android:foregroundTint="@android:color/holo_orange_light"
+            android:padding="9dp" />
 
         <Button
             android:id="@+id/btn_login_qq"

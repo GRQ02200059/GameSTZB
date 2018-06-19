@@ -18,8 +18,8 @@ import java.util.Map;
 
 public class NetManager {
     private static final String TAG = "NetManager";
-    //    public static final String ROOTURL = "http://10.0.4.44:1666/GameSTZB";
-    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
+        public static final String ROOTURL = "http://10.1.101.227:1666/GameSTZB";
+//    public static final String ROOTURL = "http://itgowo.com:1666/GameSTZB";
     public static final String ROOTURL_UPDATEVERSION = "http://itgowo.com:1888/Version";
     public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://itgowo.oss-cn-qingdao.aliyuncs.com/game/app/hero/hero_%s.jpg";
     //    public static final String ROOTURL_DOWNLOAD_HERO_IMAGE = "https://stzb.res.netease.com/pc/qt/20170323200251/data/role/card_%s.jpg";

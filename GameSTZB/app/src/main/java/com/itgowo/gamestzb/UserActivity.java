@@ -7,18 +7,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.itgowo.gamestzb.Base.BaseActivity;
 import com.itgowo.gamestzb.Base.BaseConfig;
 import com.itgowo.gamestzb.Entity.UserInfo;
 import com.itgowo.gamestzb.Manager.UserManager;
-import com.itgowo.gamestzb.View.HeroCard;
 import com.itgowo.views.SuperDialog;
 import com.taobao.sophix.SophixManager;
 
 public class UserActivity extends BaseActivity {
-    private HeroCard heroCard;
+    private ImageView userHeadImg;
     private CheckBox isPlayVideo, isPlayMusic;
     private Button btnLoginQQ;
     private View goBackBtn, rebootBtn;
@@ -45,7 +46,10 @@ public class UserActivity extends BaseActivity {
     private void initData() {
         isPlayVideo.setChecked(BaseConfig.getData(BaseConfig.USER_ISPLAYVIDEO, true));
         isPlayMusic.setChecked(BaseConfig.getData(BaseConfig.USER_ISPLAYMUSIC, true));
-        heroCard.refreshInfo();
+        if (BaseConfig.userInfo==null){
+            userHeadImg.setImageDrawable(null);
+        }else {
+            Glide.with(userHeadImg).load(BaseConfig.userInfo.getHead()).into(userHeadImg);}
         refreshLogonBtnStatus();
     }
 
@@ -76,13 +80,13 @@ public class UserActivity extends BaseActivity {
                 if (UserManager.isLogin) {
                     UserManager.logout();
                     refreshLogonBtnStatus();
-                    heroCard.refreshInfo();
+//                    heroCard.refreshInfo();
                     v.setEnabled(true);
                 } else {
                     UserManager.login4QQ(UserActivity.this, new UserManager.onUserLoginListener() {
                         @Override
                         public void onSuccess(UserInfo userInfo) {
-                            heroCard.refreshInfo();
+//                            heroCard.refreshInfo();
                             setResult(Activity.RESULT_OK);
                             refreshLogonBtnStatus();
                             v.setEnabled(true);
@@ -115,7 +119,7 @@ public class UserActivity extends BaseActivity {
     }
 
     private void initView() {
-        heroCard = findViewById(R.id.hero);
+        userHeadImg = findViewById(R.id.User_Head_Img);
         isPlayVideo = findViewById(R.id.isPlayVideo);
         isPlayMusic = findViewById(R.id.isPlayMusic);
         btnLoginQQ = findViewById(R.id.btn_login_qq);
